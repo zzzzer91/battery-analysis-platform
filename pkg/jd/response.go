@@ -1,13 +1,13 @@
-package response
+package jd
 
-type Response struct {
+type response struct {
 	Code int         `json:"code"`
 	Msg  string      `json:"msg"`
 	Data interface{} `json:"data"`
 }
 
-func Build(code int, msg string, data interface{}) *Response {
-	return &Response{
+func Build(code int, msg string, data interface{}) *response {
+	return &response{
 		Code: code,
 		Msg:  msg,
 		Data: data,
