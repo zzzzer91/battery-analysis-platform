@@ -11,12 +11,14 @@ import (
 func GetSysInfo(c *gin.Context) {
 	conn, err := upgradeHttpConn(c.Writer, c.Request)
 	if err != nil {
-		panic(err)
+		c.AbortWithStatus(500)
+		return
 	}
 	for {
 		data, _ := service.GetSysInfo()
 		if err := conn.WriteJSON(data); err != nil {
-			panic(err)
+			c.AbortWithStatus(500)
+			return
 		}
 		time.Sleep(time.Second * 3)
 	}
