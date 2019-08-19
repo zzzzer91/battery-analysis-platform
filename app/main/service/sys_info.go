@@ -2,16 +2,13 @@ package service
 
 import (
 	"battery-anlysis-platform/app/main/model"
-	"github.com/shirou/gopsutil/mem"
+	"errors"
 )
 
-func GetSysInfo() *model.SysInfo {
-	vm, _ := mem.VirtualMemory()
-	return &model.SysInfo{
-		Memory: &model.Memory{
-			Total:       vm.Total,
-			Free:        vm.Free,
-			UsedPercent: vm.UsedPercent,
-		},
+func GetSysInfo() (*model.SysInfo, error) {
+	ret := model.NewSysInfo()
+	if ret == nil {
+		return nil, errors.New("")
 	}
+	return ret, nil
 }

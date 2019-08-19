@@ -25,19 +25,18 @@ func GetUsers(c *gin.Context) {
 func CreateUser(c *gin.Context) {
 	var userCreateService service.UserCreateService
 	if err := c.ShouldBindJSON(&userCreateService); err != nil {
-		c.AbortWithStatus(500)
-		return
+		panic(err)
 	} else {
 		var code int
 		var msg string
 		var data interface{}
-		err := userCreateService.CreateUser()
+		user, err := userCreateService.CreateUser()
 		if err != nil {
 			code = jd.ERROR
 			msg = err.Error()
 		} else {
 			code = jd.SUCCESS
-			msg = "创建用户 " + userCreateService.UserName + " 成功"
+			msg = "创建用户 " + user.Name + " 成功"
 		}
 		res := jd.Build(code, msg, data)
 		c.JSON(200, res)

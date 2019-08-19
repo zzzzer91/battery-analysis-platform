@@ -7,6 +7,17 @@ import (
 )
 
 func GetSysInfo(c *gin.Context) {
-	res := jd.Build(jd.SUCCESS, "", service.GetSysInfo())
+	var code int
+	var msg string
+	var data interface{}
+	sysInfo, err := service.GetSysInfo()
+	if err != nil {
+		code = jd.ERROR
+		msg = err.Error()
+	} else {
+		code = jd.SUCCESS
+		data = sysInfo
+	}
+	res := jd.Build(code, msg, data)
 	c.JSON(200, res)
 }
