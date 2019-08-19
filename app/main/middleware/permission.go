@@ -21,7 +21,7 @@ func PermissionRequired(permission int) gin.HandlerFunc {
 			c.AbortWithStatus(401)
 			return
 		}
-		if user.Type != permission {
+		if user.Type < permission {
 			c.AbortWithStatus(403)
 			return
 		}

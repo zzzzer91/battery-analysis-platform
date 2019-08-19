@@ -8,7 +8,7 @@ import (
 )
 
 type UserCreateService struct {
-	UserName string `json:"userName" binding:"required,min=5,max=14"`
+	UserName string `json:"userName" binding:"required,min=6,max=14"`
 	Password string `json:"password" binding:"required,min=6,max=14"`
 	Comment  string `json:"comment" binding:"max=64"`
 }

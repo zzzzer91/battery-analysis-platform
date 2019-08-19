@@ -3,8 +3,8 @@ package service
 import (
 	"battery-anlysis-platform/app/main/dao"
 	"battery-anlysis-platform/app/main/model"
+	"battery-anlysis-platform/pkg/jtime"
 	"errors"
-	"time"
 )
 
 type UserLoginService struct {
@@ -24,8 +24,7 @@ func (s *UserLoginService) Login() (*model.User, error) {
 	if !user.CheckStatusOk() {
 		return nil, errors.New("该用户已被禁止登录")
 	}
-	t := time.Now()
-	user.LastLoginTime = &t
+	user.LastLoginTime = jtime.Now()
 	user.LoginCount += 1
 	dao.MysqlDB.Save(&user)
 	return &user, nil

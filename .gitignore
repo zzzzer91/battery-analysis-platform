@@ -2,3 +2,4 @@
 instance/
 go.sum
 app.ini
+.env

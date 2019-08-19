@@ -1,0 +1,56 @@
+version: '3'
+
+services:
+
+  nginx:
+    image: nginx:mainline-alpine
+    network_mode: "host" # 因为用了 host 网络模式，所以容器中的端口会会直接映射到 localhost
+    #    ports:
+    #      - 127.0.0.1:3389:3389
+    volumes:
+      - ${NGINX_CONF_FILE}:/etc/nginx/nginx.conf:ro
+      - ${NGINX_DIST_DIR}:/usr/share/nginx/dist
+      - ${NGINX_MEDIA_DIR}:/usr/share/nginx/media
+
+  mysql:
+    image: mysql:5.7.26  # 固定版本
+    # restart: always  # 重启系统后重启容器
+    ports:
+      - 127.0.0.1:3306:3306
+    environment:
+      - TZ=Asia/Shanghai
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}  # 只在数据库未初始化的情况下有效
+    volumes:
+      - ${MYSQL_DATA_DIR}:/var/lib/mysql
+
+  mongo:
+    image: mongo:4.0
+    ports:
+      - 127.0.0.1:27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+    volumes:
+      - ${MONGO_DATA_DIR}:/data/db
+
+  redis:
+    image: redis:5.0-alpine
+    ports:
+      - 127.0.0.1:6379:6379
+    volumes:
+      - ${REDIS_DATA_DIR}:/data  # redis 数据存储在容器的 /data 下
+
+  # 数据库管理工具
+
+  adminer:  # MySQL 管理
+    image: adminer:latest
+    ports:
+      - 8080:8080
+
+#  mongo-express:  # Mongo 管理
+#    image: mongo-express:latest
+#    ports:
+#      - 8081:8081
+#    environment:
+#      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+#      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}

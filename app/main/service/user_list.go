@@ -8,7 +8,7 @@ import (
 
 func GetUsers() ([]model.User, error) {
 	var users []model.User
-	err := dao.MysqlDB.Where("type != ?", model.TypeSuperUser).Find(users).Error
+	err := dao.MysqlDB.Where("type != ?", model.TypeSuperUser).Find(&users).Error
 	if err != nil {
 		return nil, errors.New("")
 	}
