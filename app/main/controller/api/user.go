@@ -25,7 +25,7 @@ func GetUsers(c *gin.Context) {
 func CreateUser(c *gin.Context) {
 	var userCreateService service.UserCreateService
 	if err := c.ShouldBindJSON(&userCreateService); err != nil {
-		c.AbortWithStatus(500)
+		c.AbortWithError(500, err)
 		return
 	} else {
 		var code int

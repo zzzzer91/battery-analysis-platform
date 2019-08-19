@@ -28,7 +28,7 @@ func Login(c *gin.Context) {
 		var userLoginService service.UserLoginService
 		// ShouldBind() 会检测是否满足设置的 bind 标签要求
 		if err := c.ShouldBindJSON(&userLoginService); err != nil {
-			c.AbortWithStatus(500)
+			c.AbortWithError(500, err)
 			return
 		} else {
 			if user, err := userLoginService.Login(); err != nil {
