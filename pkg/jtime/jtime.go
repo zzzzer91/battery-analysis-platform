@@ -36,11 +36,12 @@ func (t JSONTime) Value() (driver.Value, error) {
 // Scan valueof time.Time
 func (t *JSONTime) Scan(v interface{}) error {
 	value, ok := v.(time.Time)
-	if ok {
-		*t = JSONTime{Time: value}
-		return nil
+	if !ok {
+		s := fmt.Sprintf("can not convert %v to timestamp", v)
+		panic(s)
 	}
-	return fmt.Errorf("can not convert %v to timestamp", v)
+	*t = JSONTime{Time: value}
+	return nil
 }
 
 func Now() *JSONTime {
