@@ -3,3 +3,4 @@ instance/
 go.sum
 app.ini
 .env
+nginx.conf
