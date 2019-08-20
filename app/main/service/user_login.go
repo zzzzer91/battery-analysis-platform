@@ -10,7 +10,7 @@ import (
 
 type UserLoginService struct {
 	UserName string `json:"userName" binding:"required,min=5,max=14"`
-	Password string `json:"password" binding:"required,min=6,max=14"`
+	Password string `json:"password" binding:"required,min=5,max=14"`
 }
 
 func (s *UserLoginService) Login() (*model.User, error) {

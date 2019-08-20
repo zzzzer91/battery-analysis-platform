@@ -7,7 +7,7 @@ import (
 
 func TestReUserNameOrPassword(t *testing.T) {
 	ast := assert.New(t)
-	testCases := []string{"xiaoming", "XIAOMING", "123456", "abcde", "xiaoming12345678"}
+	testCases := []string{"xiaoming", "XIAOMING", "123456", "abcd", "xiaoming12345678"}
 	expected := []bool{true, true, true, false, false}
 	for i := range testCases {
 		ret := ReUserNameOrPassword.MatchString(testCases[i])

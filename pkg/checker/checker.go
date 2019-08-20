@@ -5,7 +5,7 @@ import (
 )
 
 // 过滤不合法用户名和密码
-var ReUserNameOrPassword = regexp.MustCompile(`^[0-9a-zA-Z]{6,14}$`)
+var ReUserNameOrPassword = regexp.MustCompile(`^[0-9a-zA-Z]{5,14}$`)
 
 // 过滤不合法日期，只能 2000-2099 年
 // 润年，2 月 没检查
