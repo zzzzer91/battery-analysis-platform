@@ -8,8 +8,9 @@ import (
 )
 
 type UserCreateService struct {
-	UserLoginService
-	Comment string `json:"comment" binding:"max=64"`
+	UserName string `json:"userName" binding:"required,min=5,max=14"`
+	Password string `json:"password" binding:"required,min=5,max=14"`
+	Comment  string `json:"comment" binding:"max=64"`
 }
 
 func (s *UserCreateService) CreateUser() (*model.User, error) {
