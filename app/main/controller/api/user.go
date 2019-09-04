@@ -2,6 +2,7 @@ package api
 
 import (
 	"battery-anlysis-platform/app/main/service"
+	"battery-anlysis-platform/pkg/checker"
 	"battery-anlysis-platform/pkg/jd"
 	"errors"
 	"github.com/gin-gonic/gin"
@@ -29,6 +30,15 @@ func CreateUser(c *gin.Context) {
 		c.AbortWithError(500, err)
 		return
 	}
+	if !checker.ReUserNameOrPassword.MatchString(s.UserName) {
+		c.AbortWithError(500, errors.New("用户名不符合正则"))
+		return
+	}
+	if !checker.ReUserNameOrPassword.MatchString(s.Password) {
+		c.AbortWithError(500, errors.New("密码不符合正则"))
+		return
+	}
+
 	var code int
 	var msg string
 	var data interface{}

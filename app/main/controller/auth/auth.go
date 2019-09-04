@@ -2,7 +2,9 @@ package auth
 
 import (
 	"battery-anlysis-platform/app/main/service"
+	"battery-anlysis-platform/pkg/checker"
 	"battery-anlysis-platform/pkg/jd"
+	"errors"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
@@ -30,20 +32,28 @@ func Login(c *gin.Context) {
 		if err := c.ShouldBindJSON(&s); err != nil {
 			c.AbortWithError(500, err)
 			return
+		}
+		if !checker.ReUserNameOrPassword.MatchString(s.UserName) {
+			c.AbortWithError(500, errors.New("用户名不符合正则"))
+			return
+		}
+		if !checker.ReUserNameOrPassword.MatchString(s.Password) {
+			c.AbortWithError(500, errors.New("密码不符合正则"))
+			return
+		}
+
+		if user, err := s.Login(); err != nil {
+			code = jd.ERROR
+			msg = err.Error()
 		} else {
-			if user, err := s.Login(); err != nil {
-				code = jd.ERROR
-				msg = err.Error()
-			} else {
-				// 设置Session
-				session := sessions.Default(c)
-				session.Clear()
-				session.Set("user_id", user.ID)
-				_ = session.Save()
-				//
-				code = jd.SUCCESS
-				data = user
-			}
+			// 设置Session
+			session := sessions.Default(c)
+			session.Clear()
+			session.Set("user_id", user.ID)
+			_ = session.Save()
+			//
+			code = jd.SUCCESS
+			data = user
 		}
 	}
 

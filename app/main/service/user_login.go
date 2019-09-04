@@ -3,7 +3,6 @@ package service
 import (
 	"battery-anlysis-platform/app/main/dao"
 	"battery-anlysis-platform/app/main/model"
-	"battery-anlysis-platform/pkg/checker"
 	"battery-anlysis-platform/pkg/jtime"
 	"errors"
 )
@@ -14,12 +13,6 @@ type UserLoginService struct {
 }
 
 func (s *UserLoginService) Login() (*model.User, error) {
-	if !checker.ReUserNameOrPassword.MatchString(s.UserName) {
-		return nil, errors.New("账号或密码错误")
-	}
-	if !checker.ReUserNameOrPassword.MatchString(s.Password) {
-		return nil, errors.New("账号或密码错误")
-	}
 	var user model.User
 	err := dao.MysqlDB.Where("name = ?", s.UserName).First(&user).Error
 	if err != nil {
