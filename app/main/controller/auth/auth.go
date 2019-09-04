@@ -36,10 +36,10 @@ func Login(c *gin.Context) {
 				msg = err.Error()
 			} else {
 				// 设置Session
-				s := sessions.Default(c)
-				s.Clear()
-				s.Set("user_id", user.ID)
-				_ = s.Save()
+				session := sessions.Default(c)
+				session.Clear()
+				session.Set("user_id", user.ID)
+				_ = session.Save()
 				//
 				code = jd.SUCCESS
 				data = user
@@ -52,9 +52,9 @@ func Login(c *gin.Context) {
 }
 
 func Logout(c *gin.Context) {
-	s := sessions.Default(c)
-	s.Clear()
-	_ = s.Save()
+	session := sessions.Default(c)
+	session.Clear()
+	_ = session.Save()
 	res := jd.Build(jd.SUCCESS, "", nil)
 	c.JSON(200, res)
 }
