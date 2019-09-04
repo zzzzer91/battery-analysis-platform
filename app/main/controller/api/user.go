@@ -24,15 +24,15 @@ func GetUsers(c *gin.Context) {
 }
 
 func CreateUser(c *gin.Context) {
-	var userCreateService service.UserCreateService
-	if err := c.ShouldBindJSON(&userCreateService); err != nil {
+	var s service.UserCreateService
+	if err := c.ShouldBindJSON(&s); err != nil {
 		c.AbortWithError(500, err)
 		return
 	}
 	var code int
 	var msg string
 	var data interface{}
-	if user, err := userCreateService.CreateUser(); err != nil {
+	if user, err := s.CreateUser(); err != nil {
 		code = jd.ERROR
 		msg = err.Error()
 	} else {
@@ -49,15 +49,15 @@ func ModifyUser(c *gin.Context) {
 		c.AbortWithError(500, errors.New("URL 参数 name 为空"))
 		return
 	}
-	var userModifyService service.UserModifyService
-	if err := c.ShouldBindJSON(&userModifyService); err != nil {
+	var s service.UserModifyService
+	if err := c.ShouldBindJSON(&s); err != nil {
 		c.AbortWithError(500, err)
 		return
 	}
 	var code int
 	var msg string
 	var data interface{}
-	if user, err := userModifyService.ModifyUser(name); err != nil {
+	if user, err := s.ModifyUser(name); err != nil {
 		code = jd.ERROR
 		msg = err.Error()
 	} else {

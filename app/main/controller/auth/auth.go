@@ -25,13 +25,13 @@ func Login(c *gin.Context) {
 			}
 		}
 	} else if c.Request.Method == "POST" {
-		var userLoginService service.UserLoginService
+		var s service.UserLoginService
 		// ShouldBind() 会检测是否满足设置的 bind 标签要求
-		if err := c.ShouldBindJSON(&userLoginService); err != nil {
+		if err := c.ShouldBindJSON(&s); err != nil {
 			c.AbortWithError(500, err)
 			return
 		} else {
-			if user, err := userLoginService.Login(); err != nil {
+			if user, err := s.Login(); err != nil {
 				code = jd.ERROR
 				msg = err.Error()
 			} else {
