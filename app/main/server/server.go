@@ -4,13 +4,13 @@ import (
 	"battery-anlysis-platform/app/main/conf"
 	"battery-anlysis-platform/app/main/dao"
 	"battery-anlysis-platform/app/main/middleware"
-	"battery-anlysis-platform/pkg/config"
+	gconf "battery-anlysis-platform/pkg/conf"
 	"github.com/gin-gonic/gin"
 )
 
 func Start() error {
 	confParams := &conf.Params{}
-	config.Load("conf/app.ini", "main", confParams)
+	gconf.Load("conf/app.ini", "main", confParams)
 
 	// 初始化数据库连接
 	dao.InitMySQL(confParams.MysqlUri)
