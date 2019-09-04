@@ -35,7 +35,6 @@ func InitMySQL(connString string) {
 	// 自动生成表
 	// 会添加没有的字段，但不会修改已有的字段
 	db.AutoMigrate(&model.User{})
-	db.AutoMigrate(&model.YutongBattery{})
 
 	MysqlDB = db
 }
