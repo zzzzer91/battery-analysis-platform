@@ -17,7 +17,9 @@ type MiningBaseService struct {
 func (s *MiningBaseService) Query() ([]map[string]interface{}, error) {
 	rows, err := dao.MysqlDB.Table(s.TableName).
 		Where("timestamp >= ?", s.StartDate).
-		Select("timestamp," + strings.Join(s.Fields, ",")).Limit(s.DataLimit).Rows()
+		Select("timestamp," + strings.Join(s.Fields, ",")).
+		Limit(s.DataLimit).
+		Rows()
 	if err != nil {
 		return nil, errors.New("查询失败")
 	}
