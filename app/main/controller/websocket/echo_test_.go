@@ -9,7 +9,7 @@ import (
 func TestEcho(t *testing.T) {
 	ast := assert.New(t)
 
-	url := "ws://localhost:8080/websocket/v1/echo"
+	url := "ws://localhost:5000/websocket/v1/echo"
 	ws, _, err := websocket.DefaultDialer.Dial(url, nil)
 	if err != nil {
 		t.Fatal(err)

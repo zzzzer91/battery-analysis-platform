@@ -7,7 +7,7 @@ import (
 )
 
 func TestSysInfo(t *testing.T) {
-	url := "ws://localhost:8080/websocket/v1/sys-info"
+	url := "ws://localhost:5000/websocket/v1/sys-info"
 	conn, _, err := websocket.DefaultDialer.Dial(url, nil)
 	if err != nil {
 		t.Fatal(err)
