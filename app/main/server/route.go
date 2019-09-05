@@ -23,7 +23,10 @@ func register(r *gin.Engine) {
 	apiV1.Use(middleware.PermissionRequired(model.TypeCommonUser))
 	{
 		apiV1.GET("/ping", api.Pong)
+
 		apiV1.GET("/sys-info", api.GetSysInfo)
+
+		apiV1.GET("/mining/base", api.GetBasicData)
 	}
 	apiV1NeedAuth := r.Group("/api/v1")
 	apiV1.Use(middleware.PermissionRequired(model.TypeSuperUser))
