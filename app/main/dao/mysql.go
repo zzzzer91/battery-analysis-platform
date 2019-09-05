@@ -12,8 +12,8 @@ import (
 var MysqlDB *gorm.DB
 
 // Database 在中间件中初始化mysql链接
-func InitMySQL(connString string) {
-	db, err := gorm.Open("mysql", connString)
+func InitMySQL(uri string) {
+	db, err := gorm.Open("mysql", uri)
 	if err != nil {
 		panic(err)
 	}
