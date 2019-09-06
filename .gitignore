@@ -1,5 +1,6 @@
 .idea/
 instance/
+database/
 go.sum
 app.ini
 .env
