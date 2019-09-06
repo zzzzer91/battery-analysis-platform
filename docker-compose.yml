@@ -21,7 +21,7 @@ services:
       - TZ=Asia/Shanghai
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}  # 只在数据库未初始化的情况下有效
     volumes:
-      - ${MYSQL_DATA_DIR}:/var/lib/mysql
+      - ${DATABASE_DATA_DIR}/mysql:/var/lib/mysql
 
   mongo:
     image: mongo:4.0
@@ -31,14 +31,14 @@ services:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
     volumes:
-      - ${MONGO_DATA_DIR}:/data/db
+      - ${DATABASE_DATA_DIR}/mongo:/data/db
 
   redis:
     image: redis:5.0-alpine
     ports:
       - 127.0.0.1:6379:6379
     volumes:
-      - ${REDIS_DATA_DIR}:/data  # redis 数据存储在容器的 /data 下
+      - ${DATABASE_DATA_DIR}/redis:/data  # redis 数据存储在容器的 /data 下
 
   # 数据库管理工具
 

@@ -2,7 +2,7 @@ package model
 
 import (
 	"battery-anlysis-platform/pkg/jtime"
-	"golang.org/x/crypto/bcrypt"
+	"battery-anlysis-platform/pkg/security"
 )
 
 // 用户类型 Type
@@ -35,17 +35,17 @@ type User struct {
 
 // SetPassword 设置密码
 func (user *User) SetPassword(password string) error {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	s, err := security.GeneratePasswordHash(password, "pbkdf2:sha256", 8)
 	if err != nil {
 		return err
 	}
-	user.Password = string(bytes)
+	user.Password = s
 	return nil
 }
 
 // CheckPassword 校验密码
 func (user *User) CheckPassword(password string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+	err := security.CheckPasswordHash(user.Password, password)
 	return err == nil
 }
 

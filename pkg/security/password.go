@@ -3,6 +3,7 @@ package security
 import (
 	"crypto/sha256"
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"golang.org/x/crypto/pbkdf2"
 	"strconv"
@@ -14,25 +15,31 @@ const (
 )
 
 // 生成加密后密码，源自 Python 的 werkzeug 库
-func GeneratePasswordHash(password, method string, saltLength int) string {
+func GeneratePasswordHash(password, method string, saltLength int) (string, error) {
 	salt := GenerateSalt(saltLength)
-	h, actualMethod := hashInternal(method, salt, password)
-	return fmt.Sprintf("%s$%s$%s", actualMethod, salt, h)
+	h, actualMethod, err := hashInternal(method, salt, password)
+	return fmt.Sprintf("%s$%s$%s", actualMethod, salt, h), err
 }
 
-func CheckPasswordHash(pwhash, password string) bool {
+func CheckPasswordHash(pwhash, password string) error {
 	if strings.Count(pwhash, "$") < 2 {
-		return false
+		return errors.New("加密密码格式有误")
 	}
 	// 把字符串分成三部分
 	args := strings.SplitN(pwhash, "$", 3)
-	tmp, _ := hashInternal(args[0], args[1], password)
-	return args[2] == tmp
+	tmp, _, err := hashInternal(args[0], args[1], password)
+	if err != nil {
+		return err
+	}
+	if args[2] != tmp {
+		return errors.New("密码错误")
+	}
+	return nil
 }
 
-func hashInternal(method, salt, password string) (string, string) {
+func hashInternal(method, salt, password string) (string, string, error) {
 	if method == "plain" {
-		return password, method
+		return password, method, nil
 	}
 	if strings.HasPrefix(method, "pbkdf2:") {
 		args := strings.Split(method[7:], ":")
@@ -49,14 +56,14 @@ func hashInternal(method, salt, password string) (string, string) {
 				iterations = defaultPbkdf2Iterations
 			}
 		} else {
-			panic("Invalid number of arguments for PBKDF2")
+			return "", "", errors.New("invalid number of arguments for PBKDF2")
 		}
 		actualMethod := fmt.Sprintf("pbkdf2:%s:%d", method, iterations)
 		rv := pbkdf2.Key([]byte(password), []byte(salt), iterations, 32, sha256.New)
 		// 将 []byte 转换成十六进制小写字符串
 		encodedStr := hex.EncodeToString(rv)
-		return encodedStr, actualMethod
+		return encodedStr, actualMethod, nil
 	} else {
-		panic("Don't support other method")
+		return "", "", errors.New("don't support other method")
 	}
 }

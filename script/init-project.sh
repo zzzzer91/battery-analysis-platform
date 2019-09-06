@@ -3,7 +3,7 @@
 ABSOLUTE_CURRENT_PATH="$(cd "$(dirname $0)/..";pwd)"
 CONFIG_DIR="${ABSOLUTE_CURRENT_PATH}/conf"
 INSTANCE_DIR="${ABSOLUTE_CURRENT_PATH}/instance"
-DATABASE_DIR="${INSTANCE_DIR}/database"
+DATABASE_DIR="${ABSOLUTE_CURRENT_PATH}/database"
 MEDIA_DIR="${INSTANCE_DIR}/media"
 DIST_DIR="${INSTANCE_DIR}/dist"
 ENV_FILE="${ABSOLUTE_CURRENT_PATH}/.env"
@@ -57,17 +57,17 @@ echo "NGINX_CONF_FILE=${CONFIG_DIR}/nginx.conf" >> ${ENV_FILE}
 echo "NGINX_DIST_DIR=${INSTANCE_DIR}/dist" >> ${ENV_FILE}
 echo "NGINX_MEDIA_DIR=${INSTANCE_DIR}/media" >> ${ENV_FILE}
 #
+echo "# docker 映射数据库数据" >> ${ENV_FILE}
+echo "DATABASE_DATA_DIR=${DATABASE_DIR}" >> ${ENV_FILE}
+#
 echo "# MySQL" >> ${ENV_FILE}
 echo "MYSQL_ROOT_PASSWORD=${mysql_root_password}" >> ${ENV_FILE}
-echo "MYSQL_DATA_DIR=${DATABASE_DIR}/mysql" >> ${ENV_FILE}
 #
 echo "# Mongo" >> ${ENV_FILE}
 echo "MONGO_INITDB_ROOT_USERNAME=root" >> ${ENV_FILE}
 echo "MONGO_INITDB_ROOT_PASSWORD=${mongo_root_password}" >> ${ENV_FILE}
-echo "MONGO_DATA_DIR=${DATABASE_DIR}/mongo" >> ${ENV_FILE}
 #
 echo "# Redis" >> ${ENV_FILE}
-echo "REDIS_DATA_DIR=${DATABASE_DIR}/redis" >> ${ENV_FILE}
 #
 echo "${ENV_FILE} 生成完毕！"
 
