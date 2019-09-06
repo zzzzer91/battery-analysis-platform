@@ -14,6 +14,11 @@ const (
 	defaultPbkdf2Iterations = 150000
 )
 
+//var (
+//	ErrInvaildPasswordHash = errors.New("加密密码格式有误")
+//	ErrPasswordDoesntMatch = errors.New("密码错误")
+//)
+
 // 生成加密后密码，源自 Python 的 werkzeug 库
 func GeneratePasswordHash(password, method string, saltLength int) (string, error) {
 	salt := GenerateSalt(saltLength)
