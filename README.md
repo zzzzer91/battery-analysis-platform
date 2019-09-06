@@ -113,6 +113,8 @@ TODO
 
 - (TODO)后端字段合法性校验在 controller 做，包括 URL 的 Param 和 Query 中，提交的数据（如 JSON）
 
+- 前端对后端返回的 JSON 字段的顺序一律假设是无序的
+
 ## TODO
 
 - 测试
