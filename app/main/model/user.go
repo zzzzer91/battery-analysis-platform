@@ -15,8 +15,8 @@ const (
 
 // 用户状态 Status
 const (
-	StatusForbiddenLogin = 0
-	StatusNormal         = 1
+	UserStatusForbiddenLogin = 0
+	UserStatusNormal         = 1
 )
 
 type User struct {
@@ -50,5 +50,5 @@ func (user *User) CheckPassword(password string) bool {
 }
 
 func (user *User) CheckStatusOk() bool {
-	return user.Status == StatusNormal
+	return user.Status == UserStatusNormal
 }

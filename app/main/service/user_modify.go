@@ -12,13 +12,14 @@ type UserModifyService struct {
 }
 
 func (s *UserModifyService) ModifyUser(name string) (*model.User, error) {
+	if s.Status != model.UserStatusNormal && s.Status != model.UserStatusForbiddenLogin {
+		return nil, errors.New("用户状态设置不合法")
+	}
+
 	var user model.User
 	err := dao.MysqlDB.Where("name = ?", name).First(&user).Error
 	if err != nil {
 		return nil, errors.New("用户不存在")
-	}
-	if s.Status != 0 && s.Status != 1 {
-		return nil, errors.New("用户状态设置不合法")
 	}
 	user.Comment = s.Comment
 	user.Status = s.Status

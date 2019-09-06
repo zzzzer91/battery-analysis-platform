@@ -28,13 +28,13 @@ func GeneratePasswordHash(password, method string, saltLength int) (string, erro
 
 func CheckPasswordHash(pwhash, password string) error {
 	if strings.Count(pwhash, "$") < 2 {
-		return errors.New("加密密码格式有误")
+		return errors.New("加密密码格式不合法")
 	}
 	// 把字符串分成三部分
 	args := strings.SplitN(pwhash, "$", 3)
 	tmp, _, err := hashInternal(args[0], args[1], password)
 	if err != nil {
-		return err
+		return errors.New("加密错误")
 	}
 	if args[2] != tmp {
 		return errors.New("密码错误")

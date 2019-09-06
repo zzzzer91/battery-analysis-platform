@@ -111,7 +111,7 @@ TODO
 
 - 一旦后端收到了不合法字段，说明前端被绕过，直接返回 500。因为 gin panic recover 后会返回 500，防止被暴力猜解。
 
-- (TODO)后端字段合法性校验在 controller 做，包括 URL 的 Param 和 Query 中，提交的数据（如 JSON）
+- (TODO)后端字段合法性校验在 service 做，包括 URL 的 Param 和 Query 中，提交的数据（如 JSON）
 
 - 前端对后端返回的 JSON 字段的顺序一律假设是无序的
 
