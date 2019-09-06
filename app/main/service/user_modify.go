@@ -7,13 +7,16 @@ import (
 )
 
 type UserModifyService struct {
-	Comment string `json:"comment" binding:"max=64"`
-	Status  int    `json:"userStatus" binding:"required"`
+	Status  int    `json:"userStatus"`
+	Comment string `json:"comment"`
 }
 
 func (s *UserModifyService) ModifyUser(name string) (*model.User, error) {
 	if s.Status != model.UserStatusNormal && s.Status != model.UserStatusForbiddenLogin {
-		return nil, errors.New("用户状态设置不合法")
+		return nil, errors.New("参数 status 不合法")
+	}
+	if len(s.Comment) > 64 {
+		return nil, errors.New("参数 comment 不合法")
 	}
 
 	var user model.User

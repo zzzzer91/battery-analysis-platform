@@ -32,7 +32,6 @@ func CreateUser(c *gin.Context) {
 
 	var code int
 	var msg string
-	var data interface{}
 	if user, err := s.CreateUser(); err != nil {
 		code = jd.ERROR
 		msg = err.Error()
@@ -40,7 +39,7 @@ func CreateUser(c *gin.Context) {
 		code = jd.SUCCESS
 		msg = "创建用户 " + user.Name + " 成功"
 	}
-	res := jd.Build(code, msg, data)
+	res := jd.Build(code, msg, nil)
 	c.JSON(200, res)
 }
 
@@ -58,7 +57,6 @@ func ModifyUser(c *gin.Context) {
 
 	var code int
 	var msg string
-	var data interface{}
 	if user, err := s.ModifyUser(name); err != nil {
 		code = jd.ERROR
 		msg = err.Error()
@@ -66,6 +64,6 @@ func ModifyUser(c *gin.Context) {
 		code = jd.SUCCESS
 		msg = "修改用户 " + user.Name + " 成功"
 	}
-	res := jd.Build(code, msg, data)
+	res := jd.Build(code, msg, nil)
 	c.JSON(200, res)
 }

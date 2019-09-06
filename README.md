@@ -113,6 +113,8 @@ TODO
 
 - (TODO)后端字段合法性校验在 service 做，包括 URL 的 Param 和 Query 中，提交的数据（如 JSON）
 
+- 后端字段合法性校验不依赖于 gin 的 ShouldBindxxx，出于逻辑和方便测试 service 上考虑
+
 - 前端对后端返回的 JSON 字段的顺序一律假设是无序的
 
 ## TODO
