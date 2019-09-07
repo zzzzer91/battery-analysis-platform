@@ -12,7 +12,7 @@ func GetUsers(c *gin.Context) {
 	var msg string
 	var data interface{}
 
-	if users, err := service.GetUsers(); err != nil {
+	if users, err := service.GetUserList(); err != nil {
 		code = jd.ERROR
 		msg = err.Error()
 	} else {

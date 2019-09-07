@@ -6,7 +6,7 @@ import (
 	"errors"
 )
 
-func GetUsers() ([]model.User, error) {
+func GetUserList() ([]model.User, error) {
 	var users []model.User
 	err := dao.MysqlDB.Where("type != ?", model.UserTypeSuperUser).Find(&users).Error
 	if err != nil {

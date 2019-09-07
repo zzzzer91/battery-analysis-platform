@@ -14,6 +14,6 @@ func init() {
 }
 
 func TestGetUsers(t *testing.T) {
-	ret, _ := GetUsers()
+	ret, _ := GetUserList()
 	t.Log(ret)
 }
