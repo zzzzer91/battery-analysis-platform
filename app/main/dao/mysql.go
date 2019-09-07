@@ -2,7 +2,6 @@ package dao
 
 import (
 	"battery-anlysis-platform/app/main/conf"
-	"battery-anlysis-platform/app/main/model"
 	"github.com/jinzhu/gorm"
 	"time"
 
@@ -36,7 +35,8 @@ func init() {
 
 	// 自动生成表
 	// 会添加没有的字段，但不会修改已有的字段
-	db.AutoMigrate(&model.User{})
+	// 创建表的任务交给用户
+	// db.AutoMigrate(&model.User{})
 
 	MysqlDB = db
 }
