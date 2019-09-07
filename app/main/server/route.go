@@ -14,13 +14,13 @@ func register(r *gin.Engine) {
 	r.POST("/login", auth.Login)
 
 	root := r.Group("/")
-	root.Use(middleware.PermissionRequired(model.TypeCommonUser))
+	root.Use(middleware.PermissionRequired(model.UserTypeCommonUser))
 	{
 		root.POST("/logout", auth.Logout)
 	}
 
 	apiV1 := r.Group("/api/v1")
-	apiV1.Use(middleware.PermissionRequired(model.TypeCommonUser))
+	apiV1.Use(middleware.PermissionRequired(model.UserTypeCommonUser))
 	{
 		apiV1.GET("/ping", api.Pong)
 
@@ -29,7 +29,7 @@ func register(r *gin.Engine) {
 		apiV1.GET("/mining/base", api.GetBasicData)
 	}
 	apiV1NeedAuth := r.Group("/api/v1")
-	apiV1.Use(middleware.PermissionRequired(model.TypeSuperUser))
+	apiV1.Use(middleware.PermissionRequired(model.UserTypeSuperUser))
 	{
 		apiV1NeedAuth.GET("/users", api.GetUsers)
 		apiV1NeedAuth.POST("/users", api.CreateUser)
@@ -37,7 +37,7 @@ func register(r *gin.Engine) {
 	}
 
 	wsV1 := r.Group("/websocket/v1")
-	wsV1.Use(middleware.PermissionRequired(model.TypeCommonUser))
+	wsV1.Use(middleware.PermissionRequired(model.UserTypeCommonUser))
 	{
 		wsV1.GET("/echo", websocket.Echo)
 		wsV1.GET("/sys-info", websocket.GetSysInfo)

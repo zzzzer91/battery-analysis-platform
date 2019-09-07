@@ -11,7 +11,7 @@ func TestUser(t *testing.T) {
 	user := &User{
 		ID:     1,
 		Name:   "xiaoming",
-		Type:   TypeSuperUser,
+		Type:   UserTypeSuperUser,
 		Status: 0,
 	}
 	err := user.SetPassword("123456")

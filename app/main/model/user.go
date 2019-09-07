@@ -8,9 +8,9 @@ import (
 // 用户类型 Type
 const (
 	// 超级用户
-	TypeSuperUser = 64
+	UserTypeSuperUser = 64
 	// 普通用户
-	TypeCommonUser = 0
+	UserTypeCommonUser = 0
 )
 
 // 用户状态 Status
