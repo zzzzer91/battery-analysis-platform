@@ -2,24 +2,15 @@ package server
 
 import (
 	"battery-anlysis-platform/app/main/conf"
-	"battery-anlysis-platform/app/main/dao"
 	"battery-anlysis-platform/app/main/middleware"
-	gconf "battery-anlysis-platform/pkg/conf"
 	"github.com/gin-gonic/gin"
 )
 
 func Start() error {
-	confParams := &conf.Params{}
-	gconf.Load("conf/app.ini", "main", confParams)
-
-	// 初始化数据库连接
-	dao.InitMySQL(confParams.MysqlUri)
-	dao.InitMongo(confParams.MongoUri)
-
-	gin.SetMode(confParams.RunMode)
+	gin.SetMode(conf.Params.RunMode)
 	r := gin.Default()
-	r.Use(middleware.Session(confParams.SecretKey))
+	r.Use(middleware.Session(conf.Params.SecretKey))
 	register(r)
 
-	return r.Run(confParams.HttpAddr)
+	return r.Run(conf.Params.HttpAddr)
 }

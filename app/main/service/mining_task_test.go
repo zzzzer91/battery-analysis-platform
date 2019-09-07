@@ -1,18 +1,9 @@
 package service
 
 import (
-	"battery-anlysis-platform/app/main/conf"
-	"battery-anlysis-platform/app/main/dao"
-	gconf "battery-anlysis-platform/pkg/conf"
 	"encoding/json"
 	"testing"
 )
-
-func init() {
-	confParams := &conf.Params{}
-	gconf.Load("conf/app.ini", "main", confParams)
-	dao.InitMongo(confParams.MongoUri)
-}
 
 func TestGetTaskList(t *testing.T) {
 	ret, err := GetTaskList()

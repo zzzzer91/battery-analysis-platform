@@ -1,6 +1,7 @@
 package dao
 
 import (
+	"battery-anlysis-platform/app/main/conf"
 	"battery-anlysis-platform/app/main/model"
 	"github.com/jinzhu/gorm"
 	"time"
@@ -12,7 +13,8 @@ import (
 var MysqlDB *gorm.DB
 
 // Database 在中间件中初始化mysql链接
-func InitMySQL(uri string) {
+func init() {
+	uri := conf.Params.MysqlUri
 	db, err := gorm.Open("mysql", uri)
 	if err != nil {
 		panic(err)

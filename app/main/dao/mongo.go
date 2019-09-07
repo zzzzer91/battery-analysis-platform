@@ -1,6 +1,7 @@
 package dao
 
 import (
+	"battery-anlysis-platform/app/main/conf"
 	"context"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -10,7 +11,8 @@ import (
 
 var MongoDB *mongo.Database
 
-func InitMongo(uri string) {
+func init() {
+	uri := conf.Params.MongoUri
 	index := strings.LastIndex(uri, "/")
 	uriSplit := uri[:index]
 	database := uri[index+1:]
