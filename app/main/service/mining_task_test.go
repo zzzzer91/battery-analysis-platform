@@ -2,6 +2,7 @@ package service
 
 import (
 	"encoding/json"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
@@ -21,4 +22,13 @@ func TestGetTask(t *testing.T) {
 	}
 	s, _ := json.Marshal(ret)
 	t.Log(string(s))
+}
+
+func TestDeleteTask(t *testing.T) {
+	ast := assert.New(t)
+	count, err := DeleteTask("none")
+	if err != nil {
+		t.Error(err)
+	}
+	ast.Equal(0, count)
 }

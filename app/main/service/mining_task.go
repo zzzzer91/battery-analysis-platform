@@ -11,10 +11,23 @@ import (
 
 const (
 	collectionNameTaskList = "mining_tasks"
+	timeout                = time.Second
 )
 
+type CreateTaskService struct {
+	TaskName     string
+	DataComeFrom string
+	StartDate    string
+	EndData      string
+	AllData      bool
+}
+
+func (s *CreateTaskService) CreateTask(name string) error {
+	return nil
+}
+
 func GetTaskList() ([]model.MiningTask, error) {
-	ctx, _ := context.WithTimeout(context.Background(), time.Second)
+	ctx, _ := context.WithTimeout(context.Background(), timeout)
 	collection := dao.MongoDB.Collection(collectionNameTaskList)
 	filter := bson.M{}                  // 过滤记录
 	projection := bson.M{"data": false} // 过滤字段
@@ -35,10 +48,10 @@ func GetTaskList() ([]model.MiningTask, error) {
 	return records, nil
 }
 
-func GetTask(taskId string) (bson.A, error) {
-	ctx, _ := context.WithTimeout(context.Background(), time.Second)
+func GetTask(id string) (bson.A, error) {
+	ctx, _ := context.WithTimeout(context.Background(), timeout)
 	collection := dao.MongoDB.Collection(collectionNameTaskList)
-	filter := bson.M{"_id": taskId}
+	filter := bson.M{"_id": id}
 	projection := bson.M{"_id": false, "data": true} // 注意 _id 默认会返回，需要手动过滤
 	// 注意 bson.E 不能用来映射 mongo 中的 map，
 	// 要么使用 bson.D，采用 []bson.E 代表一个字典，其中 bson.E 是 struct，有 key 和 value 字段，
@@ -57,4 +70,18 @@ func GetTask(taskId string) (bson.A, error) {
 		return nil, err
 	}
 	return result["data"].(bson.A), nil
+}
+
+func DeleteTask(id string) (int64, error) {
+	// TODO 终止正在执行的后台任务
+	// ...
+
+	ctx, _ := context.WithTimeout(context.Background(), timeout)
+	collection := dao.MongoDB.Collection(collectionNameTaskList)
+	filter := bson.M{"_id": id}
+	ret, err := collection.DeleteOne(ctx, filter)
+	if err != nil {
+		return 0, err
+	}
+	return ret.DeletedCount, nil
 }

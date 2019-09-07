@@ -37,3 +37,19 @@ func GetTask(c *gin.Context) {
 	res := jd.Build(code, msg, data)
 	c.JSON(200, res)
 }
+
+func DeleteTask(c *gin.Context) {
+	var code int
+	var msg string
+	var data interface{}
+	_, err := service.DeleteTask(c.Param("taskId"))
+	if err != nil {
+		code = jd.ERROR
+		msg = err.Error()
+	} else {
+		code = jd.SUCCESS
+		msg = "删除成功"
+	}
+	res := jd.Build(code, msg, data)
+	c.JSON(200, res)
+}
