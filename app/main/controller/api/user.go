@@ -3,7 +3,6 @@ package api
 import (
 	"battery-anlysis-platform/app/main/service"
 	"battery-anlysis-platform/pkg/jd"
-	"errors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -44,11 +43,6 @@ func CreateUser(c *gin.Context) {
 }
 
 func ModifyUser(c *gin.Context) {
-	name := c.Param("name")
-	if name == "" {
-		c.AbortWithError(500, errors.New("URL 参数 name 为空"))
-		return
-	}
 	var s service.UserModifyService
 	if err := c.ShouldBindJSON(&s); err != nil {
 		c.AbortWithError(500, err)
@@ -57,7 +51,7 @@ func ModifyUser(c *gin.Context) {
 
 	var code int
 	var msg string
-	if user, err := s.ModifyUser(name); err != nil {
+	if user, err := s.ModifyUser(c.Param("name")); err != nil {
 		code = jd.ERROR
 		msg = err.Error()
 	} else {
