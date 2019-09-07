@@ -6,6 +6,7 @@ import (
 	"context"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"time"
 )
 
 const (
@@ -13,10 +14,10 @@ const (
 )
 
 func GetTaskList() ([]model.MiningTask, error) {
-	ctx := context.TODO()
+	ctx, _ := context.WithTimeout(context.Background(), time.Second)
 	collection := dao.MongoDB.Collection(collectionNameTaskList)
-	filter := bson.M{}
-	projection := bson.M{"data": false}
+	filter := bson.M{}                  // 过滤记录
+	projection := bson.M{"data": false} // 过滤字段
 	cur, err := collection.Find(ctx, filter, options.Find().SetProjection(projection))
 	if err != nil {
 		return nil, err
@@ -34,10 +35,10 @@ func GetTaskList() ([]model.MiningTask, error) {
 }
 
 func GetTask(taskId string) (bson.A, error) {
-	ctx := context.TODO()
+	ctx, _ := context.WithTimeout(context.Background(), time.Second)
 	collection := dao.MongoDB.Collection(collectionNameTaskList)
 	filter := bson.M{"_id": taskId}
-	projection := bson.M{"_id": false, "data": true}
+	projection := bson.M{"_id": false, "data": true} // 注意 _id 默认会返回，需要手动过滤
 	// 注意 bson.E 不能用来映射 mongo 中的 map，
 	// 要么使用 bson.D，采用 []bson.E 代表一个字典，其中 bson.E 是 struct，有 key 和 value 字段，
 	// 此时，映射出来的子字典也都是 bson.D 类型，
