@@ -14,6 +14,7 @@ func Start() error {
 
 	// 初始化数据库连接
 	dao.InitMySQL(confParams.MysqlUri)
+	dao.InitMongo(confParams.MongoUri)
 
 	gin.SetMode(confParams.RunMode)
 	r := gin.Default()

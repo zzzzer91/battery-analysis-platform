@@ -107,16 +107,26 @@ TODO
 
 ## 设计原则
 
-- 字段前后端都要校验
-
-- 一旦后端收到了不合法字段，说明前端被绕过，直接返回 500。因为 gin panic recover 后会返回 500，防止被暴力猜解。
-
-- (TODO)后端字段合法性校验在 service 做，包括 URL 的 Param 和 Query 中，提交的数据（如 JSON）
-
-- 后端字段合法性校验不依赖于 gin 的 ShouldBindxxx，出于逻辑和方便测试 service 上考虑
+### 前端
 
 - 前端对后端返回的 JSON 字段的顺序一律假设是无序的
 
+### 后端
+
+- 字段前后端都要校验
+
+- 某些不确定情况，直接返回 500。因为 gin panic recover 后会返回 500
+
+- （TODO）后端字段合法性校验在 service 做（URL 的 Param 的判空在 controller 也要做，因为是 URL 的逻辑），包括 URL 的 Param 和 Query，提交的数据（如 JSON）
+
+- 后端字段合法性校验不依赖于 gin 的 ShouldBindxxx，出于逻辑和方便测试 service 上考虑
+
+### git
+
+- commit 时附上版本号，log 中某版本号的最后一个 commit，必须保证可运行
+
 ## TODO
+
+- 完善错误处理，将如 `error.New("xxx")` 提出来作为私有全局变量
 
 - 测试

@@ -27,6 +27,10 @@ func register(r *gin.Engine) {
 		apiV1.GET("/sys-info", api.GetSysInfo)
 
 		apiV1.GET("/mining/base", api.GetBasicData)
+
+		apiV1.GET("/mining/tasks", api.GetTaskList)
+
+		apiV1.GET("/mining/tasks/:taskId", api.GetTask)
 	}
 	apiV1NeedAuth := r.Group("/api/v1")
 	apiV1.Use(middleware.PermissionRequired(model.UserTypeSuperUser))
