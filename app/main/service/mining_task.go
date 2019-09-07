@@ -31,6 +31,7 @@ func GetTaskList() ([]model.MiningTask, error) {
 		}
 		records = append(records, result)
 	}
+	_ = cur.Close(ctx)
 	return records, nil
 }
 

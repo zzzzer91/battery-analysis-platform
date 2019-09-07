@@ -49,6 +49,7 @@ func (s *MiningBaseService) Query() ([]map[string]interface{}, error) {
 	}
 
 	records, err := mysqlx.GetRecords(rows)
+	_ = rows.Close()
 	if err != nil {
 		panic(err)
 	}
