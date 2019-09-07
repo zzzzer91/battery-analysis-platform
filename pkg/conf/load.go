@@ -1,3 +1,5 @@
+// 读取 *.ini 配置文件
+
 package conf
 
 import (
