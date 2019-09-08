@@ -23,13 +23,13 @@ type JSONTime struct {
 }
 
 // MarshalJSON on JSONTime format Time field with %Y-%m-%d %H:%M:%S
-func (t *JSONTime) MarshalJSON() ([]byte, error) {
+func (t JSONTime) MarshalJSON() ([]byte, error) {
 	formatted := `"` + t.Format(timeLayout) + `"`
 	return []byte(formatted), nil
 }
 
 // Value insert timestamp into mysql need this function.
-func (t *JSONTime) Value() (driver.Value, error) {
+func (t JSONTime) Value() (driver.Value, error) {
 	var zeroTime time.Time
 	if t.Time.UnixNano() == zeroTime.UnixNano() {
 		return nil, nil
@@ -39,11 +39,11 @@ func (t *JSONTime) Value() (driver.Value, error) {
 
 // Scan valueof time.Time
 func (t *JSONTime) Scan(v interface{}) error {
-	value, ok := v.(time.Time)
+	tTmp, ok := v.(time.Time)
 	if !ok {
 		return fmt.Errorf("can not convert %v to timestamp", v)
 	}
-	*t = JSONTime{Time: value}
+	t.Time = tTmp
 	return nil
 }
 

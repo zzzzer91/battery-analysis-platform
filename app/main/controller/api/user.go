@@ -7,17 +7,8 @@ import (
 )
 
 func GetUsers(c *gin.Context) {
-	var code int
-	var msg string
-	var data interface{}
-
-	if users, err := service.GetUserList(); err != nil {
-		code = jd.ERROR
-		msg = err.Error()
-	} else {
-		code = jd.SUCCESS
-		data = users
-	}
+	data, err := service.GetUserList()
+	code, msg := jd.HandleError(err)
 	res := jd.Build(code, msg, data)
 	c.JSON(200, res)
 }
@@ -29,14 +20,10 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 
-	var code int
-	var msg string
-	if user, err := s.CreateUser(); err != nil {
-		code = jd.ERROR
-		msg = err.Error()
-	} else {
-		code = jd.SUCCESS
-		msg = "创建用户 " + user.Name + " 成功"
+	_, err := s.CreateUser()
+	code, msg := jd.HandleError(err)
+	if code == jd.SUCCESS {
+		msg = "创建用户 " + s.UserName + " 成功"
 	}
 	res := jd.Build(code, msg, nil)
 	c.JSON(200, res)
@@ -49,14 +36,11 @@ func ModifyUser(c *gin.Context) {
 		return
 	}
 
-	var code int
-	var msg string
-	if user, err := s.ModifyUser(c.Param("name")); err != nil {
-		code = jd.ERROR
-		msg = err.Error()
-	} else {
-		code = jd.SUCCESS
-		msg = "修改用户 " + user.Name + " 成功"
+	userName := c.Param("name")
+	_, err := s.ModifyUser(userName)
+	code, msg := jd.HandleError(err)
+	if code == jd.SUCCESS {
+		msg = "修改用户 " + userName + " 成功"
 	}
 	res := jd.Build(code, msg, nil)
 	c.JSON(200, res)

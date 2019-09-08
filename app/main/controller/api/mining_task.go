@@ -13,58 +13,33 @@ func CreateTask(c *gin.Context) {
 		return
 	}
 
-	var code int
-	var msg string
 	data, err := s.CreateTask()
-	if err != nil {
-		code = jd.ERROR
-		msg = err.Error()
-	} else {
-		code = jd.SUCCESS
+	code, msg := jd.HandleError(err)
+	if code == jd.SUCCESS {
 		msg = "创建成功"
 	}
-
 	res := jd.Build(code, msg, data)
 	c.JSON(200, res)
 }
 
 func GetTaskList(c *gin.Context) {
-	var code int
-	var msg string
 	data, err := service.GetTaskList()
-	if err != nil {
-		code = jd.ERROR
-		msg = err.Error()
-	} else {
-		code = jd.SUCCESS
-	}
+	code, msg := jd.HandleError(err)
 	res := jd.Build(code, msg, data)
 	c.JSON(200, res)
 }
 
 func GetTask(c *gin.Context) {
-	var code int
-	var msg string
 	data, err := service.GetTask(c.Param("taskId"))
-	if err != nil {
-		code = jd.ERROR
-		msg = err.Error()
-	} else {
-		code = jd.SUCCESS
-	}
+	code, msg := jd.HandleError(err)
 	res := jd.Build(code, msg, data)
 	c.JSON(200, res)
 }
 
 func DeleteTask(c *gin.Context) {
-	var code int
-	var msg string
 	_, err := service.DeleteTask(c.Param("taskId"))
-	if err != nil {
-		code = jd.ERROR
-		msg = err.Error()
-	} else {
-		code = jd.SUCCESS
+	code, msg := jd.HandleError(err)
+	if code == jd.SUCCESS {
 		msg = "删除成功"
 	}
 	res := jd.Build(code, msg, nil)

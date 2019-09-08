@@ -13,14 +13,9 @@ func GetBasicData(c *gin.Context) {
 		return
 	}
 
-	var code int
-	var msg string
 	data, err := s.Query()
-	if err != nil {
-		code = jd.ERROR
-		msg = err.Error()
-	} else {
-		code = jd.SUCCESS
+	code, msg := jd.HandleError(err)
+	if code == jd.SUCCESS {
 		msg = "查询成功"
 	}
 	res := jd.Build(code, msg, data)

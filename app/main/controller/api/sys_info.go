@@ -7,15 +7,8 @@ import (
 )
 
 func GetSysInfo(c *gin.Context) {
-	var code int
-	var msg string
 	data, err := service.GetSysInfo()
-	if err != nil {
-		code = jd.ERROR
-		msg = err.Error()
-	} else {
-		code = jd.SUCCESS
-	}
+	code, msg := jd.HandleError(err)
 	res := jd.Build(code, msg, data)
 	c.JSON(200, res)
 }
