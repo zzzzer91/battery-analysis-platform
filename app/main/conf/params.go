@@ -13,5 +13,8 @@ type confParams struct {
 var Params confParams
 
 func init() {
-	conf.Load("conf/app.ini", "main", &Params)
+	err := conf.Load("conf/app.ini", "main", &Params)
+	if err != nil {
+		panic(err)
+	}
 }
