@@ -20,7 +20,7 @@ type JSONTime struct {
 
 // MarshalJSON on JSONTime format Time field with %Y-%m-%d %H:%M:%S
 func (t JSONTime) MarshalJSON() ([]byte, error) {
-	formatted := fmt.Sprintf("\"%s\"", t.Format("2006-01-02 15:04:05"))
+	formatted := `"` + t.Format("2006-01-02 15:04:05") + `"`
 	return []byte(formatted), nil
 }
 
@@ -47,4 +47,8 @@ func (t *JSONTime) Scan(v interface{}) error {
 func Now() *JSONTime {
 	t := time.Now()
 	return &JSONTime{Time: t}
+}
+
+func NowStr() string {
+	return time.Now().Format("2006-01-02 15:04:05")
 }

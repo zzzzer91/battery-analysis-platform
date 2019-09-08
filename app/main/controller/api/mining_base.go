@@ -7,25 +7,21 @@ import (
 )
 
 func GetBasicData(c *gin.Context) {
-	var code int
-	var msg string
-	var data interface{}
-
-	s := &service.MiningBaseService{
-		DataComeFrom: c.Query("dataComeFrom"),
-		StartDate:    c.Query("startDate"),
-		NeedParams:   c.Query("needParams"),
-		DataLimit:    c.Query("dataLimit"),
+	var s service.MiningBaseService
+	if err := c.ShouldBindQuery(&s); err != nil {
+		c.AbortWithError(500, err)
+		return
 	}
 
-	ret, err := s.Query()
+	var code int
+	var msg string
+	data, err := s.Query()
 	if err != nil {
 		code = jd.ERROR
 		msg = err.Error()
 	} else {
 		code = jd.SUCCESS
 		msg = "查询成功"
-		data = ret
 	}
 	res := jd.Build(code, msg, data)
 	c.JSON(200, res)

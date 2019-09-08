@@ -54,7 +54,7 @@ func init() {
 	}
 
 	BatteryMysqlNameToTable = map[string]MysqlTable{
-		"yutong_4F37195C1A908CFBE0532932A8C0EECB": {
+		"宇通_4F37195C1A908CFBE0532932A8C0EECB": {
 			Name: "yutong_vehicle1", FieldToName: yutongFieldToName,
 		},
 	}

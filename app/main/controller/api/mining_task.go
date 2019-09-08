@@ -6,17 +6,37 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GetTaskList(c *gin.Context) {
+func CreateTask(c *gin.Context) {
+	var s service.MiningCreateTaskService
+	if err := c.ShouldBindJSON(&s); err != nil {
+		c.AbortWithError(500, err)
+		return
+	}
+
 	var code int
 	var msg string
-	var data interface{}
-	taskList, err := service.GetTaskList()
+	data, err := s.CreateTask()
 	if err != nil {
 		code = jd.ERROR
 		msg = err.Error()
 	} else {
 		code = jd.SUCCESS
-		data = taskList
+		msg = "创建成功"
+	}
+
+	res := jd.Build(code, msg, data)
+	c.JSON(200, res)
+}
+
+func GetTaskList(c *gin.Context) {
+	var code int
+	var msg string
+	data, err := service.GetTaskList()
+	if err != nil {
+		code = jd.ERROR
+		msg = err.Error()
+	} else {
+		code = jd.SUCCESS
 	}
 	res := jd.Build(code, msg, data)
 	c.JSON(200, res)
@@ -25,14 +45,12 @@ func GetTaskList(c *gin.Context) {
 func GetTask(c *gin.Context) {
 	var code int
 	var msg string
-	var data interface{}
-	taskList, err := service.GetTask(c.Param("taskId"))
+	data, err := service.GetTask(c.Param("taskId"))
 	if err != nil {
 		code = jd.ERROR
 		msg = err.Error()
 	} else {
 		code = jd.SUCCESS
-		data = taskList
 	}
 	res := jd.Build(code, msg, data)
 	c.JSON(200, res)
@@ -41,7 +59,6 @@ func GetTask(c *gin.Context) {
 func DeleteTask(c *gin.Context) {
 	var code int
 	var msg string
-	var data interface{}
 	_, err := service.DeleteTask(c.Param("taskId"))
 	if err != nil {
 		code = jd.ERROR
@@ -50,6 +67,6 @@ func DeleteTask(c *gin.Context) {
 		code = jd.SUCCESS
 		msg = "删除成功"
 	}
-	res := jd.Build(code, msg, data)
+	res := jd.Build(code, msg, nil)
 	c.JSON(200, res)
 }

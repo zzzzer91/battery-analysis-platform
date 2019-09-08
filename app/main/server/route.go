@@ -28,10 +28,9 @@ func register(r *gin.Engine) {
 
 		apiV1.GET("/mining/base", api.GetBasicData)
 
+		apiV1.POST("/mining/tasks", api.CreateTask)
 		apiV1.GET("/mining/tasks", api.GetTaskList)
-
 		apiV1.GET("/mining/tasks/:taskId", api.GetTask)
-
 		apiV1.DELETE("/mining/tasks/:taskId", api.DeleteTask)
 	}
 	apiV1NeedAuth := r.Group("/api/v1")

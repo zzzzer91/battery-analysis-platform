@@ -9,14 +9,12 @@ import (
 func GetSysInfo(c *gin.Context) {
 	var code int
 	var msg string
-	var data interface{}
-	sysInfo, err := service.GetSysInfo()
+	data, err := service.GetSysInfo()
 	if err != nil {
 		code = jd.ERROR
 		msg = err.Error()
 	} else {
 		code = jd.SUCCESS
-		data = sysInfo
 	}
 	res := jd.Build(code, msg, data)
 	c.JSON(200, res)

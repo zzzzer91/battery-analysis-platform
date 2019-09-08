@@ -6,15 +6,14 @@ import (
 	"battery-anlysis-platform/pkg/checker"
 	"battery-anlysis-platform/pkg/mysqlx"
 	"errors"
-	"strconv"
 	"strings"
 )
 
 type MiningBaseService struct {
-	DataComeFrom string
-	StartDate    string
-	NeedParams   string
-	DataLimit    string
+	DataComeFrom string `form:"dataComeFrom" binding:"required"`
+	StartDate    string `form:"startDate" binding:"required"`
+	NeedParams   string `form:"needParams" binding:"required"`
+	DataLimit    int    `form:"dataLimit" binding:"required"`
 }
 
 func (s *MiningBaseService) Query() ([]map[string]interface{}, error) {
@@ -33,16 +32,14 @@ func (s *MiningBaseService) Query() ([]map[string]interface{}, error) {
 	if !checker.ReDatetime.MatchString(s.StartDate) {
 		return nil, errors.New("参数 startDate 不合法")
 	}
-	StartDate := s.StartDate
-	dataLimit, err := strconv.Atoi(s.DataLimit)
-	if err != nil || dataLimit > 10000 {
+	if s.DataLimit > 10000 {
 		return nil, errors.New("参数 dataLimit 不合法")
 	}
 
 	rows, err := dao.MysqlDB.Table(table.Name).
-		Where("timestamp >= ?", StartDate).
+		Where("timestamp >= ?", s.StartDate).
 		Select("timestamp," + strings.Join(fields, ",")).
-		Limit(dataLimit).
+		Limit(s.DataLimit).
 		Rows()
 	if err != nil {
 		return nil, errors.New("查询失败")

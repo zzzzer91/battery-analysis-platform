@@ -3,7 +3,10 @@ package service
 import (
 	"battery-anlysis-platform/app/main/dao"
 	"battery-anlysis-platform/app/main/model"
+	"battery-anlysis-platform/pkg/checker"
+	"battery-anlysis-platform/pkg/jtime"
 	"context"
+	"errors"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"time"
@@ -14,16 +17,43 @@ const (
 	timeout                = time.Second
 )
 
-type CreateTaskService struct {
-	TaskName     string
-	DataComeFrom string
-	StartDate    string
-	EndData      string
-	AllData      bool
+type MiningCreateTaskService struct {
+	TaskName     string `json:"taskName" binding:"required"`
+	DataComeFrom string `json:"dataComeFrom" binding:"required"`
+	StartDate    string `json:"startDate" binding:"required"`
+	EndDate      string `json:"endDate" binding:"required"`
+	AllData      bool   `json:"allData"` // bool 型不能 required，因为 false 会被判空
 }
 
-func (s *CreateTaskService) CreateTask(name string) error {
-	return nil
+func (s *MiningCreateTaskService) CreateTask() (*model.MiningTask, error) {
+	if _, ok := model.MiningSupportTaskSet[s.TaskName]; !ok {
+		return nil, errors.New("参数 TaskName 不合法")
+	}
+	if _, ok := model.BatteryMysqlNameToTable[s.DataComeFrom]; !ok {
+		return nil, errors.New("参数 dataComeFrom 不合法")
+	}
+	var requestParams string
+	if s.AllData {
+		requestParams = "所有数据"
+	} else {
+		if !checker.ReDatetime.MatchString(s.StartDate) {
+			return nil, errors.New("参数 startDate 不合法")
+		}
+		if !checker.ReDatetime.MatchString(s.EndDate) {
+			return nil, errors.New("参数 EndDate 不合法")
+		}
+		requestParams = s.StartDate + " - " + s.EndDate
+	}
+	data := &model.MiningTask{
+		Id:            "123",
+		TaskName:      s.TaskName,
+		DataComeFrom:  s.DataComeFrom,
+		RequestParams: requestParams,
+		CreateTime:    jtime.NowStr(),
+		TaskStatus:    "执行中",
+		Comment:       "",
+	}
+	return data, nil
 }
 
 func GetTaskList() ([]model.MiningTask, error) {
