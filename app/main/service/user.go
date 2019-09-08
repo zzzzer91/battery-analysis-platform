@@ -9,8 +9,8 @@ import (
 )
 
 type UserCreateService struct {
-	UserName string `json:"userName"`
-	Password string `json:"password"`
+	UserName string `json:"userName" binding:"required"`
+	Password string `json:"password" binding:"required"`
 	Comment  string `json:"comment"`
 }
 
@@ -38,7 +38,7 @@ func (s *UserCreateService) CreateUser() (*model.User, error) {
 }
 
 type UserModifyService struct {
-	Status  int    `json:"userStatus"`
+	Status  int    `json:"userStatus" binding:"required"`
 	Comment string `json:"comment"`
 }
 
@@ -62,8 +62,8 @@ func (s *UserModifyService) ModifyUser(name string) (*model.User, error) {
 }
 
 type UserLoginService struct {
-	UserName string `json:"userName"`
-	Password string `json:"password"`
+	UserName string `json:"userName" binding:"required"`
+	Password string `json:"password" binding:"required"`
 }
 
 func (s *UserLoginService) Login() (*model.User, error) {
