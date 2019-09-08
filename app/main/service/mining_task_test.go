@@ -30,5 +30,5 @@ func TestDeleteTask(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	ast.Equal(0, count)
+	ast.Equal(int64(0), count)
 }
