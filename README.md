@@ -125,6 +125,8 @@ TODO
 
 - service 中的 xxxService 结构体字段类型只能是基本类型
 
+- service 某些中出现了不宜返回给用户的错误信息，则用 panic 抛出，这时后端会捕获并返回 500
+
 ### git
 
 - commit 时附上版本号，log 中某版本号的最后一个 commit，必须保证可运行

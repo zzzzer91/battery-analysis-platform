@@ -7,6 +7,7 @@ type confParams struct {
 	HttpAddr  string
 	MysqlUri  string
 	MongoUri  string
+	RedisUri  string
 	SecretKey string
 }
 
