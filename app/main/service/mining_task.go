@@ -3,6 +3,7 @@ package service
 import (
 	"battery-anlysis-platform/app/main/dao"
 	"battery-anlysis-platform/app/main/model"
+	"battery-anlysis-platform/app/main/worker"
 	"battery-anlysis-platform/pkg/checker"
 	"battery-anlysis-platform/pkg/jtime"
 	"context"
@@ -15,6 +16,10 @@ import (
 const (
 	collectionNameTaskList = "mining_tasks"
 	timeout                = time.Second
+
+	// support task
+	taskComputeModel     = "worker.compute_model"
+	taskStopComputeModel = "worker.stop_compute_model"
 )
 
 type MiningCreateTaskService struct {
@@ -29,7 +34,8 @@ func (s *MiningCreateTaskService) CreateTask() (*model.MiningTask, error) {
 	if _, ok := model.MiningSupportTaskSet[s.TaskName]; !ok {
 		return nil, errors.New("参数 TaskName 不合法")
 	}
-	if _, ok := model.BatteryMysqlNameToTable[s.DataComeFrom]; !ok {
+	table, ok := model.BatteryMysqlNameToTable[s.DataComeFrom]
+	if !ok {
 		return nil, errors.New("参数 dataComeFrom 不合法")
 	}
 	var requestParams string
@@ -44,16 +50,31 @@ func (s *MiningCreateTaskService) CreateTask() (*model.MiningTask, error) {
 		}
 		requestParams = s.StartDate + " - " + s.EndDate
 	}
-	data := &model.MiningTask{
-		Id:            "123",
+
+	task := &model.MiningTask{
 		TaskName:      s.TaskName,
 		DataComeFrom:  s.DataComeFrom,
 		RequestParams: requestParams,
 		CreateTime:    jtime.NowStr(),
 		TaskStatus:    "执行中",
-		Comment:       "",
 	}
-	return data, nil
+
+	asyncResult, err := worker.Celery.Delay(
+		taskComputeModel,
+		task.TaskName, table.Name, s.StartDate, s.EndDate)
+	if err != nil {
+		panic(err)
+	}
+	task.Id = asyncResult.TaskID
+
+	ctx, _ := context.WithTimeout(context.Background(), timeout)
+	collection := dao.MongoDB.Collection(collectionNameTaskList)
+	_, err = collection.InsertOne(ctx, &task)
+	if err != nil {
+		panic(err)
+	}
+
+	return task, nil
 }
 
 func GetTaskList() ([]model.MiningTask, error) {
@@ -63,14 +84,14 @@ func GetTaskList() ([]model.MiningTask, error) {
 	projection := bson.M{"data": false} // 过滤字段
 	cur, err := collection.Find(ctx, filter, options.Find().SetProjection(projection))
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
 	var records []model.MiningTask
 	for cur.Next(ctx) {
 		result := model.MiningTask{}
 		err := cur.Decode(&result)
 		if err != nil {
-			return nil, err
+			panic(err)
 		}
 		records = append(records, result)
 	}
@@ -97,21 +118,25 @@ func GetTask(id string) (bson.A, error) {
 	err := collection.FindOne(ctx, filter, options.FindOne().
 		SetProjection(projection)).Decode(&result)
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
 	return result["data"].(bson.A), nil
 }
 
 func DeleteTask(id string) (int64, error) {
-	// TODO 终止正在执行的后台任务
-	// ...
+	// 因为 gocelery 未提供终止任务的 api，这里把终止行为封装成任务，然后调用它
+	_, err := worker.Celery.Delay(
+		taskStopComputeModel, id)
+	if err != nil {
+		panic(err)
+	}
 
 	ctx, _ := context.WithTimeout(context.Background(), timeout)
 	collection := dao.MongoDB.Collection(collectionNameTaskList)
 	filter := bson.M{"_id": id}
 	ret, err := collection.DeleteOne(ctx, filter)
 	if err != nil {
-		return 0, err
+		panic(err)
 	}
 	return ret.DeletedCount, nil
 }
