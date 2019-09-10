@@ -30,6 +30,7 @@ require (
 	golang.org/x/crypto v0.0.0-20190701094942-4def268fd1a4
 	golang.org/x/net v0.0.0-20190813141303-74dc4d7220e7 // indirect
 	gopkg.in/ini.v1 v1.46.0 // indirect
+	gopkg.in/yaml.v2 v2.2.2
 )
 
 replace github.com/satori/go.uuid v1.2.0 => github.com/satori/go.uuid v1.2.1-0.20181028125025-b2ce2384e17b
