@@ -1,0 +1,7 @@
+main:
+  runMode: debug
+  httpAddr: 127.0.0.1:5000
+  secretKey: test
+  mysqlUri: root:123456@/mytest?charset=utf8mb4&parseTime=True&loc=Local
+  mongoUri: mongodb://root:123456@localhost:27017/mytest
+  redisUri: redis://localhost:6379
