@@ -3,5 +3,6 @@ instance/
 database/
 go.sum
 app.ini
+app.yml
 .env
 nginx.conf
