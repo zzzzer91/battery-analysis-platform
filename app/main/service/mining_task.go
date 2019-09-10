@@ -82,7 +82,8 @@ func GetTaskList() ([]model.MiningTask, error) {
 	collection := dao.MongoDB.Collection(collectionNameTaskList)
 	filter := bson.M{}                  // 过滤记录
 	projection := bson.M{"data": false} // 过滤字段
-	cur, err := collection.Find(ctx, filter, options.Find().SetProjection(projection))
+	sort := bson.M{"createTime": -1}    // 结果排序
+	cur, err := collection.Find(ctx, filter, options.Find().SetProjection(projection).SetSort(sort))
 	if err != nil {
 		panic(err)
 	}
