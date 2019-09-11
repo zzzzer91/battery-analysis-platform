@@ -27,5 +27,6 @@ celery:
   mongo:
     uri: mongodb://root:123456@mongo:27017
     database: mytest
-  redis:
-    uri: redis://redis:6379
+  celery:
+    brokerUri: redis://redis:6379
+    backendUri: redis://redis:6379
