@@ -40,6 +40,17 @@ services:
     volumes:
       - ${DATABASE_DATA_DIR}/redis:/data  # redis 数据存储在容器的 /data 下
 
+  # app
+  # go-app
+  # ...
+  # py-app
+  celery:
+    build: ./py/celery
+    command: sh run-celery-worker.sh
+    volumes:
+      - ./py/celery:/code
+      - ./conf/app.yml:/conf/app.yml
+
   # 数据库管理工具
 
   adminer:  # MySQL 管理

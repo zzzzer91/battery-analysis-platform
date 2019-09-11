@@ -1,0 +1,6 @@
+celery
+pymongo
+pymysql
+pyyaml
+redis
+sqlalchemy
