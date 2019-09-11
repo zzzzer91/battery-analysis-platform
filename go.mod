@@ -7,7 +7,6 @@ require (
 	github.com/gin-contrib/sessions v0.0.0-20190814041826-3f766bdeb0d1
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/gin-gonic/gin v1.4.0
-	github.com/go-ini/ini v1.46.0
 	github.com/go-ole/go-ole v1.2.4 // indirect
 	github.com/gocelery/gocelery v0.0.0-20190903155139-6b67328b138d
 	github.com/golang/protobuf v1.3.2 // indirect
@@ -19,7 +18,6 @@ require (
 	github.com/mattn/go-isatty v0.0.9 // indirect
 	github.com/satori/go.uuid v1.2.0 // indirect
 	github.com/shirou/gopsutil v2.18.12+incompatible
-	github.com/smartystreets/goconvey v0.0.0-20190731233626-505e41936337 // indirect
 	github.com/streadway/amqp v0.0.0-20190827072141-edfb9018d271 // indirect
 	github.com/stretchr/testify v1.4.0
 	github.com/tidwall/pretty v1.0.0 // indirect
@@ -29,7 +27,6 @@ require (
 	go.mongodb.org/mongo-driver v1.1.0
 	golang.org/x/crypto v0.0.0-20190701094942-4def268fd1a4
 	golang.org/x/net v0.0.0-20190813141303-74dc4d7220e7 // indirect
-	gopkg.in/ini.v1 v1.46.0 // indirect
 	gopkg.in/yaml.v2 v2.2.2
 )
 
