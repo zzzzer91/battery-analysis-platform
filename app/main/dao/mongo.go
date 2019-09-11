@@ -9,7 +9,7 @@ import (
 var MongoDB *mongo.Database
 
 func init() {
-	d, err := db.InitMongo(conf.App.Main.MongoUri)
+	d, err := db.InitMongo(&conf.App.Main.Mongo)
 	if err != nil {
 		panic(err)
 	}

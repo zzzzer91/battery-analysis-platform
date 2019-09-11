@@ -1,6 +1,7 @@
 .idea/
 instance/
 database/
+__pycache__/
 go.sum
 app.ini
 app.yml

@@ -7,13 +7,38 @@ import (
 	"io/ioutil"
 )
 
-type MainConf struct {
+type GinConf struct {
 	RunMode   string `yaml:"runMode"`
 	HttpAddr  string `yaml:"httpAddr"`
 	SecretKey string `yaml:"secretKey"`
-	MysqlUri  string `yaml:"mysqlUri"`
-	MongoUri  string `yaml:"mongoUri"`
-	RedisUri  string `yaml:"redisUri"`
+}
+
+type GormConf struct {
+	Uri string `yaml:"uri"`
+	// 设置连接池
+	// 空闲
+	MaxIdleConns int `yaml:"maxIdleConns"`
+	// 打开
+	MaxOpenConns int `yaml:"maxOpenConns"`
+	// 超时
+	ConnMaxLifetime int `yaml:"connMaxLifetime"`
+}
+
+type MongoConf struct {
+	Uri      string `yaml:"uri"`
+	Database string `yaml:"database"`
+}
+
+type CeleryConf struct {
+	BrokerUri  string `yaml:"brokerUri"`
+	BackendUri string `yaml:"backendUri"`
+}
+
+type MainConf struct {
+	Gin    GinConf    `yaml:"gin"`
+	Gorm   GormConf   `yaml:"gorm"`
+	Mongo  MongoConf  `yaml:"mongo"`
+	Celery CeleryConf `yaml:"celery"`
 }
 
 type AppConf struct {

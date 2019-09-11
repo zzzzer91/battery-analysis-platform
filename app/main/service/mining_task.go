@@ -18,8 +18,9 @@ const (
 	timeout                = time.Second
 
 	// support task
-	taskComputeModel     = "worker.compute_model"
-	taskStopComputeModel = "worker.stop_compute_model"
+	taskBasename         = "task."
+	taskComputeModel     = taskBasename + "compute_model"
+	taskStopComputeModel = taskBasename + "stop_compute_model"
 )
 
 type MiningCreateTaskService struct {

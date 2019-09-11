@@ -1,12 +1,31 @@
+# go-app
 main:
-  runMode: debug  # debug or release
-  httpAddr: 127.0.0.1:5000
-  secretKey: test
-  mysqlUri: root:123456@/mytest?charset=utf8mb4&parseTime=True&loc=Local
-  mongoUri: mongodb://root:123456@localhost:27017/mytest
-  redisUri: redis://localhost:6379
+  gin:
+    runMode: debug  # debug or release
+    httpAddr: 127.0.0.1:5000
+    secretKey: test
+  gorm:
+    uri: root:123456@tcp(localhost:3306)/mytest?charset=utf8mb4&parseTime=True&loc=Local
+    # 设置连接池
+    # 空闲
+    maxIdleConns: 20
+    # 打开
+    maxOpenConns: 100
+    # 超时
+    connMaxLifetime: 30
+  mongo:
+    uri: mongodb://root:123456@localhost:27017
+    database: mytest
+  celery:
+    brokerUri: redis://localhost:6379
+    backendUri: redis://localhost:6379
 
+# python-app
 celery:
-  mysqlUri: root:123456@mysql/mytest?charset=utf8mb4&parseTime=True&loc=Local
-  mongoUri: mongodb://root:123456@mongo:27017/mytest
-  redisUri: redis://redis:6379
+  sqlalchemy:
+    uri: mysql+pymysql://root:123456@mysql:3306/mytest
+  mongo:
+    uri: mongodb://root:123456@mongo:27017
+    database: mytest
+  redis:
+    uri: redis://redis:6379

@@ -9,7 +9,7 @@ import (
 var Celery *gocelery.CeleryClient
 
 func init() {
-	cli, err := worker.InitCelery(conf.App.Main.RedisUri)
+	cli, err := worker.InitCelery(&conf.App.Main.Celery)
 	if err != nil {
 		panic(err)
 	}

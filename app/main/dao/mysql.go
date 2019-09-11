@@ -9,7 +9,7 @@ import (
 var MysqlDB *gorm.DB
 
 func init() {
-	d, err := db.InitMysql(conf.App.Main.MysqlUri)
+	d, err := db.InitGorm(&conf.App.Main.Gorm)
 	if err != nil {
 		panic(err)
 	}

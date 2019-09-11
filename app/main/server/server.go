@@ -6,11 +6,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func Start() error {
-	gin.SetMode(conf.App.Main.RunMode)
+func Start(ginConf *conf.GinConf) error {
+	gin.SetMode(ginConf.RunMode)
 	r := gin.Default()
-	r.Use(middleware.Session(conf.App.Main.SecretKey))
+	r.Use(middleware.Session(ginConf.SecretKey))
 	register(r)
 
-	return r.Run(conf.App.Main.HttpAddr)
+	return r.Run(ginConf.HttpAddr)
 }
