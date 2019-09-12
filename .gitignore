@@ -2,6 +2,8 @@
 instance/
 database/
 __pycache__/
+py/
+
 go.sum
 app.ini
 app.yml
