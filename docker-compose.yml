@@ -2,16 +2,7 @@ version: '3'
 
 services:
 
-  # 基础设置
-  nginx:
-    image: nginx:stable
-    # network_mode: "host" # 用了 host 网络模式，容器中的端口会会直接映射到 localhost，此时不需要再指定 ports
-    ports:
-      - 3389:80
-    volumes:
-      - ${NGINX_CONF_FILE}:/etc/nginx/nginx.conf:ro
-      - ${NGINX_DIST_DIR}:/usr/share/nginx/dist
-      - ${NGINX_MEDIA_DIR}:/usr/share/nginx/media
+  # 数据库
   mysql:
     image: mysql:5.7.26  # 固定版本
     # restart: always  # 重启系统后重启容器
@@ -31,6 +22,31 @@ services:
     image: redis:5.0-alpine
     volumes:
       - ${DATABASE_DATA_DIR}/redis:/data  # redis 数据存储在容器的 /data 下
+
+  # 数据库管理工具
+  adminer:  # MySQL 管理
+    image: adminer:latest
+    ports:
+      - 8080:8080
+    depends_on:
+      - mysql
+  mongo-express:  # Mongo 管理
+    image: mongo-express:latest
+    ports:
+      - 8078:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+    depends_on:
+      - mongo
+  redis-commander:  # redis 管理
+    image: rediscommander/redis-commander:latest
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    ports:
+      - 8079:8081
+    depends_on:
+      - redis
 
   # go-app
   go-main:
@@ -57,27 +73,15 @@ services:
       - mongo
       - redis
 
-  # 数据库管理工具
-  adminer:  # MySQL 管理
-    image: adminer:latest
+  # nginx
+  nginx:
+    image: nginx:stable
+    # network_mode: "host" # 用了 host 网络模式，容器中的端口会会直接映射到 localhost，此时不需要再指定 ports
     ports:
-      - 8080:8080
+      - 3389:80
+    volumes:
+      - ${NGINX_CONF_FILE}:/etc/nginx/nginx.conf:ro
+      - ${NGINX_DIST_DIR}:/usr/share/nginx/dist
+      - ${NGINX_MEDIA_DIR}:/usr/share/nginx/media
     depends_on:
-      - mysql
-  mongo-express:  # Mongo 管理
-    image: mongo-express:latest
-    ports:
-      - 8078:8081
-    environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_INITDB_ROOT_USERNAME}
-      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
-    depends_on:
-      - mongo
-  redis-commander:  # redis 管理
-    image: rediscommander/redis-commander:latest
-    environment:
-      - REDIS_HOSTS=local:redis:6379
-    ports:
-      - 8079:8081
-    depends_on:
-      - redis
+      - go-main
