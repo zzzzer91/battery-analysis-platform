@@ -24,8 +24,8 @@ const (
 )
 
 type MiningCreateTaskService struct {
-	TaskName     string `json:"taskName" binding:"required"`
-	DataComeFrom string `json:"dataComeFrom" binding:"required"`
+	TaskName     string `json:"taskName"`
+	DataComeFrom string `json:"dataComeFrom"`
 	StartDate    string `json:"startDate"`
 	EndDate      string `json:"endDate"`
 	AllData      bool   `json:"allData"` // bool 型不能 required，因为 false 会被判空

@@ -119,7 +119,7 @@ TODO
 
 - （TODO）后端字段合法性校验在 service 做（URL 的 Param 的判空在 controller 也要做，因为是 URL 的逻辑），包括 URL 的 Param 和 Query，提交的数据（如 JSON）
 
-- 后端字段合法性校验不依赖于 gin 的 ShouldBindxxx（除了基本的判断字段是否存在，如设置 `binding:"required"`），出于逻辑和方便测试 service 上考虑
+- 后端字段合法性校验不依赖于 gin 的 ShouldBindxxx，出于逻辑和方便测试 service 上考虑
 
 - service 中的 xxxService 结构体用于接收用户发送的数据；而 model 中结构体是返回给用户的数据格式
 

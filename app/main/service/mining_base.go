@@ -10,10 +10,10 @@ import (
 )
 
 type MiningBaseService struct {
-	DataComeFrom string `form:"dataComeFrom" binding:"required"`
-	StartDate    string `form:"startDate" binding:"required"`
-	NeedParams   string `form:"needParams" binding:"required"`
-	DataLimit    int    `form:"dataLimit" binding:"required"`
+	DataComeFrom string `form:"dataComeFrom"`
+	StartDate    string `form:"startDate"`
+	NeedParams   string `form:"needParams"`
+	DataLimit    int    `form:"dataLimit"`
 }
 
 func (s *MiningBaseService) Query() ([]map[string]interface{}, error) {
