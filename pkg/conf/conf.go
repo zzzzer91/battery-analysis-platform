@@ -5,6 +5,7 @@ package conf
 import (
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
+	"os"
 )
 
 type GinConf struct {
@@ -47,8 +48,25 @@ type AppConf struct {
 
 var App *AppConf
 
+func Load(file string, out *AppConf) error {
+	b, err := ioutil.ReadFile(file)
+	if err != nil {
+		return err
+	}
+
+	err = yaml.Unmarshal(b, out)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func init() {
-	b, err := ioutil.ReadFile("/conf/app.yml")
+	file := os.Getenv("CONF_FILE")
+	if file == "" {
+		panic("环境变量 CONF_FILE 不存在")
+	}
+	b, err := ioutil.ReadFile(file)
 	if err != nil {
 		panic(err)
 	}

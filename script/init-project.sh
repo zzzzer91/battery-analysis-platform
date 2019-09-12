@@ -52,10 +52,7 @@ read -p "输入 Mongo 数据库名：" mongo_database
 echo "# docker-compose.yml 中使用的环境变量" > ${ENV_FILE}
 echo "# 注意值两边的单双引号，会被当作值的一部分，这在 docker-compose 中会出现问题" >> ${ENV_FILE}
 #
-echo "# Nginx" >> ${ENV_FILE}
-echo "NGINX_CONF_FILE=${CONFIG_DIR}/nginx.conf" >> ${ENV_FILE}
-echo "NGINX_DIST_DIR=${INSTANCE_DIR}/dist" >> ${ENV_FILE}
-echo "NGINX_MEDIA_DIR=${INSTANCE_DIR}/media" >> ${ENV_FILE}
+echo "PROJECT_DIR=${ABSOLUTE_PROJECT_PATH}" >> ${ENV_FILE}
 #
 echo "# docker 映射数据库数据" >> ${ENV_FILE}
 echo "DATABASE_DATA_DIR=${DATABASE_DIR}" >> ${ENV_FILE}

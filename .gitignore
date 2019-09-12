@@ -4,9 +4,14 @@ database/
 __pycache__/
 py/
 build/
+dist/
+media/
 
 go.sum
-app.ini
-app.yml
 .env
+app.yml
+app.debug.yml
+app.release.yml
 nginx.conf
+nginx.debug.conf
+nginx.release.conf

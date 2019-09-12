@@ -1,0 +1,62 @@
+version: '3'
+
+services:
+  # 数据库
+  mysql:
+    image: mysql:5.7.26  # 固定版本
+    # restart: always  # 重启系统后重启容器
+    ports:
+      - 127.0.0.1:3306:3306
+    environment:
+      - TZ=Asia/Shanghai
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}  # 只在数据库未初始化的情况下有效
+    volumes:
+      - ${DATABASE_DATA_DIR}/mysql:/var/lib/mysql
+  mongo:
+    image: mongo:4.0
+    ports:
+      - 127.0.0.1:27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+    volumes:
+      - ${DATABASE_DATA_DIR}/mongo:/data/db
+  redis:
+    image: redis:5.0-alpine
+    ports:
+      - 127.0.0.1:6379:6379
+    volumes:
+      - ${DATABASE_DATA_DIR}/redis:/data  # redis 数据存储在容器的 /data 下
+
+  # 数据库管理工具
+  adminer:  # MySQL 管理
+    image: adminer:latest
+    ports:
+      - 8080:8080
+  redis-commander:  # redis 管理
+    image: rediscommander/redis-commander:latest
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    ports:
+      - 8079:8081
+
+  # nginx
+  nginx:
+    image: nginx:stable
+    # 用了 host 网络模式，容器中的端口会会直接映射到 localhost
+    # 因为开发环境 go-app 运行在宿主机
+    network_mode: "host"
+    #    ports:
+    #      - 127.0.0.1:3389:3389
+    volumes:
+      - ${PROJECT_DIR}/conf/nginx.debug.conf:/etc/nginx/nginx.conf:ro
+      - ${PROJECT_DIR}/dist:/usr/share/nginx/dist
+      - ${PROJECT_DIR}/media:/usr/share/nginx/media
+
+  # py-app
+  celery:
+    build: ./py/celery
+    command: sh run-celery-worker.sh
+    volumes:
+      - ./py/celery:/code
+      - ./conf/app.debug.yml:/conf/app.yml
