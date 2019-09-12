@@ -48,7 +48,7 @@ type AppConf struct {
 var App *AppConf
 
 func init() {
-	b, err := ioutil.ReadFile("conf/app.yml")
+	b, err := ioutil.ReadFile("/conf/app.yml")
 	if err != nil {
 		panic(err)
 	}

@@ -46,5 +46,6 @@ func register(r *gin.Engine) {
 	{
 		wsV1.GET("/echo", websocket.Echo)
 		wsV1.GET("/sys-info", websocket.GetSysInfo)
+		wsV1.GET("/mining/tasks", websocket.GetTaskList)
 	}
 }

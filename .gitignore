@@ -3,6 +3,7 @@ instance/
 database/
 __pycache__/
 py/
+build/
 
 go.sum
 app.ini
