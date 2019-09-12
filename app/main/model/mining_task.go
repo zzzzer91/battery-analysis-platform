@@ -11,12 +11,12 @@ type MiningTask struct {
 	Comment       string `json:"comment" bson:"comment"`
 }
 
-var MiningSupportTaskSet map[string]struct{}
-
-func init() {
-	MiningSupportTaskSet = map[string]struct{}{
-		"充电过程": {},
-		"工况":   {},
-		"电池统计": {},
-	}
-}
+//var MiningSupportTaskSet map[string]struct{}
+//
+//func init() {
+//	MiningSupportTaskSet = map[string]struct{}{
+//		"充电过程": {},
+//		"工况":   {},
+//		"电池统计": {},
+//	}
+//}

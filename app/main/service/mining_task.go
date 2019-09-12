@@ -26,13 +26,22 @@ const (
 type MiningCreateTaskService struct {
 	TaskName     string `json:"taskName" binding:"required"`
 	DataComeFrom string `json:"dataComeFrom" binding:"required"`
-	StartDate    string `json:"startDate" binding:"required"`
-	EndDate      string `json:"endDate" binding:"required"`
+	StartDate    string `json:"startDate"`
+	EndDate      string `json:"endDate"`
 	AllData      bool   `json:"allData"` // bool 型不能 required，因为 false 会被判空
 }
 
 func (s *MiningCreateTaskService) CreateTask() (*model.MiningTask, error) {
-	if _, ok := model.MiningSupportTaskSet[s.TaskName]; !ok {
+	// needFields 的顺序不能变，追加新字段，必须放在最后
+	var needFields string
+	switch s.TaskName {
+	case "充电过程":
+		needFields = "bty_t_vol, bty_t_curr, battery_soc, id, byt_ma_sys_state"
+	case "工况":
+		needFields = "timestamp, bty_t_curr, met_spd"
+	case "电池统计":
+		needFields = "max_t_s_b_num, min_t_s_b_num"
+	default:
 		return nil, errors.New("参数 TaskName 不合法")
 	}
 	table, ok := model.BatteryMysqlNameToTable[s.DataComeFrom]
@@ -52,21 +61,21 @@ func (s *MiningCreateTaskService) CreateTask() (*model.MiningTask, error) {
 		requestParams = s.StartDate + " - " + s.EndDate
 	}
 
+	asyncResult, err := worker.Celery.Delay(
+		taskComputeModel,
+		s.TaskName, needFields, table.Name, requestParams)
+	if err != nil {
+		panic(err)
+	}
+
 	task := &model.MiningTask{
+		Id:            asyncResult.TaskID,
 		TaskName:      s.TaskName,
 		DataComeFrom:  s.DataComeFrom,
 		RequestParams: requestParams,
 		CreateTime:    jtime.NowStr(),
 		TaskStatus:    "执行中",
 	}
-
-	asyncResult, err := worker.Celery.Delay(
-		taskComputeModel,
-		task.TaskName, table.Name, s.StartDate, s.EndDate)
-	if err != nil {
-		panic(err)
-	}
-	task.Id = asyncResult.TaskID
 
 	ctx, _ := context.WithTimeout(context.Background(), timeout)
 	collection := dao.MongoDB.Collection(collectionNameTaskList)

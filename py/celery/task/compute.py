@@ -20,30 +20,27 @@ def wrapp_rows(rows):
 def compute_model(self,
                   task_name: str,
                   # 这三个参数传给 SQl 语句
+                  need_fields: str,
                   table_name: str,
-                  start_date: str,
-                  end_date: str) -> None:
+                  request_params: str) -> None:
     """根据 task_name，选择任务交给 celery 执行。
 
     :param self: Celery 装饰器中添加 `bind=True` 参数。告诉 Celery 发送一个 self 参数到该函数，
                  可以获取一些任务信息，或更新用 `self.update_stat()` 任务状态。
+    :param need_fields: 计算需要的字段。
     :param task_name: 任务名，中文。
     :param table_name: 从哪张表查询数据，表名。
-    :param start_date: 数据查询起始日期，>=。
-    :param end_date: 数据查询终止日期，<=。
+    :param request_params: 数据查询起止日期，格式有：["所有数据"] 和 ["起 - 止"]。
     """
 
     # 用 celery 产生的 id 做 mongo 主键
     task_id = self.request.id
 
     if task_name == '充电过程':
-        need_params = 'bty_t_vol, bty_t_curr, battery_soc, id, byt_ma_sys_state'
         compute_alg = compute_charging_process
     elif task_name == '工况':
-        need_params = 'timestamp, bty_t_curr, met_spd'
         compute_alg = compute_working_condition
     elif task_name == '电池统计':
-        need_params = 'max_t_s_b_num, min_t_s_b_num'
         compute_alg = compute_battery_statistic
     else:
         return
@@ -52,17 +49,18 @@ def compute_model(self,
 
     # 从连接池取一个连接
     mysql_conn = mysql.connect()
-    if start_date is None:
+    if request_params == '所有数据':
         rows = mysql_conn.execute(
             'SELECT '
-            f'{need_params} '
+            f'{need_fields} '
             f'FROM {table_name}'
         )
     else:
+        start_date, end_date = request_params.split(' - ')
         rows = mysql_conn.execute(
             text(
                 'SELECT '
-                f'{need_params} '
+                f'{need_fields} '
                 f'FROM {table_name} '
                 'WHERE timestamp >= :start_date and timestamp <= :end_date'
             ),
@@ -81,7 +79,7 @@ def compute_model(self,
         return
 
     # 处理数据
-    data = compute_alg(wrapp_rows(rows))
+    data = compute_alg(rows)
     # 放回连接
     mysql_conn.close()
 
@@ -98,7 +96,7 @@ def compute_model(self,
 
 
 @app.task(name='task.stop_compute_model', ignore_result=True)
-def stop_compute_model(task_id):
+def stop_compute_model(task_id: str) -> None:
     # 取消一个任务，
     # 如果该任务已执行，那么必须设置 `terminate=True` 才能终止它
     # 如果该任务不存在，也不会报错
