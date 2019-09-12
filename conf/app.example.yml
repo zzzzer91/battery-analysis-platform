@@ -5,7 +5,7 @@ main:
     httpAddr: 127.0.0.1:5000
     secretKey: test
   gorm:
-    uri: root:123456@tcp(localhost:3306)/mytest?charset=utf8mb4&parseTime=True&loc=Local
+    uri: root:123456@tcp(127.0.0.1:3306)/mytest?charset=utf8mb4&parseTime=True&loc=Local
     # 设置连接池
     # 空闲
     maxIdleConns: 20
@@ -14,11 +14,11 @@ main:
     # 超时
     connMaxLifetime: 30
   mongo:
-    uri: mongodb://root:123456@localhost:27017
+    uri: mongodb://root:123456@127.0.0.1:27017
     database: mytest
   celery:
-    brokerUri: redis://localhost:6379
-    backendUri: redis://localhost:6379
+    brokerUri: redis://127.0.0.1:6379
+    backendUri: redis://127.0.0.1:6379
 
 # python-app
 celery:
