@@ -81,6 +81,8 @@ func (s *MiningCreateTaskService) CreateTask() (*model.MiningTask, error) {
 	collection := dao.MongoDB.Collection(collectionNameTaskList)
 	_, err = collection.InsertOne(ctx, &task)
 	if err != nil {
+		// 终止正在执行的任务
+		_, _ = worker.Celery.Delay(taskStopComputeModel, task.Id)
 		panic(err)
 	}
 
@@ -136,8 +138,7 @@ func GetTask(id string) (bson.A, error) {
 
 func DeleteTask(id string) (int64, error) {
 	// 因为 gocelery 未提供终止任务的 api，这里把终止行为封装成任务，然后调用它
-	_, err := worker.Celery.Delay(
-		taskStopComputeModel, id)
+	_, err := worker.Celery.Delay(taskStopComputeModel, id)
 	if err != nil {
 		panic(err)
 	}
