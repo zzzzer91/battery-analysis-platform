@@ -3,6 +3,8 @@
 package conf
 
 import (
+	"errors"
+	"fmt"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
@@ -35,21 +37,31 @@ type CeleryConf struct {
 	BackendUri string `yaml:"backendUri"`
 }
 
-type MainConf struct {
-	Gin    GinConf    `yaml:"gin"`
-	Gorm   GormConf   `yaml:"gorm"`
-	Mongo  MongoConf  `yaml:"mongo"`
-	Celery CeleryConf `yaml:"celery"`
-}
+// Load 载入指定 app 的 yaml 配置，注意 yaml 文件的格式有要求，见 app.example.yml
+func Load(app string, out interface{}) error {
+	file := os.Getenv("CONF_FILE")
+	if file == "" {
+		return errors.New("环境变量 CONF_FILE 不存在")
+	}
 
-type AppConf struct {
-	Main MainConf `yaml:"main"`
-}
-
-var App *AppConf
-
-func Load(file string, out *AppConf) error {
 	b, err := ioutil.ReadFile(file)
+	if err != nil {
+		return err
+	}
+
+	m := make(map[string]interface{})
+
+	err = yaml.Unmarshal(b, m)
+	if err != nil {
+		return err
+	}
+
+	mAppConf, ok := m[app]
+	if !ok {
+		return fmt.Errorf("%s 中 %s 不存在", file, app)
+	}
+
+	b, err = yaml.Marshal(mAppConf)
 	if err != nil {
 		return err
 	}
@@ -58,23 +70,6 @@ func Load(file string, out *AppConf) error {
 	if err != nil {
 		return err
 	}
+
 	return nil
-}
-
-func init() {
-	file := os.Getenv("CONF_FILE")
-	if file == "" {
-		panic("环境变量 CONF_FILE 不存在")
-	}
-	b, err := ioutil.ReadFile(file)
-	if err != nil {
-		panic(err)
-	}
-
-	var out AppConf
-	err = yaml.Unmarshal(b, &out)
-	if err != nil {
-		panic(err)
-	}
-	App = &out
 }

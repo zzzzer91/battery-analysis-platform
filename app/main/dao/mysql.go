@@ -1,7 +1,7 @@
 package dao
 
 import (
-	"battery-anlysis-platform/pkg/conf"
+	"battery-anlysis-platform/app/main/conf"
 	"battery-anlysis-platform/pkg/db"
 	"github.com/jinzhu/gorm"
 )
@@ -9,7 +9,7 @@ import (
 var MysqlDB *gorm.DB
 
 func init() {
-	d, err := db.InitGorm(&conf.App.Main.Gorm)
+	d, err := db.InitGorm(&conf.App.Gorm)
 	if err != nil {
 		panic(err)
 	}

@@ -1,7 +1,7 @@
 package dao
 
 import (
-	"battery-anlysis-platform/pkg/conf"
+	"battery-anlysis-platform/app/main/conf"
 	"battery-anlysis-platform/pkg/db"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -9,7 +9,7 @@ import (
 var MongoDB *mongo.Database
 
 func init() {
-	d, err := db.InitMongo(&conf.App.Main.Mongo)
+	d, err := db.InitMongo(&conf.App.Mongo)
 	if err != nil {
 		panic(err)
 	}
