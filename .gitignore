@@ -2,7 +2,6 @@
 instance/
 database/
 __pycache__/
-py/
 build/
 dist/
 media/
