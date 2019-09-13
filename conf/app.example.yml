@@ -13,6 +13,8 @@ main:
     maxOpenConns: 100
     # 超时
     connMaxLifetime: 30
+    # 是否打开 log
+    logMode: true
   mongo:
     uri: mongodb://root:123456@127.0.0.1:27017
     database: mytest

@@ -17,7 +17,8 @@ type GinConf struct {
 }
 
 type GormConf struct {
-	Uri string `yaml:"uri"`
+	LogMode bool   `yaml:"logMode"`
+	Uri     string `yaml:"uri"`
 	// 设置连接池
 	// 空闲
 	MaxIdleConns int `yaml:"maxIdleConns"`

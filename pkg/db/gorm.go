@@ -12,8 +12,8 @@ func InitGorm(gormConf *conf.GormConf) (*gorm.DB, error) {
 	if err != nil {
 		return nil, err
 	}
-	// 默认打开 log
-	db.LogMode(true)
+	// 是否打开 log
+	db.LogMode(gormConf.LogMode)
 	// 全局禁用表名复数，默认创建表名时会使用复数
 	db.SingularTable(true)
 
