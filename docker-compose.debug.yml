@@ -45,7 +45,7 @@ services:
       - redis
 
   # py-app
-  celery:
+  py-app-celery:
     build: ./py/celery
     command: sh run-celery-worker.sh
     volumes:

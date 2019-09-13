@@ -49,7 +49,7 @@ services:
 #      - redis
 
   # go-app
-  go-main:
+  go-app-main:
     image: alpine:3.10
     environment:
       - CONF_FILE=/conf/app.yml
@@ -63,7 +63,7 @@ services:
       - redis
 
   # py-app
-  py-celery:
+  py-app-celery:
     build: ./py/celery
     command: "sh run-celery-worker.sh"
     volumes:
@@ -86,4 +86,4 @@ services:
       - ${PROJECT_DIR}/dist:/usr/share/nginx/dist
       - ${PROJECT_DIR}/media:/usr/share/nginx/media
     depends_on:
-      - go-main
+      - go-app-main
