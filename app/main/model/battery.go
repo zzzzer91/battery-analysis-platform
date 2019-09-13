@@ -1,7 +1,7 @@
 package model
 
 //type YutongBattery struct {
-//	ID                        int             `json:"-" gorm:"primary_key"`
+//	Id                        int             `json:"-" gorm:"primary_key"`
 //	Province                  string          `json:"-" gorm:"type:varchar(100)"`
 //	City                      string          `json:"-" gorm:"type:varchar(100)"`
 //	Timestamp                 *jtime.JSONTime `json:"timestamp" gorm:"type:datetime;index"`

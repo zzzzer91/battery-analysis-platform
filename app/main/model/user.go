@@ -20,7 +20,7 @@ const (
 )
 
 type User struct {
-	ID       int    `json:"-" gorm:"primary_key"`
+	Id       int    `json:"-" gorm:"primary_key"`
 	Name     string `json:"userName" gorm:"type:char(16);unique_index;not null"`
 	Password string `json:"-" gorm:"type:varchar(128);not null"`
 	Type     int    `json:"userType" gorm:"type:tinyint;not null;default:0"`

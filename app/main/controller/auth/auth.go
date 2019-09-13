@@ -1,30 +1,25 @@
 package auth
 
 import (
+	"battery-anlysis-platform/app/main/model"
 	"battery-anlysis-platform/app/main/service"
-	"battery-anlysis-platform/pkg/checker"
 	"battery-anlysis-platform/pkg/jd"
-	"errors"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
 
 func Login(c *gin.Context) {
-	var code int
-	var msg string
-	var data interface{}
+	code := jd.ERROR
+	msg := ""
+	var data *model.User
+	var err error
 
 	if c.Request.Method == "GET" {
 		session := sessions.Default(c)
-		userId := session.Get("user_id")
+		userId := session.Get("userId")
 		if userId != nil {
-			if user, err := service.LoginByCookie(userId.(int)); err != nil {
-				code = jd.ERROR
-				msg = err.Error()
-			} else {
-				code = jd.SUCCESS
-				data = user
-			}
+			data, err = service.LoginByCookie(userId.(int))
+			code, msg = jd.HandleError(err)
 		}
 	} else if c.Request.Method == "POST" {
 		var s service.UserLoginService
@@ -33,27 +28,15 @@ func Login(c *gin.Context) {
 			c.AbortWithError(500, err)
 			return
 		}
-		if !checker.ReUserNameOrPassword.MatchString(s.UserName) {
-			c.AbortWithError(500, errors.New("用户名不符合正则"))
-			return
-		}
-		if !checker.ReUserNameOrPassword.MatchString(s.Password) {
-			c.AbortWithError(500, errors.New("密码不符合正则"))
-			return
-		}
 
-		if user, err := s.Login(); err != nil {
-			code = jd.ERROR
-			msg = err.Error()
-		} else {
+		data, err = s.Login()
+		code, msg = jd.HandleError(err)
+		if code == jd.SUCCESS {
 			// 设置Session
 			session := sessions.Default(c)
 			session.Clear()
-			session.Set("user_id", user.ID)
+			session.Set("userId", data.Id)
 			_ = session.Save()
-			//
-			code = jd.SUCCESS
-			data = user
 		}
 	}
 

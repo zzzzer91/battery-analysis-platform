@@ -10,7 +10,7 @@ import (
 func PermissionRequired(permission int) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		session := sessions.Default(c)
-		userId := session.Get("user_id")
+		userId := session.Get("userId")
 		if userId == nil {
 			c.AbortWithStatus(401)
 			return

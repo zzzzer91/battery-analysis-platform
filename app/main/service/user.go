@@ -28,7 +28,7 @@ func (s *UserCreateService) CreateUser() (*model.User, error) {
 	user := &model.User{Name: s.UserName, Comment: s.Comment}
 	err := user.SetPassword(s.Password)
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
 	err = dao.MysqlDB.Create(user).Error
 	if err != nil {
@@ -38,7 +38,7 @@ func (s *UserCreateService) CreateUser() (*model.User, error) {
 }
 
 type UserModifyService struct {
-	Status  int    `json:"userStatus" binding:"required"`
+	Status  int    `json:"userStatus"`
 	Comment string `json:"comment"`
 }
 
@@ -62,8 +62,8 @@ func (s *UserModifyService) ModifyUser(name string) (*model.User, error) {
 }
 
 type UserLoginService struct {
-	UserName string `json:"userName" binding:"required"`
-	Password string `json:"password" binding:"required"`
+	UserName string `json:"userName"`
+	Password string `json:"password"`
 }
 
 func (s *UserLoginService) Login() (*model.User, error) {

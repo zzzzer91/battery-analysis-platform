@@ -42,11 +42,11 @@ func (s *MiningBaseService) Query() ([]map[string]interface{}, error) {
 		Limit(s.DataLimit).
 		Rows()
 	if err != nil {
-		return nil, errors.New("查询失败")
+		panic(err)
 	}
+	defer rows.Close()
 
 	records, err := mysqlx.GetRecords(rows)
-	_ = rows.Close()
 	if err != nil {
 		panic(err)
 	}
