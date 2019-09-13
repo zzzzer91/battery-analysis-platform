@@ -24,12 +24,12 @@ services:
       - ${DATABASE_DATA_DIR}/redis:/data  # redis 数据存储在容器的 /data 下
 
   # 数据库管理工具
-  adminer:  # MySQL 管理
-    image: adminer:latest
-    ports:
-      - 8080:8080
-    depends_on:
-      - mysql
+#  adminer:  # MySQL 管理
+#    image: adminer:latest
+#    ports:
+#      - 8080:8080
+#    depends_on:
+#      - mysql
 #  mongo-express:  # Mongo 管理
 #    image: mongo-express:latest
 #    ports:
@@ -39,14 +39,14 @@ services:
 #      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
 #    depends_on:
 #      - mongo
-  redis-commander:  # redis 管理
-    image: rediscommander/redis-commander:latest
-    environment:
-      - REDIS_HOSTS=local:redis:6379
-    ports:
-      - 8079:8081
-    depends_on:
-      - redis
+#  redis-commander:  # redis 管理
+#    image: rediscommander/redis-commander:latest
+#    environment:
+#      - REDIS_HOSTS=local:redis:6379
+#    ports:
+#      - 8079:8081
+#    depends_on:
+#      - redis
 
   # go-app
   go-main:
@@ -56,7 +56,7 @@ services:
     command: "./app"
     volumes:
       - ./build/main/app:/app
-      - ./conf/app.release.yml:/conf/app.yml
+      - ./conf/app.release.yml:/conf/app.yml:ro
     depends_on:
       - mysql
       - mongo
@@ -69,7 +69,7 @@ services:
     volumes:
       - ./py/celery/task:/code/task
       - ./py/celery/run-celery-worker.sh:/code/run-celery-worker.sh
-      - ./conf/app.release.yml:/conf/app.yml
+      - ./conf/app.release.yml:/conf/app.yml:ro
     depends_on:
       - mysql
       - mongo

@@ -51,7 +51,7 @@ services:
     volumes:
       - ./py/celery/task:/code/task
       - ./py/celery/run-celery-worker.sh:/code/run-celery-worker.sh
-      - ./conf/app.debug.yml:/conf/app.yml
+      - ./conf/app.debug.yml:/conf/app.yml:ro
     depends_on:
       - mysql
       - mongo
