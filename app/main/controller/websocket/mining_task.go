@@ -15,14 +15,21 @@ func GetTaskList(c *gin.Context) {
 		return
 	}
 	defer conn.Close()
+
+	closed := wsClientClosed(conn)
 	for {
-		data, err := service.GetTaskList()
-		code, msg := jd.HandleError(err)
-		res := jd.Build(code, msg, data)
-		if err := conn.WriteJSON(res); err != nil {
-			log.Println(err)
-			break
+		select {
+		case <-closed:
+			return
+		default:
+			data, err := service.GetTaskList()
+			code, msg := jd.HandleError(err)
+			res := jd.Build(code, msg, data)
+			if err := conn.WriteJSON(res); err != nil {
+				log.Println(err)
+				return
+			}
+			time.Sleep(time.Second * 3)
 		}
-		time.Sleep(time.Second * 3)
 	}
 }
