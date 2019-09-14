@@ -1,6 +1,6 @@
-# 电池数据分析平台后端
+# 新能源汽车电池数据分析平台后端
 
-电动汽车电池数据分析平台后端，RESTful 设计风格，前后端分离。
+新能源汽车电池数据分析平台后端，RESTful 设计风格，前后端分离。
 
 ## 项目结构
 
@@ -118,8 +118,6 @@ $ docker-compose -f docker-compose.debug.yml up
 $ docker-compose -f docker-compose.release.yml up
 ```
 
-TODO
-
 ## 其他
 
 ### 管理 MySQL
@@ -138,15 +136,11 @@ TODO
 
 ### 杂
 
-- 开发环境和生产环境区别：
-  - 开发环境 go app 没有实现容器化，所以数据库和 nginx 容器需要暴露接口
-  - 生产环境完全实现了容器化，`docker-compose -f docker-compose.release.yml up` 部署，部署前切记要执行 `./script/build.sh` 编译 go 执行文件
-
 - 配置文件名中带有 release 的是生产环境的配置文件，带有 debug 的是开发环境配置文件
 
 - 开发环境需要手动设置环境变量 `CONF_FILE`，指定配置文件路径
 
-- gin 的请求 log 会在请求处理函数结束后打印，所以请求 websocket 时，打印会很延迟
+- gin 的请求 log 会在请求处理函数结束后打印（记录请求用时），所以请求 websocket 时，打印会很延迟
 
 ### 前端
 
@@ -168,13 +162,11 @@ TODO
 
 - service 某些中出现了不宜返回给用户的错误信息，则用 panic 抛出，这时后端会捕获并返回 500
 
-### git
+### Git
 
 - commit 时附上版本号，log 中某版本号的最后一个 commit，必须保证可运行
 
 ## TODO
-
-- 修复 websocket taskList，客户端关闭后，服务端没有正确关闭
 
 - 加缓存
 
