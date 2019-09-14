@@ -44,19 +44,6 @@ services:
     depends_on:
       - redis
 
-  # py-app
-  py-app-celery:
-    build: ./py/celery
-    command: sh run-celery-worker.sh
-    volumes:
-      - ./py/celery/task:/code/task
-      - ./py/celery/run-celery-worker.sh:/code/run-celery-worker.sh
-      - ./conf/app.debug.yml:/conf/app.yml:ro
-    depends_on:
-      - mysql
-      - mongo
-      - redis
-
   # nginx
   nginx:
     image: nginx:stable-alpine

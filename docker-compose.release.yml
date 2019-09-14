@@ -65,10 +65,12 @@ services:
   # py-app
   py-app-celery:
     build: ./py/celery
-    command: "sh run-celery-worker.sh"
+    environment:
+      - CONF_FILE=/conf/app.yml
+    command: sh run-celery.sh
     volumes:
       - ./py/celery/task:/code/task
-      - ./py/celery/run-celery-worker.sh:/code/run-celery-worker.sh
+      - ./py/celery/run-celery.sh:/code/run-celery.sh
       - ./conf/app.release.yml:/conf/app.yml:ro
     depends_on:
       - mysql

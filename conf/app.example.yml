@@ -25,10 +25,10 @@ main:
 # python-app
 celery:
   sqlalchemy:
-    uri: mysql+pymysql://root:123456@mysql:3306/mytest
+    uri: mysql+pymysql://root:123456@127.0.0.1:3306/mytest
   mongo:
-    uri: mongodb://root:123456@mongo:27017
+    uri: mongodb://root:123456@127.0.0.1:27017
     database: mytest
   celery:
-    brokerUri: redis://redis:6379
-    backendUri: redis://redis:6379
+    brokerUri: redis://127.0.0.1:6379
+    backendUri: redis://127.0.0.1:6379
