@@ -69,6 +69,10 @@ $ sudo systemctl start docker
 
 ## 项目初始化
 
+### MySQL 初始化
+
+创建相应数据库。
+
 ### 生成文件
 
 ```bash
@@ -79,15 +83,40 @@ $ ./init-project.sh
 
 ### 创建配置文件
 
-在 *conf* 文件夹中根据配置模板创建配置文件，去掉 *.example*。
-
-### MySQL 初始化
-
-1、创建相应数据库
-
-2、启动程序后会自动生成 MySQL 表：
+在 *conf* 文件夹中根据配置模板创建配置文件，文件名中 example，替换为 release 和 debug。
 
 ## 启动项目
+
+### 开发环境
+
+启动数据库和 Nginx：
+
+```bash
+$ docker-compose -f docker-compose.debug.yml up
+```
+
+启动 py-app-celery：
+
+```
+在 Pycharm 中配置 run template，
+选择要执行的 py 模块 celery，
+输入运行参数 `-A task worker --concurrency=2`，
+最后指定好环境变量 CONF_FILE。
+```
+
+启动 go-app-main：
+
+```
+在 goland 中配置 run template，只需指定好环境变量 CONF_FILE。
+```
+
+### 生产环境
+
+只需执行：
+
+```bash
+$ docker-compose -f docker-compose.release.yml up
+```
 
 TODO
 
