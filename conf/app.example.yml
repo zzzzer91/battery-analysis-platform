@@ -1,5 +1,5 @@
 # go-app
-main:
+go-app-main:
   gin:
     runMode: debug  # debug or release
     httpAddr: 127.0.0.1:5000
@@ -23,7 +23,7 @@ main:
     backendUri: redis://127.0.0.1:6379
 
 # python-app
-celery:
+py-app-celery:
   sqlalchemy:
     uri: mysql+pymysql://root:123456@127.0.0.1:3306/mytest
   mongo:

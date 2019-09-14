@@ -9,4 +9,4 @@ def load(path: str) -> Dict:
         return yaml.load(f, Loader=yaml.SafeLoader)
 
 
-app_conf = load(os.getenv('CONF_FILE'))['celery']
+app_conf = load(os.getenv('CONF_FILE'))['py-app-celery']

@@ -12,7 +12,7 @@ type appConf struct {
 var App appConf
 
 func init() {
-	if err := conf.Load("main", &App); err != nil {
+	if err := conf.Load("go-app-main", &App); err != nil {
 		panic(err)
 	}
 }
