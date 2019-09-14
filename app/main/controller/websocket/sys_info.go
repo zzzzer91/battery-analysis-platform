@@ -3,7 +3,7 @@
 package websocket
 
 import (
-	"battery-anlysis-platform/app/main/service"
+	"battery-analysis-platform/app/main/service"
 	"github.com/gin-gonic/gin"
 	"time"
 )

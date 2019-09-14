@@ -1,7 +1,7 @@
 package api
 
 import (
-	"battery-anlysis-platform/pkg/jd"
+	"battery-analysis-platform/pkg/jd"
 	"github.com/gin-gonic/gin"
 )
 

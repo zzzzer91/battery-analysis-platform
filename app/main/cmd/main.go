@@ -1,7 +1,7 @@
 package main
 
 import (
-	"battery-anlysis-platform/app/main/server"
+	"battery-analysis-platform/app/main/server"
 )
 
 func main() {

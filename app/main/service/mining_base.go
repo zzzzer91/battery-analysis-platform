@@ -1,10 +1,10 @@
 package service
 
 import (
-	"battery-anlysis-platform/app/main/dao"
-	"battery-anlysis-platform/app/main/model"
-	"battery-anlysis-platform/pkg/checker"
-	"battery-anlysis-platform/pkg/mysqlx"
+	"battery-analysis-platform/app/main/dao"
+	"battery-analysis-platform/app/main/model"
+	"battery-analysis-platform/pkg/checker"
+	"battery-analysis-platform/pkg/mysqlx"
 	"errors"
 	"strings"
 )

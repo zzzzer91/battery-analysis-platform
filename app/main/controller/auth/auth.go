@@ -1,9 +1,9 @@
 package auth
 
 import (
-	"battery-anlysis-platform/app/main/model"
-	"battery-anlysis-platform/app/main/service"
-	"battery-anlysis-platform/pkg/jd"
+	"battery-analysis-platform/app/main/model"
+	"battery-analysis-platform/app/main/service"
+	"battery-analysis-platform/pkg/jd"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )

@@ -1,8 +1,8 @@
 package server
 
 import (
-	"battery-anlysis-platform/app/main/middleware"
-	"battery-anlysis-platform/pkg/jd"
+	"battery-analysis-platform/app/main/middleware"
+	"battery-analysis-platform/pkg/jd"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"

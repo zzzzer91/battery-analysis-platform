@@ -1,8 +1,8 @@
 package websocket
 
 import (
-	"battery-anlysis-platform/app/main/service"
-	"battery-anlysis-platform/pkg/jd"
+	"battery-analysis-platform/app/main/service"
+	"battery-analysis-platform/pkg/jd"
 	"github.com/gin-gonic/gin"
 	"log"
 	"time"

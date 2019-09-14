@@ -1,6 +1,6 @@
 package conf
 
-import "battery-anlysis-platform/pkg/conf"
+import "battery-analysis-platform/pkg/conf"
 
 type appConf struct {
 	Gin    conf.GinConf    `yaml:"gin"`

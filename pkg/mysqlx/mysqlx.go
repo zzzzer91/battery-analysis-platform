@@ -3,7 +3,7 @@
 package mysqlx
 
 import (
-	"battery-anlysis-platform/pkg/jtime"
+	"battery-analysis-platform/pkg/jtime"
 	"database/sql"
 	"reflect"
 	"unsafe"

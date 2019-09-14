@@ -1,7 +1,7 @@
 package websocket
 
 import (
-	"battery-anlysis-platform/app/main/model"
+	"battery-analysis-platform/app/main/model"
 	"github.com/gorilla/websocket"
 	"testing"
 )

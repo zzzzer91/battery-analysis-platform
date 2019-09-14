@@ -1,4 +1,4 @@
-module battery-anlysis-platform
+module battery-analysis-platform
 
 go 1.13
 

@@ -1,8 +1,8 @@
 package middleware
 
 import (
-	"battery-anlysis-platform/app/main/dao"
-	"battery-anlysis-platform/app/main/model"
+	"battery-analysis-platform/app/main/dao"
+	"battery-analysis-platform/app/main/model"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )

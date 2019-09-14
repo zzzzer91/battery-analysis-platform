@@ -1,8 +1,8 @@
 package dao
 
 import (
-	"battery-anlysis-platform/app/main/conf"
-	"battery-anlysis-platform/pkg/db"
+	"battery-analysis-platform/app/main/conf"
+	"battery-analysis-platform/pkg/db"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 

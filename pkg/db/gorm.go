@@ -1,7 +1,7 @@
 package db
 
 import (
-	"battery-anlysis-platform/pkg/conf"
+	"battery-analysis-platform/pkg/conf"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"time"

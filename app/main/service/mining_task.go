@@ -1,11 +1,11 @@
 package service
 
 import (
-	"battery-anlysis-platform/app/main/dao"
-	"battery-anlysis-platform/app/main/model"
-	"battery-anlysis-platform/app/main/worker"
-	"battery-anlysis-platform/pkg/checker"
-	"battery-anlysis-platform/pkg/jtime"
+	"battery-analysis-platform/app/main/dao"
+	"battery-analysis-platform/app/main/model"
+	"battery-analysis-platform/app/main/worker"
+	"battery-analysis-platform/pkg/checker"
+	"battery-analysis-platform/pkg/jtime"
 	"context"
 	"errors"
 	"go.mongodb.org/mongo-driver/bson"

@@ -1,7 +1,7 @@
 package service
 
 import (
-	"battery-anlysis-platform/app/main/model"
+	"battery-analysis-platform/app/main/model"
 	"github.com/shirou/gopsutil/mem"
 )
 

@@ -1,11 +1,11 @@
 package server
 
 import (
-	"battery-anlysis-platform/app/main/controller/api"
-	"battery-anlysis-platform/app/main/controller/auth"
-	"battery-anlysis-platform/app/main/controller/websocket"
-	"battery-anlysis-platform/app/main/middleware"
-	"battery-anlysis-platform/app/main/model"
+	"battery-analysis-platform/app/main/controller/api"
+	"battery-analysis-platform/app/main/controller/auth"
+	"battery-analysis-platform/app/main/controller/websocket"
+	"battery-analysis-platform/app/main/middleware"
+	"battery-analysis-platform/app/main/model"
 	"github.com/gin-gonic/gin"
 )
 

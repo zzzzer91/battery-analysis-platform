@@ -1,8 +1,8 @@
 package worker
 
 import (
-	"battery-anlysis-platform/app/main/conf"
-	"battery-anlysis-platform/pkg/worker"
+	"battery-analysis-platform/app/main/conf"
+	"battery-analysis-platform/pkg/worker"
 	"github.com/gocelery/gocelery"
 )
 

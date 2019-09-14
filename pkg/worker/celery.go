@@ -1,7 +1,7 @@
 package worker
 
 import (
-	"battery-anlysis-platform/pkg/conf"
+	"battery-analysis-platform/pkg/conf"
 	"github.com/gocelery/gocelery"
 )
 

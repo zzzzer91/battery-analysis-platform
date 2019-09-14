@@ -1,8 +1,8 @@
 package model
 
 import (
-	"battery-anlysis-platform/pkg/jtime"
-	"battery-anlysis-platform/pkg/security"
+	"battery-analysis-platform/pkg/jtime"
+	"battery-analysis-platform/pkg/security"
 )
 
 // 用户类型 Type

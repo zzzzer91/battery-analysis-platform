@@ -1,8 +1,8 @@
 package server
 
 import (
-	"battery-anlysis-platform/app/main/conf"
-	"battery-anlysis-platform/app/main/middleware"
+	"battery-analysis-platform/app/main/conf"
+	"battery-analysis-platform/app/main/middleware"
 	"github.com/gin-gonic/gin"
 )
 

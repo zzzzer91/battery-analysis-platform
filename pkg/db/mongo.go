@@ -1,7 +1,7 @@
 package db
 
 import (
-	"battery-anlysis-platform/pkg/conf"
+	"battery-analysis-platform/pkg/conf"
 	"context"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
