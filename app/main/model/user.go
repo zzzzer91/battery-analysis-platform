@@ -78,6 +78,7 @@ func GetUser(name string) (*User, error) {
 
 func ListCommonUser() ([]User, error) {
 	var users []User
+	// 找不到返回空列表
 	err := dao.MysqlDB.Where("type != ?", UserTypeSuperUser).Find(&users).Error
 	if err != nil {
 		return nil, err

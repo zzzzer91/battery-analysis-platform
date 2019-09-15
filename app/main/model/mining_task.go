@@ -65,7 +65,8 @@ func ListMiningTask() ([]MiningTask, error) {
 	if err != nil {
 		return nil, err
 	}
-	var records []MiningTask
+	// 为了使其找不到时返回空列表，而不是 nil
+	records := make([]MiningTask, 0)
 	for cur.Next(ctx) {
 		result := MiningTask{}
 		err := cur.Decode(&result)
