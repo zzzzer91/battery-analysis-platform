@@ -45,10 +45,16 @@ func jsonResponseEquel(t *testing.T, w *httptest.ResponseRecorder, code int, msg
 	assert.Equal(t, response["data"], data)
 }
 
-func TestGetLogin(t *testing.T) {
+func TestLogin(t *testing.T) {
 	r := getGinEngine()
 	w := request(r, "GET", "/login", nil)
 	assert.Equal(t, http.StatusOK, w.Code)
 
 	jsonResponseEquel(t, w, jd.ERROR, "", nil)
+}
+
+func TestLogout(t *testing.T) {
+	r := getGinEngine()
+	w := request(r, "POST", "/logout", nil)
+	assert.Equal(t, http.StatusUnauthorized, w.Code)
 }

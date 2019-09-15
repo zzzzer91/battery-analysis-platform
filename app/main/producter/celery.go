@@ -1,4 +1,4 @@
-package worker
+package producter
 
 import (
 	"battery-analysis-platform/app/main/conf"

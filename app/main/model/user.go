@@ -1,6 +1,7 @@
 package model
 
 import (
+	"battery-analysis-platform/app/main/dao"
 	"battery-analysis-platform/pkg/jtime"
 	"battery-analysis-platform/pkg/security"
 )
@@ -51,4 +52,39 @@ func (user *User) CheckPassword(password string) bool {
 
 func (user *User) CheckStatusOk() bool {
 	return user.Status == UserStatusNormal
+}
+
+func CreateUser(name, password, comment string) (*User, error) {
+	user := &User{Name: name, Comment: comment}
+	err := user.SetPassword(password)
+	if err != nil {
+		return nil, err
+	}
+	err = dao.MysqlDB.Create(user).Error
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
+func GetUser(name string) (*User, error) {
+	var user User
+	err := dao.MysqlDB.Where("name = ?", name).First(&user).Error
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
+
+func ListCommonUser() ([]User, error) {
+	var users []User
+	err := dao.MysqlDB.Where("type != ?", UserTypeSuperUser).Find(&users).Error
+	if err != nil {
+		return nil, err
+	}
+	return users, nil
+}
+
+func SaveUserChange(user *User) error {
+	return dao.MysqlDB.Save(user).Error
 }

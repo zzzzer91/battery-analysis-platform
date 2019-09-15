@@ -1,5 +1,11 @@
 package model
 
+import (
+	"battery-analysis-platform/app/main/dao"
+	"battery-analysis-platform/pkg/mysqlx"
+	"strings"
+)
+
 //type YutongBattery struct {
 //	Id                        int             `json:"-" gorm:"primary_key"`
 //	Province                  string          `json:"-" gorm:"type:varchar(100)"`
@@ -25,12 +31,12 @@ package model
 //	Byt_ma_sys_state          int             `json:"byt_ma_sys_state"`
 //}
 
-type MysqlTable struct {
+type mysqlTable struct {
 	Name        string
 	FieldToName map[string]string
 }
 
-var BatteryMysqlNameToTable map[string]MysqlTable
+var BatteryMysqlNameToTable map[string]mysqlTable
 
 func init() {
 	yutongFieldToName := map[string]string{
@@ -53,9 +59,23 @@ func init() {
 		"min_v_e_core_num": "最低电压电池号",
 	}
 
-	BatteryMysqlNameToTable = map[string]MysqlTable{
+	BatteryMysqlNameToTable = map[string]mysqlTable{
 		"宇通_4F37195C1A908CFBE0532932A8C0EECB": {
 			Name: "yutong_vehicle1", FieldToName: yutongFieldToName,
 		},
 	}
+}
+
+func GetBatteryData(tableName, startDate string, limit int, fields []string) ([]map[string]interface{}, error) {
+	rows, err := dao.MysqlDB.Table(tableName).
+		Where("timestamp >= ?", startDate).
+		Select("timestamp," + strings.Join(fields, ",")).
+		Limit(limit).
+		Rows()
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	return mysqlx.GetRecords(rows)
 }

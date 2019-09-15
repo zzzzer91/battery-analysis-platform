@@ -22,21 +22,19 @@ func register(r *gin.Engine) {
 	apiV1 := r.Group("/api/v1")
 	apiV1.Use(middleware.PermissionRequired(model.UserTypeCommonUser))
 	{
-		apiV1.GET("/ping", api.Pong)
+		apiV1.GET("/sys-info", api.ShowSysInfo)
 
-		apiV1.GET("/sys-info", api.GetSysInfo)
+		apiV1.GET("/mining/base", api.ShowMiningBaseData)
 
-		apiV1.GET("/mining/base", api.GetBasicData)
-
-		apiV1.POST("/mining/tasks", api.CreateTask)
-		apiV1.GET("/mining/tasks", api.GetTaskList)
-		apiV1.GET("/mining/tasks/:taskId", api.GetTask)
-		apiV1.DELETE("/mining/tasks/:taskId", api.DeleteTask)
+		apiV1.POST("/mining/tasks", api.CreateMiningTask)
+		apiV1.GET("/mining/tasks", api.ListMiningTask)
+		apiV1.GET("/mining/tasks/:taskId", api.ShowMiningTaskData)
+		apiV1.DELETE("/mining/tasks/:taskId", api.DeleteMiningTask)
 	}
 	apiV1NeedAuth := r.Group("/api/v1")
 	apiV1.Use(middleware.PermissionRequired(model.UserTypeSuperUser))
 	{
-		apiV1NeedAuth.GET("/users", api.GetUsers)
+		apiV1NeedAuth.GET("/users", api.ListUser)
 		apiV1NeedAuth.POST("/users", api.CreateUser)
 		apiV1NeedAuth.PUT("/users/:name", api.ModifyUser)
 	}
@@ -44,8 +42,7 @@ func register(r *gin.Engine) {
 	wsV1 := r.Group("/websocket/v1")
 	wsV1.Use(middleware.PermissionRequired(model.UserTypeCommonUser))
 	{
-		wsV1.GET("/echo", websocket.Echo)
-		wsV1.GET("/sys-info", websocket.GetSysInfo)
-		wsV1.GET("/mining/tasks", websocket.GetTaskList)
+		wsV1.GET("/sys-info", websocket.ShowSysInfo)
+		wsV1.GET("/mining/tasks", websocket.ListMiningTask)
 	}
 }

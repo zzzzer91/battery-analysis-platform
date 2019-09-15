@@ -1,26 +1,28 @@
 package auth
 
 import (
-	"battery-analysis-platform/app/main/model"
 	"battery-analysis-platform/app/main/service"
 	"battery-analysis-platform/pkg/jd"
+	"errors"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
 
 func Login(c *gin.Context) {
-	code := jd.ERROR
-	msg := ""
-	var data *model.User
-	var err error
-
 	if c.Request.Method == "GET" {
 		session := sessions.Default(c)
-		userId := session.Get("userId")
-		if userId != nil {
-			data, err = service.LoginByCookie(userId.(int))
-			code, msg = jd.HandleError(err)
+		userName := session.Get("userName")
+		if userName == nil {
+			c.JSON(200, jd.Err(""))
+			return
 		}
+		s := service.UserLoginByCookieService{UserName: userName.(string)}
+		res, err := s.Do()
+		if err != nil {
+			c.AbortWithError(500, err)
+			return
+		}
+		c.JSON(200, res)
 	} else if c.Request.Method == "POST" {
 		var s service.UserLoginService
 		// ShouldBind() 会检测是否满足设置的 bind 标签要求
@@ -28,26 +30,33 @@ func Login(c *gin.Context) {
 			c.AbortWithError(500, err)
 			return
 		}
-
-		data, err = s.Login()
-		code, msg = jd.HandleError(err)
-		if code == jd.SUCCESS {
+		res, err := s.Do()
+		if err != nil {
+			c.AbortWithError(500, err)
+			return
+		}
+		if res.Code == jd.SUCCESS {
 			// 设置Session
 			session := sessions.Default(c)
 			session.Clear()
-			session.Set("userId", data.Id)
-			_ = session.Save()
+			session.Set("userName", s.UserName)
+			session.Save()
 		}
+		c.JSON(200, res)
+	} else {
+		c.AbortWithError(500, errors.New("错误的 Request Method"))
 	}
-
-	res := jd.Build(code, msg, data)
-	c.JSON(200, res)
 }
 
 func Logout(c *gin.Context) {
 	session := sessions.Default(c)
 	session.Clear()
 	_ = session.Save()
-	res := jd.Build(jd.SUCCESS, "", nil)
+	var s service.UserLogoutService
+	res, err := s.Do()
+	if err != nil {
+		c.AbortWithError(500, err)
+		return
+	}
 	c.JSON(200, res)
 }
