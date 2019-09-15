@@ -2,7 +2,7 @@ package service
 
 import (
 	"battery-analysis-platform/app/main/model"
-	"battery-analysis-platform/app/main/producter"
+	"battery-analysis-platform/app/main/producer"
 	"battery-analysis-platform/pkg/checker"
 	"battery-analysis-platform/pkg/jd"
 )
@@ -52,7 +52,7 @@ func (s *MiningTaskCreateService) Do() (*jd.Response, error) {
 		requestParams = s.StartDate + " - " + s.EndDate
 	}
 
-	asyncResult, err := producter.Celery.Delay(
+	asyncResult, err := producer.Celery.Delay(
 		taskComputeModel,
 		s.TaskName, needFields, table.Name, requestParams)
 	if err != nil {
@@ -96,7 +96,7 @@ type MiningTaskDeleteService struct {
 
 func (s *MiningTaskDeleteService) Do() (*jd.Response, error) {
 	// 因为 gocelery 未提供终止任务的 api，这里把终止行为封装成任务，然后调用它
-	_, err := producter.Celery.Delay(taskStopComputeModel, s.Id)
+	_, err := producer.Celery.Delay(taskStopComputeModel, s.Id)
 	if err != nil {
 		return nil, err
 	}
