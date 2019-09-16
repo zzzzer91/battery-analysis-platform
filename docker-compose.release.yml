@@ -1,7 +1,6 @@
 version: '3'
 
 services:
-
   # 数据库
   mysql:
     image: mysql:5.7.26  # 固定版本
@@ -80,7 +79,6 @@ services:
   # nginx
   nginx:
     image: nginx:stable-alpine
-    # network_mode: "host" # 用了 host 网络模式，容器中的端口会会直接映射到 localhost，此时不需要再指定 ports
     ports:
       - 3389:80
     volumes:

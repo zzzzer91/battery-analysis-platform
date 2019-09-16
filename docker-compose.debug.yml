@@ -50,8 +50,6 @@ services:
     # 用了 host 网络模式，容器中的端口会会直接映射到 localhost
     # 因为开发环境 go-app 运行在宿主机
     network_mode: "host"
-    #    ports:
-    #      - 127.0.0.1:3389:3389
     volumes:
       - ${PROJECT_DIR}/conf/nginx.debug.conf:/etc/nginx/nginx.conf:ro
       - ${PROJECT_DIR}/dist:/usr/share/nginx/dist
