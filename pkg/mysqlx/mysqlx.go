@@ -6,22 +6,17 @@ import (
 	"battery-analysis-platform/pkg/jtime"
 	"database/sql"
 	"reflect"
-	"unsafe"
 )
 
 // 这些类型接收 mysql 返回的数据，因为可能为 NULL，所以要用指针
 var (
-	typeFloat32 = reflect.TypeOf((*float32)(toPointer(0)))
-	typeFloat64 = reflect.TypeOf((*float64)(toPointer(0)))
-	typeInt     = reflect.TypeOf((*int)(toPointer(0)))
-	typeString  = reflect.TypeOf((*string)(toPointer("")))
+	typeFloat32 = reflect.TypeOf((*float32)(nil))
+	typeFloat64 = reflect.TypeOf((*float64)(nil))
+	typeInt     = reflect.TypeOf((*int)(nil))
+	typeString  = reflect.TypeOf((*string)(nil))
 	// 自定义时间类型，用于 json 序列化时格式化时间
-	typeJSONTime = reflect.TypeOf(&jtime.JSONTime{})
+	typeJSONTime = reflect.TypeOf((*jtime.JSONTime)(nil))
 )
-
-func toPointer(x interface{}) unsafe.Pointer {
-	return unsafe.Pointer(&x)
-}
 
 func getGoType(databaseTypeName string) (tp reflect.Type) {
 	switch databaseTypeName {

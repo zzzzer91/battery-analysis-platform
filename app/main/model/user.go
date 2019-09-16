@@ -69,6 +69,7 @@ func CreateUser(name, password, comment string) (*User, error) {
 
 func GetUser(name string) (*User, error) {
 	var user User
+	// 找不到会返回 ErrRecordNotFound 错误
 	err := dao.MysqlDB.Where("name = ?", name).First(&user).Error
 	if err != nil {
 		return nil, err
@@ -78,7 +79,7 @@ func GetUser(name string) (*User, error) {
 
 func ListCommonUser() ([]User, error) {
 	var users []User
-	// 找不到返回空列表
+	// 找不到会返回空列表，不会返回错误
 	err := dao.MysqlDB.Where("type != ?", UserTypeSuperUser).Find(&users).Error
 	if err != nil {
 		return nil, err
