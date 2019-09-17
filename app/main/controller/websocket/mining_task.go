@@ -2,36 +2,41 @@ package websocket
 
 import (
 	"battery-analysis-platform/app/main/service"
+	"fmt"
 	"github.com/gin-gonic/gin"
-	"log"
 	"time"
 )
 
 func ListMiningTask(c *gin.Context) {
 	conn, err := upgradeHttpConn(c.Writer, c.Request)
 	if err != nil {
-		log.Println(err)
+		fmt.Println(err)
 		return
 	}
 	defer conn.Close()
 
-	closed := wsClientClosed(conn)
 	for {
-		select {
-		case <-closed:
+		// read 指定时间后超时返回
+		err := conn.SetReadDeadline(time.Now().Add(6 * time.Second))
+		if err != nil {
+			fmt.Println(err)
 			return
-		default:
-			var s service.MiningTaskListService
-			res, err := s.Do()
-			if err != nil {
-				log.Println(err)
-				return
-			}
-			if err := conn.WriteJSON(res); err != nil {
-				log.Println(err)
-				return
-			}
-			time.Sleep(time.Second * 3)
 		}
+		if _, _, err = conn.ReadMessage(); err != nil {
+			fmt.Println(err)
+			return
+		}
+		var s service.MiningTaskListService
+		res, err := s.Do()
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		if err = conn.WriteJSON(res); err != nil {
+			fmt.Println(err)
+			return
+		}
+		// 服务端也做速度控制
+		time.Sleep(time.Second * 3)
 	}
 }
