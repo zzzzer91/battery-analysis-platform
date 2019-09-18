@@ -42,7 +42,7 @@ func register(r *gin.Engine) {
 	wsV1 := r.Group("/websocket/v1")
 	wsV1.Use(middleware.PermissionRequired(model.UserTypeCommonUser))
 	{
-		wsV1.GET("/sys-info", websocket.ShowSysInfo)
+		//wsV1.GET("/sys-info", websocket.ShowSysInfo)
 		wsV1.GET("/mining/tasks", websocket.ListMiningTask)
 	}
 }
