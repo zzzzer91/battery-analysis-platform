@@ -1,4 +1,4 @@
-package worker
+package producer
 
 import (
 	"battery-analysis-platform/pkg/conf"

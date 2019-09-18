@@ -11,7 +11,7 @@ import (
 
 const (
 	miningTaskCollection = "mining_tasks"
-	miningTaskTimeout    = time.Second
+	miningTaskTimeout    = time.Second * 10
 )
 
 // 不包含任务数据，这个 model 用来做任务列表的元素，所以不需要
