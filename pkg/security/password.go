@@ -21,7 +21,7 @@ const (
 
 // 生成加密后密码，源自 Python 的 werkzeug 库
 func GeneratePasswordHash(password, method string, saltLength int) (string, error) {
-	salt := GenerateSalt(saltLength)
+	salt := GenerateRandomString(saltLength)
 	h, actualMethod, err := hashInternal(method, salt, password)
 	return fmt.Sprintf("%s$%s$%s", actualMethod, salt, h), err
 }
