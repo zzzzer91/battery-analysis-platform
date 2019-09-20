@@ -36,6 +36,7 @@ type MiningTask struct {
 //}
 
 func CreateMiningTask(id, name, dataComeFrom, requestParams string) (*MiningTask, error) {
+	collection := dao.MongoDB.Collection(miningTaskCollection)
 	task := &MiningTask{
 		Id:            id,
 		TaskName:      name,
@@ -44,9 +45,7 @@ func CreateMiningTask(id, name, dataComeFrom, requestParams string) (*MiningTask
 		CreateTime:    jtime.NowStr(),
 		TaskStatus:    "执行中",
 	}
-
 	ctx, _ := context.WithTimeout(context.Background(), miningTaskTimeout)
-	collection := dao.MongoDB.Collection(miningTaskCollection)
 	_, err := collection.InsertOne(ctx, &task)
 	if err != nil {
 		return nil, err
@@ -56,17 +55,18 @@ func CreateMiningTask(id, name, dataComeFrom, requestParams string) (*MiningTask
 }
 
 func ListMiningTask() ([]MiningTask, error) {
-	ctx, _ := context.WithTimeout(context.Background(), miningTaskTimeout)
 	collection := dao.MongoDB.Collection(miningTaskCollection)
 	filter := bson.M{}                  // 过滤记录
 	projection := bson.M{"data": false} // 过滤字段
 	sort := bson.M{"createTime": -1}    // 结果排序
+	ctx, _ := context.WithTimeout(context.Background(), miningTaskTimeout)
 	cur, err := collection.Find(ctx, filter, options.Find().SetProjection(projection).SetSort(sort))
 	if err != nil {
 		return nil, err
 	}
 	// 为了使其找不到时返回空列表，而不是 nil
 	records := make([]MiningTask, 0)
+	ctx, _ = context.WithTimeout(context.Background(), miningTaskTimeout)
 	for cur.Next(ctx) {
 		result := MiningTask{}
 		err := cur.Decode(&result)
@@ -80,7 +80,6 @@ func ListMiningTask() ([]MiningTask, error) {
 }
 
 func GetMiningTaskData(id string) (bson.A, error) {
-	ctx, _ := context.WithTimeout(context.Background(), miningTaskTimeout)
 	collection := dao.MongoDB.Collection(miningTaskCollection)
 	filter := bson.M{"_id": id}
 	projection := bson.M{"_id": false, "data": true} // 注意 _id 默认会返回，需要手动过滤
@@ -95,6 +94,7 @@ func GetMiningTaskData(id string) (bson.A, error) {
 	// 这种方法 JSON 序列化时符合直觉，推荐使用；
 	// 若要代表一个列表，类似 Python 中 list，不限定类型，使用 bson.A，即 []interface{}。
 	var result bson.M
+	ctx, _ := context.WithTimeout(context.Background(), miningTaskTimeout)
 	err := collection.FindOne(ctx, filter, options.FindOne().
 		SetProjection(projection)).Decode(&result)
 	if err != nil {
@@ -104,9 +104,9 @@ func GetMiningTaskData(id string) (bson.A, error) {
 }
 
 func DeleteMiningTask(id string) (int64, error) {
-	ctx, _ := context.WithTimeout(context.Background(), miningTaskTimeout)
 	collection := dao.MongoDB.Collection(miningTaskCollection)
 	filter := bson.M{"_id": id}
+	ctx, _ := context.WithTimeout(context.Background(), miningTaskTimeout)
 	ret, err := collection.DeleteOne(ctx, filter)
 	if err != nil {
 		return 0, err
