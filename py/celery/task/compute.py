@@ -64,7 +64,7 @@ def compute_model(self,
     collection = mongo['mining_tasks']
     if rows.rowcount == 0:
         collection.update_one(
-            {'_id': task_id},
+            {'taskId': task_id},
             {'$set': {
                 'taskStatus': '失败',
                 'comment': '无可用数据',
@@ -81,7 +81,7 @@ def compute_model(self,
     used_time = round(time.perf_counter() - start, 2)
 
     collection.update_one(
-        {'_id': task_id},
+        {'taskId': task_id},
         {'$set': {
             'taskStatus': '完成',
             'comment': f'用时 {used_time}s',

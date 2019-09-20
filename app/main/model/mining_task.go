@@ -10,13 +10,13 @@ import (
 )
 
 const (
-	miningTaskCollection = "mining_tasks"
-	miningTaskTimeout    = time.Second * 10
+	mongoCtxTimeout            = time.Second * 10
+	mongoCollectionMiningTasks = "mining_tasks"
 )
 
 // 不包含任务数据，这个 model 用来做任务列表的元素，所以不需要
 type MiningTask struct {
-	Id            string `json:"taskId" bson:"_id"`
+	TaskId        string `json:"taskId" bson:"taskId"`
 	TaskName      string `json:"taskName" bson:"taskName"`
 	DataComeFrom  string `json:"dataComeFrom" bson:"dataComeFrom"`
 	RequestParams string `json:"requestParams" bson:"requestParams"`
@@ -36,16 +36,16 @@ type MiningTask struct {
 //}
 
 func CreateMiningTask(id, name, dataComeFrom, requestParams string) (*MiningTask, error) {
-	collection := dao.MongoDB.Collection(miningTaskCollection)
+	collection := dao.MongoDB.Collection(mongoCollectionMiningTasks)
 	task := &MiningTask{
-		Id:            id,
+		TaskId:        id,
 		TaskName:      name,
 		DataComeFrom:  dataComeFrom,
 		RequestParams: requestParams,
 		CreateTime:    jtime.NowStr(),
 		TaskStatus:    "执行中",
 	}
-	ctx, _ := context.WithTimeout(context.Background(), miningTaskTimeout)
+	ctx, _ := context.WithTimeout(context.Background(), mongoCtxTimeout)
 	_, err := collection.InsertOne(ctx, &task)
 	if err != nil {
 		return nil, err
@@ -55,18 +55,19 @@ func CreateMiningTask(id, name, dataComeFrom, requestParams string) (*MiningTask
 }
 
 func ListMiningTask() ([]MiningTask, error) {
-	collection := dao.MongoDB.Collection(miningTaskCollection)
+	collection := dao.MongoDB.Collection(mongoCollectionMiningTasks)
 	filter := bson.M{}                  // 过滤记录
 	projection := bson.M{"data": false} // 过滤字段
 	sort := bson.M{"createTime": -1}    // 结果排序
-	ctx, _ := context.WithTimeout(context.Background(), miningTaskTimeout)
+	// 注意 ctx 不能几个连接复用
+	ctx, _ := context.WithTimeout(context.Background(), mongoCtxTimeout)
 	cur, err := collection.Find(ctx, filter, options.Find().SetProjection(projection).SetSort(sort))
 	if err != nil {
 		return nil, err
 	}
 	// 为了使其找不到时返回空列表，而不是 nil
 	records := make([]MiningTask, 0)
-	ctx, _ = context.WithTimeout(context.Background(), miningTaskTimeout)
+	ctx, _ = context.WithTimeout(context.Background(), mongoCtxTimeout)
 	for cur.Next(ctx) {
 		result := MiningTask{}
 		err := cur.Decode(&result)
@@ -80,8 +81,8 @@ func ListMiningTask() ([]MiningTask, error) {
 }
 
 func GetMiningTaskData(id string) (bson.A, error) {
-	collection := dao.MongoDB.Collection(miningTaskCollection)
-	filter := bson.M{"_id": id}
+	collection := dao.MongoDB.Collection(mongoCollectionMiningTasks)
+	filter := bson.M{"taskId": id}
 	projection := bson.M{"_id": false, "data": true} // 注意 _id 默认会返回，需要手动过滤
 	// 注意 bson.E 不能用来映射 mongo 中的 map，
 	// 要么使用 bson.D，采用 []bson.E 代表一个字典，其中 bson.E 是 struct，有 key 和 value 字段，
@@ -94,7 +95,7 @@ func GetMiningTaskData(id string) (bson.A, error) {
 	// 这种方法 JSON 序列化时符合直觉，推荐使用；
 	// 若要代表一个列表，类似 Python 中 list，不限定类型，使用 bson.A，即 []interface{}。
 	var result bson.M
-	ctx, _ := context.WithTimeout(context.Background(), miningTaskTimeout)
+	ctx, _ := context.WithTimeout(context.Background(), mongoCtxTimeout)
 	err := collection.FindOne(ctx, filter, options.FindOne().
 		SetProjection(projection)).Decode(&result)
 	if err != nil {
@@ -104,9 +105,9 @@ func GetMiningTaskData(id string) (bson.A, error) {
 }
 
 func DeleteMiningTask(id string) (int64, error) {
-	collection := dao.MongoDB.Collection(miningTaskCollection)
-	filter := bson.M{"_id": id}
-	ctx, _ := context.WithTimeout(context.Background(), miningTaskTimeout)
+	collection := dao.MongoDB.Collection(mongoCollectionMiningTasks)
+	filter := bson.M{"taskId": id}
+	ctx, _ := context.WithTimeout(context.Background(), mongoCtxTimeout)
 	ret, err := collection.DeleteOne(ctx, filter)
 	if err != nil {
 		return 0, err
