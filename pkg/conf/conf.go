@@ -33,6 +33,12 @@ type MongoConf struct {
 	Database string `yaml:"database"`
 }
 
+type RedisConf struct {
+	Uri      string `yaml:"uri"`
+	DB       int    `yaml:"db"`
+	Password string `yaml:"password"`
+}
+
 type CeleryConf struct {
 	BrokerUri  string `yaml:"brokerUri"`
 	BackendUri string `yaml:"backendUri"`
