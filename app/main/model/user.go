@@ -55,16 +55,17 @@ func (user *User) CheckStatusOk() bool {
 }
 
 func CreateUser(name, password, comment string) (*User, error) {
-	user := &User{Name: name, Comment: comment}
+	user := User{Name: name, Comment: comment}
 	err := user.SetPassword(password)
 	if err != nil {
 		return nil, err
 	}
-	err = db.Gorm.Create(user).Error
+	// 这里必须传入指针
+	err = db.Gorm.Create(&user).Error
 	if err != nil {
 		return nil, err
 	}
-	return user, nil
+	return &user, nil
 }
 
 func GetUser(name string) (*User, error) {

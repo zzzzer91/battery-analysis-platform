@@ -37,7 +37,7 @@ type MiningTask struct {
 
 func CreateMiningTask(id, name, dataComeFrom, requestParams string) (*MiningTask, error) {
 	collection := db.Mongo.Collection(mongoCollectionMiningTasks)
-	task := &MiningTask{
+	task := MiningTask{
 		TaskId:        id,
 		TaskName:      name,
 		DataComeFrom:  dataComeFrom,
@@ -46,12 +46,12 @@ func CreateMiningTask(id, name, dataComeFrom, requestParams string) (*MiningTask
 		TaskStatus:    "执行中",
 	}
 	ctx, _ := context.WithTimeout(context.Background(), mongoCtxTimeout)
-	_, err := collection.InsertOne(ctx, &task)
+	_, err := collection.InsertOne(ctx, task)
 	if err != nil {
 		return nil, err
 	}
 
-	return task, nil
+	return &task, nil
 }
 
 func ListMiningTask() ([]MiningTask, error) {
