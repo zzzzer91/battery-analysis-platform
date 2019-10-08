@@ -1,7 +1,7 @@
 package model
 
 import (
-	"battery-analysis-platform/app/main/dao"
+	"battery-analysis-platform/app/main/db"
 	"context"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -9,10 +9,8 @@ import (
 )
 
 func init() {
-	dao.MysqlDB.AutoMigrate(&User{})
-
 	// 确保 mongo 索引
-	collection := dao.MongoDB.Collection(mongoCollectionMiningTasks)
+	collection := db.Mongo.Collection(mongoCollectionMiningTasks)
 	ctx, _ := context.WithTimeout(context.Background(), mongoCtxTimeout)
 	_, err := collection.Indexes().CreateOne(
 		ctx,

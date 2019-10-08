@@ -1,7 +1,7 @@
 package model
 
 import (
-	"battery-analysis-platform/app/main/dao"
+	"battery-analysis-platform/app/main/db"
 	"battery-analysis-platform/pkg/jtime"
 	"context"
 	"go.mongodb.org/mongo-driver/bson"
@@ -36,7 +36,7 @@ type MiningTask struct {
 //}
 
 func CreateMiningTask(id, name, dataComeFrom, requestParams string) (*MiningTask, error) {
-	collection := dao.MongoDB.Collection(mongoCollectionMiningTasks)
+	collection := db.Mongo.Collection(mongoCollectionMiningTasks)
 	task := &MiningTask{
 		TaskId:        id,
 		TaskName:      name,
@@ -55,7 +55,7 @@ func CreateMiningTask(id, name, dataComeFrom, requestParams string) (*MiningTask
 }
 
 func ListMiningTask() ([]MiningTask, error) {
-	collection := dao.MongoDB.Collection(mongoCollectionMiningTasks)
+	collection := db.Mongo.Collection(mongoCollectionMiningTasks)
 	filter := bson.M{}                  // 过滤记录
 	projection := bson.M{"data": false} // 过滤字段
 	sort := bson.M{"createTime": -1}    // 结果排序
@@ -81,7 +81,7 @@ func ListMiningTask() ([]MiningTask, error) {
 }
 
 func GetMiningTaskData(id string) (bson.A, error) {
-	collection := dao.MongoDB.Collection(mongoCollectionMiningTasks)
+	collection := db.Mongo.Collection(mongoCollectionMiningTasks)
 	filter := bson.M{"taskId": id}
 	projection := bson.M{"_id": false, "data": true} // 注意 _id 默认会返回，需要手动过滤
 	// 注意 bson.E 不能用来映射 mongo 中的 map，
@@ -105,7 +105,7 @@ func GetMiningTaskData(id string) (bson.A, error) {
 }
 
 func DeleteMiningTask(id string) (int64, error) {
-	collection := dao.MongoDB.Collection(mongoCollectionMiningTasks)
+	collection := db.Mongo.Collection(mongoCollectionMiningTasks)
 	filter := bson.M{"taskId": id}
 	ctx, _ := context.WithTimeout(context.Background(), mongoCtxTimeout)
 	ret, err := collection.DeleteOne(ctx, filter)

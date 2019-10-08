@@ -1,7 +1,7 @@
 package model
 
 import (
-	"battery-analysis-platform/app/main/dao"
+	"battery-analysis-platform/app/main/db"
 	"battery-analysis-platform/pkg/jtime"
 	"battery-analysis-platform/pkg/security"
 )
@@ -60,7 +60,7 @@ func CreateUser(name, password, comment string) (*User, error) {
 	if err != nil {
 		return nil, err
 	}
-	err = dao.MysqlDB.Create(user).Error
+	err = db.Gorm.Create(user).Error
 	if err != nil {
 		return nil, err
 	}
@@ -70,7 +70,7 @@ func CreateUser(name, password, comment string) (*User, error) {
 func GetUser(name string) (*User, error) {
 	var user User
 	// 找不到会返回 ErrRecordNotFound 错误
-	err := dao.MysqlDB.Where("name = ?", name).First(&user).Error
+	err := db.Gorm.Where("name = ?", name).First(&user).Error
 	if err != nil {
 		return nil, err
 	}
@@ -80,7 +80,7 @@ func GetUser(name string) (*User, error) {
 func ListCommonUser() ([]User, error) {
 	var users []User
 	// 找不到会返回空列表，不会返回错误
-	err := dao.MysqlDB.Where("type != ?", UserTypeSuperUser).Find(&users).Error
+	err := db.Gorm.Where("type != ?", UserTypeSuperUser).Find(&users).Error
 	if err != nil {
 		return nil, err
 	}
@@ -88,5 +88,5 @@ func ListCommonUser() ([]User, error) {
 }
 
 func SaveUserChange(user *User) error {
-	return dao.MysqlDB.Save(user).Error
+	return db.Gorm.Save(user).Error
 }

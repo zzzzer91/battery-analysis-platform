@@ -1,7 +1,7 @@
 package model
 
 import (
-	"battery-analysis-platform/app/main/dao"
+	"battery-analysis-platform/app/main/db"
 	"battery-analysis-platform/pkg/mysqlx"
 	"strings"
 )
@@ -67,7 +67,7 @@ func init() {
 }
 
 func GetBatteryData(tableName, startDate string, limit int, fields []string) ([]map[string]interface{}, error) {
-	rows, err := dao.MysqlDB.Table(tableName).
+	rows, err := db.Gorm.Table(tableName).
 		Where("timestamp >= ?", startDate).
 		Select("timestamp," + strings.Join(fields, ",")).
 		Limit(limit).

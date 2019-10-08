@@ -1,4 +1,4 @@
-package dao
+package db
 
 import (
 	"battery-analysis-platform/app/main/conf"
@@ -6,12 +6,12 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-var MongoDB *mongo.Database
+var Mongo *mongo.Database
 
 func init() {
 	d, err := db.InitMongo(&conf.App.Mongo)
 	if err != nil {
 		panic(err)
 	}
-	MongoDB = d
+	Mongo = d
 }
