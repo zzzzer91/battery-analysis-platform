@@ -14,10 +14,11 @@ import (
 )
 
 const (
-	letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-	// 6 bits 最多代表 64 个不同索引，所以 letterBytes 长度不能大于 64
+	// url safe 的 base64 支持的字符，64 个
+	letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_"
+	// 6 bits 代表 64 个不同索引，所以 letterBytes 长度必须为 64
 	letterIdxBits = 6
-	// All 1-bits, as many as letterIdxBits
+	// 先位移，然后减 1
 	letterIdxMask = 1<<letterIdxBits - 1
 	// 生成一个 int64,有 63 个 有效 bit
 	letterIdxMax = 63 / letterIdxBits
@@ -30,21 +31,14 @@ func GenerateRandomString(n int) string {
 		panic("String length must be positive")
 	}
 	b := make([]byte, n)
-	// A src.Int63() generates 63 random bits, enough for letterIdxMax characters!
-	for i, cache, remain := n-1, src.Int63(), letterIdxMax; i >= 0; {
-		// 生成的随机数用完了，重新生成
+	for i, cache, remain := n-1, src.Int63(), letterIdxMax; i >= 0; i-- {
 		if remain == 0 {
+			// 生成的随机数用完了，重新生成
 			cache, remain = src.Int63(), letterIdxMax
 		}
-		// 因为生成的 idx 大小范围是 0 ～ 63，而 letterBytes 长度可能小于 63，
-		// 所以大于这个长度的要忽略
-		if idx := int(cache & letterIdxMask); idx < len(letterBytes) {
-			b[i] = letterBytes[idx]
-			i--
-		}
+		b[i] = letterBytes[cache&letterIdxMask]
 		cache >>= letterIdxBits
 		remain--
 	}
-
 	return conv.Bytes2string(b)
 }
