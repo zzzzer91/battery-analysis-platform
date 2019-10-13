@@ -9,7 +9,7 @@ import (
 )
 
 func init() {
-	// 确保 mongo 索引
+	// 确保创建 mongo 索引
 	collection := db.Mongo.Collection(mongoCollectionMiningTasks)
 	ctx, _ := context.WithTimeout(context.Background(), mongoCtxTimeout)
 	_, err := collection.Indexes().CreateOne(

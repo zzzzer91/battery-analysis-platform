@@ -21,17 +21,17 @@ const (
 )
 
 type User struct {
-	Id       int    `json:"-" gorm:"primary_key"`
-	Name     string `json:"userName" gorm:"type:char(16);unique_index;not null"`
-	Password string `json:"-" gorm:"type:varchar(128);not null"`
-	Type     int    `json:"userType" gorm:"type:tinyint;not null;default:0"`
+	Id       int    `json:"-"`
+	Name     string `json:"userName"`
+	Password string `json:"-"`
+	Type     int    `json:"userType"`
 	// *string 让其 json 时可以返回 null，否则只能返回字符串零值
-	AvatarName    *string         `json:"avatarName" gorm:"type:varchar(256)"`
-	LastLoginTime *jtime.JSONTime `json:"lastLoginTime" gorm:"type:datetime"`
-	Comment       string          `json:"comment" gorm:"type:varchar(64)"`
-	LoginCount    int             `json:"loginCount" gorm:"type:integer;not null;default:0"`
-	Status        int             `json:"userStatus" gorm:"type:tinyint;not null;default:1"`
-	CreateTime    *jtime.JSONTime `json:"createTime" gorm:"type:datetime;default:current_timestamp"`
+	AvatarName    *string         `json:"avatarName"`
+	LastLoginTime *jtime.JSONTime `json:"lastLoginTime"`
+	Comment       string          `json:"comment"`
+	LoginCount    int             `json:"loginCount"`
+	Status        int             `json:"userStatus"`
+	CreateTime    *jtime.JSONTime `json:"createTime"`
 }
 
 // SetPassword 设置密码
