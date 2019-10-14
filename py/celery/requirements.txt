@@ -4,3 +4,6 @@ pymysql
 pyyaml
 redis
 sqlalchemy
+numpy
+pandas
+scipy

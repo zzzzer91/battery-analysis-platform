@@ -1,27 +1,37 @@
 import time
 
-from sqlalchemy import text
+import pandas as pd
 
 from .celery import app
 from .db import mysql, mongo
-from .algorithm import compute_battery_statistic
-from .algorithm import compute_charging_process
-from .algorithm import compute_working_condition
+from .algorithm import compute_battery_statistic, \
+    compute_charging_process, compute_working_condition, \
+    compute_correlation
+
+
+def _gen_sql(need_fields: str, table_name: str, request_params: str) -> str:
+    """防 sql 注入的工作由创建任务者检查"""
+
+    if request_params == '所有数据':
+        sql = f'SELECT {need_fields} FROM {table_name}'
+    else:
+        start_date, end_date = request_params.split(' - ')
+        sql = f'SELECT {need_fields} FROM {table_name} ' \
+              f'WHERE timestamp >= "{start_date}" and timestamp <= "{end_date}"'
+    return sql
 
 
 # `ignore_result=True` 该任务不会将结果保存在 redis，提高性能
 @app.task(name='task.compute_model', bind=True, ignore_result=True)
 def compute_model(self,
                   task_name: str,
-                  # 这三个参数传给 SQl 语句
-                  need_fields: str,
+                  # 这几个参数传给 SQl 语句
                   table_name: str,
                   request_params: str) -> None:
     """根据 task_name，选择任务交给 celery 执行。
 
     :param self: Celery 装饰器中添加 `bind=True` 参数。告诉 Celery 发送一个 self 参数到该函数，
                  可以获取一些任务信息，或更新用 `self.update_stat()` 任务状态。
-    :param need_fields: 计算需要的字段。
     :param task_name: 任务名，中文。
     :param table_name: 从哪张表查询数据，表名。
     :param request_params: 数据查询起止日期，格式有：["所有数据"] 和 ["起 - 止"]。
@@ -30,39 +40,48 @@ def compute_model(self,
     # 用 celery 产生的 id 做 mongo 主键
     task_id = self.request.id
 
-    if task_name == '充电过程':
-        compute_alg = compute_charging_process
-    elif task_name == '工况':
-        compute_alg = compute_working_condition
-    elif task_name == '电池统计':
-        compute_alg = compute_battery_statistic
-    else:
-        return
-
-    start = time.perf_counter()
+    collection = mongo['mining_tasks']
 
     # 从连接池取一个连接
     mysql_conn = mysql.connect()
-    if request_params == '所有数据':
-        rows = mysql_conn.execute(
-            'SELECT '
-            f'{need_fields} '
-            f'FROM {table_name}'
-        )
-    else:
-        start_date, end_date = request_params.split(' - ')
-        rows = mysql_conn.execute(
-            text(
-                'SELECT '
-                f'{need_fields} '
-                f'FROM {table_name} '
-                'WHERE timestamp >= :start_date and timestamp <= :end_date'
-            ),
-            {'start_date': start_date, 'end_date': end_date}
-        )
 
-    collection = mongo['mining_tasks']
-    if rows.rowcount == 0:
+    start = time.perf_counter()
+
+    # 处理数据
+    data = None
+    if task_name == '充电过程':
+        # needFields 字符串中字段的顺序不能变，追加新字段，必须放在最后
+        need_fields = 'bty_t_vol, bty_t_curr, battery_soc, id, byt_ma_sys_state'
+        sql = _gen_sql(need_fields, table_name, request_params)
+        # sqlalchemy 默认返回 row 是元组，可以用 `dict(row)` 转换成字典
+        rows = mysql_conn.execute(sql)
+        if rows.rowcount != 0:
+            data = compute_charging_process(rows)
+    elif task_name == '工况':
+        need_fields = 'timestamp, bty_t_curr, met_spd'
+        sql = _gen_sql(need_fields, table_name, request_params)
+        rows = mysql_conn.execute(sql)
+        if rows.rowcount != 0:
+            data = compute_working_condition(rows)
+    elif task_name == '电池统计':
+        need_fields = 'max_t_s_b_num, min_t_s_b_num'
+        sql = _gen_sql(need_fields, table_name, request_params)
+        rows = mysql_conn.execute(sql)
+        if rows.rowcount != 0:
+            data = compute_battery_statistic(rows)
+    elif task_name == 'pearson相关系数':
+        need_fields = 'bty_t_vol,bty_t_curr,met_spd,battery_soc,' \
+                      's_b_max_t,s_b_min_t,s_b_max_v,s_b_min_v'
+        sql = _gen_sql(need_fields, table_name, request_params)
+        rows = pd.read_sql(sql, con=mysql_conn).corr('pearson').values.tolist()
+        data = compute_correlation(rows)
+    else:
+        return
+
+    # 放回连接
+    mysql_conn.close()
+
+    if data is None or len(data) == 0:
         collection.update_one(
             {'taskId': task_id},
             {'$set': {
@@ -70,24 +89,16 @@ def compute_model(self,
                 'comment': '无可用数据',
             }}
         )
-        return
-
-    # 处理数据
-    # sqlalchemy 默认返回 row 是元组，可以用 `dict(row)` 转换成字典
-    data = compute_alg(rows)
-    # 放回连接
-    mysql_conn.close()
-
-    used_time = round(time.perf_counter() - start, 2)
-
-    collection.update_one(
-        {'taskId': task_id},
-        {'$set': {
-            'taskStatus': '完成',
-            'comment': f'用时 {used_time}s',
-            'data': data
-        }}
-    )
+    else:
+        used_time = round(time.perf_counter() - start, 2)
+        collection.update_one(
+            {'taskId': task_id},
+            {'$set': {
+                'taskStatus': '完成',
+                'comment': f'用时 {used_time}s',
+                'data': data
+            }}
+        )
 
 
 @app.task(name='task.stop_compute_model', ignore_result=True)

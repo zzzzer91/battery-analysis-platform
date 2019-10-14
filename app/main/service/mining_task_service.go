@@ -23,22 +23,15 @@ type MiningTaskCreateService struct {
 }
 
 func (s *MiningTaskCreateService) Do() (*jd.Response, error) {
-	// needFields 的顺序不能变，追加新字段，必须放在最后
-	var needFields string
-	switch s.TaskName {
-	case "充电过程":
-		needFields = "bty_t_vol, bty_t_curr, battery_soc, id, byt_ma_sys_state"
-	case "工况":
-		needFields = "timestamp, bty_t_curr, met_spd"
-	case "电池统计":
-		needFields = "max_t_s_b_num, min_t_s_b_num"
-	default:
+	if _, ok := model.MiningSupportTaskSet[s.TaskName]; !ok {
 		return jd.Err("参数 TaskName 不合法"), nil
 	}
+
 	table, ok := model.BatteryMysqlNameToTable[s.DataComeFrom]
 	if !ok {
 		return jd.Err("参数 dataComeFrom 不合法"), nil
 	}
+
 	var requestParams string
 	if s.AllData {
 		requestParams = "所有数据"
@@ -54,7 +47,7 @@ func (s *MiningTaskCreateService) Do() (*jd.Response, error) {
 
 	asyncResult, err := producer.Celery.Delay(
 		taskComputeModel,
-		s.TaskName, needFields, table.Name, requestParams)
+		s.TaskName, table.Name, requestParams)
 	if err != nil {
 		return nil, err
 	}

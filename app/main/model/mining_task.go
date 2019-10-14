@@ -14,6 +14,14 @@ const (
 	mongoCollectionMiningTasks = "mining_tasks"
 )
 
+// 过滤不合法任务
+var MiningSupportTaskSet = map[string]struct{}{
+	"充电过程":        {},
+	"工况":          {},
+	"电池统计":        {},
+	"pearson相关系数": {},
+}
+
 // 不包含任务数据，这个 model 用来做任务列表的元素，所以不需要
 type MiningTask struct {
 	TaskId        string `json:"taskId" bson:"taskId"`
@@ -24,16 +32,6 @@ type MiningTask struct {
 	TaskStatus    string `json:"taskStatus" bson:"taskStatus"`
 	Comment       string `json:"comment" bson:"comment"`
 }
-
-//var MiningSupportTaskSet map[string]struct{}
-//
-//func init() {
-//	MiningSupportTaskSet = map[string]struct{}{
-//		"充电过程": {},
-//		"工况":   {},
-//		"电池统计": {},
-//	}
-//}
 
 func CreateMiningTask(id, name, dataComeFrom, requestParams string) (*MiningTask, error) {
 	collection := db.Mongo.Collection(mongoCollectionMiningTasks)
