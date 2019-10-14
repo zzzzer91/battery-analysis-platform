@@ -70,7 +70,7 @@ func (s *MiningTaskCreateService) Do() (*jd.Response, error) {
 type MiningTaskListService struct {
 }
 
-func (s *MiningTaskListService) Do() (*jd.Response, error) {
+func (MiningTaskListService) Do() (*jd.Response, error) {
 	data, err := model.ListMiningTask()
 	if err != nil {
 		return nil, err
