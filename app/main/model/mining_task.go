@@ -6,12 +6,6 @@ import (
 	"context"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"time"
-)
-
-const (
-	mongoCtxTimeout            = time.Second * 10
-	mongoCollectionMiningTasks = "mining_tasks"
 )
 
 // 过滤不合法任务
