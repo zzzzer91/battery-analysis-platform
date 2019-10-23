@@ -49,13 +49,13 @@ services:
 
   # go-app
   go-app-main:
-    image: alpine:3.10
+    build:
+      context: ./go
+      dockerfile: ../docker/go-app-main/Dockerfile
     environment:
-      - CONF_FILE=/conf/app.yml
-    command: "./app"
+      - CONF_FILE=/root/conf/app.yml
     volumes:
-      - ./build/main/app:/app
-      - ./conf/app.release.yml:/conf/app.yml:ro
+      - ./conf/app.release.yml:/root/conf/app.yml:ro
     depends_on:
       - mysql
       - mongo
@@ -63,13 +63,16 @@ services:
 
   # py-app
   py-app-celery:
-    build: ./py/celery
+    build:
+      context: ./py
+      dockerfile: ../docker/py-app-celery/Dockerfile
     environment:
-      - CONF_FILE=/conf/app.yml
-    command: python3 -m celery -A task worker --concurrency=2
+      - CONF_FILE=/root/conf/app.yml
+    command: sh run.sh
     volumes:
-      - ./py/celery/task:/code/task
-      - ./conf/app.release.yml:/conf/app.yml:ro
+      - ./py/celery/task:/root/task
+      - ./py/celery/run.sh:/root/run.sh
+      - ./conf/app.release.yml:/root/conf/app.yml:ro
     depends_on:
       - mysql
       - mongo
@@ -82,7 +85,7 @@ services:
       - 3389:80
     volumes:
       - ${PROJECT_DIR}/conf/nginx.release.conf:/etc/nginx/nginx.conf:ro
-      - ${PROJECT_DIR}/resource/dist:/usr/share/nginx/dist
-      - ${PROJECT_DIR}/resource/media:/usr/share/nginx/media
+      - ${PROJECT_DIR}/dist:/usr/share/nginx/dist
+      - ${PROJECT_DIR}/media:/usr/share/nginx/media
     depends_on:
       - go-app-main
