@@ -66,10 +66,9 @@ services:
     build: ./py/celery
     environment:
       - CONF_FILE=/conf/app.yml
-    command: sh run-celery.sh
+    command: python3 -m celery -A task worker --concurrency=2
     volumes:
       - ./py/celery/task:/code/task
-      - ./py/celery/run-celery.sh:/code/run-celery.sh
       - ./conf/app.release.yml:/conf/app.yml:ro
     depends_on:
       - mysql
@@ -83,7 +82,7 @@ services:
       - 3389:80
     volumes:
       - ${PROJECT_DIR}/conf/nginx.release.conf:/etc/nginx/nginx.conf:ro
-      - ${PROJECT_DIR}/dist:/usr/share/nginx/dist
-      - ${PROJECT_DIR}/media:/usr/share/nginx/media
+      - ${PROJECT_DIR}/resource/dist:/usr/share/nginx/dist
+      - ${PROJECT_DIR}/resource/media:/usr/share/nginx/media
     depends_on:
       - go-app-main
