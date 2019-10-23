@@ -1,11 +1,14 @@
 .idea/
-instance/
+.vscode/
+node_modules/
 database/
 __pycache__/
 build/
+resource/
 dist/
 media/
 
+.DS_Store
 go.sum
 .env
 app.yml
@@ -14,3 +17,5 @@ app.release.yml
 nginx.conf
 nginx.debug.conf
 nginx.release.conf
+
+frontend
