@@ -17,5 +17,3 @@ app.release.yml
 nginx.conf
 nginx.debug.conf
 nginx.release.conf
-
-frontend

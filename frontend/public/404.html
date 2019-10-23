@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 Not Found</title>
+    <style>
+    body {
+      font-family: Seravek, 'Myriad Pro', Myriad, 'Open Sans', 'Helvetica Neue', Helvetica, Arial, 'Arial Black', sans-serif;
+      color: #fff;
+      padding: 0;
+      margin: 0;
+      transition: all 1800ms ease;
+    }
+    a {
+      color: #fff;
+      text-decoration: none;
+    }
+    a:hover {
+      border-bottom: 3px solid #fff;
+    }
+    p {
+      font-size: 70px;
+      text-align: center;
+      position: relative;
+      margin: 18% auto;
+    }
+
+    </style>
+</head>
+
+<body style="background-color: #111;">
+<p id="welcome">
+    <span>这个又大又闪的彩蛋送给<a href="/">你</a></span>
+</p>
+
+<script>
+    const listOfColors = ['#12CD55', '#2089DA', '#DE4D00', '#ffcc00'];
+    let currentColorIndex = 0;
+    const moveToNextColor = function () {
+      if (currentColorIndex === listOfColors.length - 1) {
+        currentColorIndex = 0;
+      } else {
+        currentColorIndex += 1;
+      }
+    };
+    window.setTimeout(function () {
+      document.getElementById('welcome').style.opacity = 1;
+      window.setTimeout(function () {
+        window.setInterval(function () {
+          document.getElementsByTagName('body')[0].style.backgroundColor = listOfColors[currentColorIndex];
+          document.getElementsByTagName('a')[0].style.backgroundColor = listOfColors[currentColorIndex];
+          moveToNextColor();
+        }, 2000);
+      }, 800);
+    }, 200);
+
+</script>
+</body>
+</html>

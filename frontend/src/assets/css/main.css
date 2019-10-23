@@ -1,0 +1,66 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+#app {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: 'PingFang SC', "Helvetica Neue", Helvetica, "microsoft yahei", arial, STHeiTi, sans-serif;
+}
+
+a {
+  text-decoration: none
+}
+
+.crumbs {
+  margin: 10px 0;
+}
+
+.container {
+  padding: 30px;
+  background: #fff;
+  border: 1px solid #DCDFE6;
+  box-shadow: 0 2px 4px 0 rgba(0,0,0,.12), 0 0 6px 0 rgba(0,0,0,.04);
+  min-height: 600px;
+}
+
+.mgl10 {
+  margin-left: 10px;
+}
+
+.mgl20 {
+  margin-left: 20px;
+}
+
+.mrg10 {
+  margin-right: 10px;
+}
+
+.mgr20 {
+  margin-right: 20px;
+}
+
+.mgb20 {
+  margin-bottom: 20px;
+}
+
+.mgt20 {
+  margin-top: 20px;
+}
+
+.move-enter-active,
+.move-leave-active {
+  transition: opacity .5s;
+}
+
+.move-enter,
+.move-leave {
+  opacity: 0;
+}
