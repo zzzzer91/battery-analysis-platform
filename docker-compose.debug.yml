@@ -52,5 +52,5 @@ services:
     network_mode: "host"
     volumes:
       - ./conf/nginx.debug.conf:/etc/nginx/nginx.conf:ro
-      - ./dist:/usr/share/nginx/dist
-      - ./media:/usr/share/nginx/media
+      - ./resource/dist:/usr/share/nginx/dist
+      - ./resource/media:/usr/share/nginx/media
