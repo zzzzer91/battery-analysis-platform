@@ -51,9 +51,11 @@ services:
   go-app-main:
     build:
       context: ./go
+      # 相对于 context
       dockerfile: ../docker/go-app-main/Dockerfile
     environment:
       - CONF_FILE=/root/conf/app.yml
+    command: ./app
     volumes:
       - ./conf/app.release.yml:/root/conf/app.yml:ro
     depends_on:
@@ -68,10 +70,9 @@ services:
       dockerfile: ../docker/py-app-celery/Dockerfile
     environment:
       - CONF_FILE=/root/conf/app.yml
-    command: sh run.sh
+    command: python3 -m celery -A task worker --concurrency=2
     volumes:
-      - ./py/celery/task:/root/task
-      - ./py/celery/run.sh:/root/run.sh
+      - ./py/celery/task:/root/task:ro
       - ./conf/app.release.yml:/root/conf/app.yml:ro
     depends_on:
       - mysql
@@ -84,8 +85,8 @@ services:
     ports:
       - 3389:80
     volumes:
-      - ${PROJECT_DIR}/conf/nginx.release.conf:/etc/nginx/nginx.conf:ro
-      - ${PROJECT_DIR}/dist:/usr/share/nginx/dist
-      - ${PROJECT_DIR}/media:/usr/share/nginx/media
+      - ./conf/nginx.release.conf:/etc/nginx/nginx.conf:ro
+      - ./resource/dist:/usr/share/nginx/dist:ro
+      - ./resource/media:/usr/share/nginx/media
     depends_on:
       - go-app-main

@@ -92,7 +92,7 @@ $ ./init-project.sh
 启动数据库和 Nginx：
 
 ```bash
-$ docker-compose -f docker-compose.debug.yml up
+$ ./script/run-debug.sh
 ```
 
 启动 py-app-celery：
@@ -115,7 +115,7 @@ $ docker-compose -f docker-compose.debug.yml up
 只需执行：
 
 ```bash
-$ docker-compose -f docker-compose.release.yml up
+$ ./script/run-release.sh
 ```
 
 ## 其他
