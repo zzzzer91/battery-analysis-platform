@@ -5,7 +5,26 @@
 ## 项目结构
 
 ```
-TODO
+.
+├── conf                     # 放置配置文件
+├── docker                   # dockerfile
+├── frontend                 # 前端
+├── go                       # Go 程序
+│   ├── app                  # 按功能划分模块
+│   │   └── main             # 主要功能实现
+│   └── pkg                  # 一些公用包
+│       ├── checker          # 检查用户传来的参数
+│       ├── conf             # 配置相关
+│       ├── conv             # 类型转换
+│       ├── db               # 数据库初始化
+│       ├── jd               # json 响应相关封装
+│       ├── jtime            # json 序列化时间时能返回指定格式
+│       ├── mysqlx           # 增强原生 Mysql 查询功能
+│       ├── producer         # 调用 Celery
+│       └── security         # 安全相关
+├── py                       # Python 程序
+│   └── celery               # 异步执行 Python 代码
+└── script                   # 脚本文件
 ```
 
 ## 前置需求
