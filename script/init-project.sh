@@ -1,6 +1,7 @@
 #!/bin/bash
 
 ABSOLUTE_PROJECT_PATH="$(cd "$(dirname $0)/..";pwd)"
+RESOURECE_DIR="${ABSOLUTE_PROJECT_PATH}/resource"
 ENV_FILE="${ABSOLUTE_PROJECT_PATH}/.env"
 
 echo '项目初始化中...'
@@ -10,7 +11,15 @@ mongo_root_password=''
 read -p "输入 MySQL root 密码：" mysql_root_password
 read -p "输入 Mongo root 密码：" mongo_root_password
 
-# 生成 .env
+# 如果文件夹不存在，创建文件夹
+if [ ! -d "${RESOURECE_DIR}" ]; then
+    mkdir "${RESOURECE_DIR}"
+    echo "${RESOURECE_DIR} 创建完毕！"
+else
+    echo "${RESOURECE_DIR} 已存在！"
+fi
+
+# 生成 .env，会覆盖原来的
 echo "# docker-compose.yml 中使用的环境变量" > ${ENV_FILE}
 echo "# 注意值两边的单双引号，会被当作值的一部分，这在 docker-compose 中会出现问题" >> ${ENV_FILE}
 #

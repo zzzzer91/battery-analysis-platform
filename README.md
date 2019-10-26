@@ -57,7 +57,7 @@ $ sudo usermod -aG docker $USER
 $ groups $USER
 ```
 
-4、注销并重新登录当前用户。
+4、注销并重新登录当前用户
 
 ### 启动 docker
 
@@ -73,7 +73,7 @@ $ sudo systemctl start docker
 
 创建相应数据库。
 
-### 生成文件
+### 生成相应文件
 
 ```bash
 $ ./init-project.sh
@@ -89,13 +89,13 @@ $ ./init-project.sh
 
 ### 开发环境
 
-启动数据库和 Nginx：
+1、启动数据库和 Nginx：
 
 ```bash
 $ ./script/run-debug.sh
 ```
 
-启动 py-app-celery：
+2、启动 py-app-celery：
 
 ```
 在 Pycharm 中配置 run template，
@@ -104,25 +104,43 @@ $ ./script/run-debug.sh
 最后指定好环境变量 CONF_FILE。
 ```
 
-启动 go-app-main：
+3、启动 go-app-main：
 
 ```
 在 goland 中配置 run template，只需指定好环境变量 CONF_FILE。
 ```
 
+4、启动前端：
+
+```bash
+npm run serve
+```
+
+5、访问 `127.0.0.1:8081`
+
 ### 生产环境
 
-只需执行：
+1、编译前端：
+
+```bash
+npm run build
+```
+
+2、把 *frontend* 下编译出来的 *dist* 文件夹放入 *resource* 文件夹中。
+
+3、执行：
 
 ```bash
 $ ./script/run-release.sh
 ```
 
+4、访问 `127.0.0.1:3389`
+
 ## 其他
 
 ### 管理 MySQL
 
-浏览器访问 `<ip>:8080` 端口。
+浏览器访问 `<ip>:8080` 端口
 
 ### 管理 Mongo
 
@@ -130,7 +148,7 @@ $ ./script/run-release.sh
 
 ### 管理 Redis
 
-浏览器访问 `<ip>:8079` 端口。
+浏览器访问 `<ip>:8079` 端口
 
 ## 说明
 
@@ -147,6 +165,8 @@ $ ./script/run-release.sh
 - 前端对后端返回的 JSON 字段的顺序一律假设是无序的
 
 ### 后端
+
+- 数据库表不由程序负责创建
 
 - 字段前后端都要校验
 
