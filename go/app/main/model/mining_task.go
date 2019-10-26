@@ -18,24 +18,24 @@ var MiningSupportTaskSet = map[string]struct{}{
 
 // 不包含任务数据，这个 model 用来做任务列表的元素，所以不需要
 type MiningTask struct {
-	TaskId        string `json:"taskId" bson:"taskId"`
-	TaskName      string `json:"taskName" bson:"taskName"`
-	DataComeFrom  string `json:"dataComeFrom" bson:"dataComeFrom"`
-	RequestParams string `json:"requestParams" bson:"requestParams"`
-	CreateTime    string `json:"createTime" bson:"createTime"`
-	TaskStatus    string `json:"taskStatus" bson:"taskStatus"`
-	Comment       string `json:"comment" bson:"comment"`
+	TaskId       string `json:"taskId" bson:"taskId"`
+	TaskName     string `json:"taskName" bson:"taskName"`
+	DataComeFrom string `json:"dataComeFrom" bson:"dataComeFrom"`
+	DateRange    string `json:"dateRange" bson:"dateRange"`
+	CreateTime   string `json:"createTime" bson:"createTime"`
+	TaskStatus   string `json:"taskStatus" bson:"taskStatus"`
+	Comment      string `json:"comment" bson:"comment"`
 }
 
-func CreateMiningTask(id, name, dataComeFrom, requestParams string) (*MiningTask, error) {
+func CreateMiningTask(id, name, dataComeFrom, dateRange string) (*MiningTask, error) {
 	collection := db.Mongo.Collection(mongoCollectionMiningTasks)
 	task := MiningTask{
-		TaskId:        id,
-		TaskName:      name,
-		DataComeFrom:  dataComeFrom,
-		RequestParams: requestParams,
-		CreateTime:    jtime.NowStr(),
-		TaskStatus:    "执行中",
+		TaskId:       id,
+		TaskName:     name,
+		DataComeFrom: dataComeFrom,
+		DateRange:    dateRange,
+		CreateTime:   jtime.NowStr(),
+		TaskStatus:   "执行中",
 	}
 	ctx, _ := context.WithTimeout(context.Background(), mongoCtxTimeout)
 	_, err := collection.InsertOne(ctx, task)

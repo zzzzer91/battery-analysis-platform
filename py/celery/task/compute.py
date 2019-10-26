@@ -9,13 +9,13 @@ from .algorithm import compute_battery_statistic, \
     compute_correlation
 
 
-def _gen_sql(need_fields: str, table_name: str, request_params: str) -> str:
+def _gen_sql(need_fields: str, table_name: str, date_range: str) -> str:
     """防 sql 注入的工作由创建任务者检查"""
 
-    if request_params == '所有数据':
+    if date_range == '所有数据':
         sql = f'SELECT {need_fields} FROM {table_name}'
     else:
-        start_date, end_date = request_params.split(' - ')
+        start_date, end_date = date_range.split(' - ')
         sql = f'SELECT {need_fields} FROM {table_name} ' \
               f'WHERE timestamp >= "{start_date}" and timestamp <= "{end_date}"'
     return sql
@@ -27,14 +27,14 @@ def compute_model(self,
                   task_name: str,
                   # 这几个参数传给 SQl 语句
                   table_name: str,
-                  request_params: str) -> None:
+                  date_range: str) -> None:
     """根据 task_name，选择任务交给 celery 执行。
 
     :param self: Celery 装饰器中添加 `bind=True` 参数。告诉 Celery 发送一个 self 参数到该函数，
                  可以获取一些任务信息，或更新用 `self.update_stat()` 任务状态。
     :param task_name: 任务名，中文。
     :param table_name: 从哪张表查询数据，表名。
-    :param request_params: 数据查询起止日期，格式有：["所有数据"] 和 ["起 - 止"]。
+    :param date_range: 数据查询起止日期，格式有：["所有数据"] 和 ["起 - 止"]。
     """
 
     # 用 celery 产生的 id 做 mongo 主键
@@ -52,27 +52,27 @@ def compute_model(self,
     if task_name == '充电过程':
         # needFields 字符串中字段的顺序不能变，追加新字段，必须放在最后
         need_fields = 'bty_t_vol, bty_t_curr, battery_soc, id, byt_ma_sys_state'
-        sql = _gen_sql(need_fields, table_name, request_params)
+        sql = _gen_sql(need_fields, table_name, date_range)
         # sqlalchemy 默认返回 row 是元组，可以用 `dict(row)` 转换成字典
         rows = mysql_conn.execute(sql)
         if rows.rowcount != 0:
             data = compute_charging_process(rows)
     elif task_name == '工况':
         need_fields = 'timestamp, bty_t_curr, met_spd'
-        sql = _gen_sql(need_fields, table_name, request_params)
+        sql = _gen_sql(need_fields, table_name, date_range)
         rows = mysql_conn.execute(sql)
         if rows.rowcount != 0:
             data = compute_working_condition(rows)
     elif task_name == '电池统计':
         need_fields = 'max_t_s_b_num, min_t_s_b_num'
-        sql = _gen_sql(need_fields, table_name, request_params)
+        sql = _gen_sql(need_fields, table_name, date_range)
         rows = mysql_conn.execute(sql)
         if rows.rowcount != 0:
             data = compute_battery_statistic(rows)
     elif task_name == 'pearson相关系数':
         need_fields = 'bty_t_vol,bty_t_curr,met_spd,battery_soc,' \
                       's_b_max_t,s_b_min_t,s_b_max_v,s_b_min_v'
-        sql = _gen_sql(need_fields, table_name, request_params)
+        sql = _gen_sql(need_fields, table_name, date_range)
         rows = pd.read_sql(sql, con=mysql_conn).corr('pearson').values.tolist()
         data = compute_correlation(rows)
     else:

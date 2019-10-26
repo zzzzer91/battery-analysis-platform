@@ -7,7 +7,8 @@
       <el-table :data="tableData" border height="500" ref="multipleTable">
         <el-table-column prop="taskName" label="任务名" width="100" sortable show-overflow-tooltip></el-table-column>
         <el-table-column prop="dataComeFrom" label="数据来源" width="340" sortable></el-table-column>
-        <el-table-column prop="requestParams" label="数据时间范围" width="180" show-overflow-tooltip></el-table-column>
+        <!-- <el-table-column prop="batteryStatus" label="电池状态" width="100" show-overflow-tooltip></el-table-column> -->
+        <el-table-column prop="dateRange" label="时间范围" width="180" show-overflow-tooltip></el-table-column>
         <el-table-column prop="createTime" label="创建时间" width="180"></el-table-column>
         <el-table-column prop="taskStatus" label="状态" width="100" sortable>
           <template scope="scope">
@@ -43,17 +44,17 @@
       title="创建计算任务"
       :visible.sync="newTaskDialogVisible"
       :close-on-click-modal="false"
-      width="35%"
+      width="40%"
     >
       <el-form ref="form" :model="newForm">
-        <el-form-item label="数据来源">
+        <el-form-item label="数据来源：">
           <el-cascader
             expand-trigger="hover"
             :options="dataComeFromOptions"
             v-model="newForm.dataComeFrom"
           ></el-cascader>
         </el-form-item>
-        <el-form-item label="计算模型">
+        <el-form-item label="计算模型：">
           <el-select v-model="newForm.taskName" placeholder="请选择">
             <el-option
               v-for="item in requestParamOptions"
@@ -63,9 +64,16 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="起止日期">
+        <!-- <el-form-item label="电池状态：">
+          <el-radio-group v-model="newForm.batteryStatus">
+            <el-radio :label="0">全部</el-radio>
+            <el-radio :label="1">充电</el-radio>
+            <el-radio :label="2">放电</el-radio>
+          </el-radio-group>
+        </el-form-item> -->
+        <el-form-item label="起止日期：">
           <el-date-picker
-            v-model="newForm.rangeDate"
+            v-model="newForm.dateRange"
             type="datetimerange"
             range-separator="至"
             start-placeholder="开始日期"
@@ -73,7 +81,7 @@
             :disabled="newForm.allData"
           ></el-date-picker>
         </el-form-item>
-        <el-form-item label="所有数据">
+        <el-form-item label="所有数据：">
           <el-checkbox v-model="newForm.allData"></el-checkbox>
         </el-form-item>
       </el-form>
@@ -152,7 +160,8 @@ export default {
       newForm: {
         dataComeFrom: ['宇通', '4F37195C1A908CFBE0532932A8C0EECB'],
         taskName: null,
-        rangeDate: [new Date(2019, 0, 1, 0, 0), new Date(2019, 0, 2, 0, 0)],
+        batteryStatus: 0,
+        dateRange: [new Date(2019, 0, 1, 0, 0), new Date(2019, 0, 2, 0, 0)],
         allData: false
       },
       tableData: [],
@@ -164,7 +173,8 @@ export default {
       this.newForm = {
         dataComeFrom: ['宇通', '4F37195C1A908CFBE0532932A8C0EECB'],
         taskName: null,
-        rangeDate: [new Date(2019, 0, 1, 0, 0), new Date(2019, 0, 2, 0, 0)],
+        batteryStatus: 0,
+        dateRange: [new Date(2019, 0, 1, 0, 0), new Date(2019, 0, 2, 0, 0)],
         allData: false
       }
       this.newTaskDialogVisible = true
@@ -175,20 +185,21 @@ export default {
         return false
       }
       // 时间范围清空数据，会返回 null
-      if (this.newForm.rangeDate === null && !this.newForm.allData) {
+      if (this.newForm.dateRange === null && !this.newForm.allData) {
         this.$message.error('时间范围不能为空！或请勾选所有数据')
         return false
       }
 
-      const startDate = moment(this.newForm.rangeDate[0]).format(
+      const startDate = moment(this.newForm.dateRange[0]).format(
         'YYYY-MM-DD HH:mm:ss'
       )
-      const endDate = moment(this.newForm.rangeDate[1]).format(
+      const endDate = moment(this.newForm.dateRange[1]).format(
         'YYYY-MM-DD HH:mm:ss'
       )
       let params = {
         dataComeFrom: this.newForm.dataComeFrom.join('_'),
         taskName: this.newForm.taskName,
+        batteryStatus: this.newForm.batteryStatus,
         startDate: startDate,
         endDate: endDate,
         allData: this.newForm.allData

@@ -17,9 +17,10 @@ const (
 type MiningTaskCreateService struct {
 	TaskName     string `json:"taskName"`
 	DataComeFrom string `json:"dataComeFrom"`
-	StartDate    string `json:"startDate"`
-	EndDate      string `json:"endDate"`
-	AllData      bool   `json:"allData"` // bool 型不能 required，因为 false 会被判空
+	// BatteryStatus int    `json:"batteryStatus"`
+	StartDate string `json:"startDate"`
+	EndDate   string `json:"endDate"`
+	AllData   bool   `json:"allData"` // bool 型不能 required，因为 false 会被判空
 }
 
 func (s *MiningTaskCreateService) Do() (*jd.Response, error) {
@@ -32,9 +33,9 @@ func (s *MiningTaskCreateService) Do() (*jd.Response, error) {
 		return jd.Err("参数 dataComeFrom 不合法"), nil
 	}
 
-	var requestParams string
+	var dateRange string
 	if s.AllData {
-		requestParams = "所有数据"
+		dateRange = "所有数据"
 	} else {
 		if !checker.ReDatetime.MatchString(s.StartDate) {
 			return jd.Err("参数 startDate 不合法"), nil
@@ -42,17 +43,17 @@ func (s *MiningTaskCreateService) Do() (*jd.Response, error) {
 		if !checker.ReDatetime.MatchString(s.EndDate) {
 			return jd.Err("参数 EndDate 不合法"), nil
 		}
-		requestParams = s.StartDate + " - " + s.EndDate
+		dateRange = s.StartDate + " - " + s.EndDate
 	}
 
 	asyncResult, err := producer.Celery.Delay(
 		taskComputeModel,
-		s.TaskName, table.Name, requestParams)
+		s.TaskName, table.Name, dateRange)
 	if err != nil {
 		return nil, err
 	}
 
-	data, err := model.CreateMiningTask(asyncResult.TaskID, s.TaskName, s.DataComeFrom, requestParams)
+	data, err := model.CreateMiningTask(asyncResult.TaskID, s.TaskName, s.DataComeFrom, dateRange)
 	if err != nil {
 		return nil, err
 	}
