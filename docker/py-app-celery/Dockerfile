@@ -1,5 +1,5 @@
 FROM python:3.7 as builder
-WORKDIR /root/code
+WORKDIR /root
 COPY celery/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 
