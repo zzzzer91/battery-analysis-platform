@@ -33,7 +33,15 @@ func createMongoCollectionIdx(name string, model mongo.IndexModel) error {
 func init() {
 	indexModel := mongo.IndexModel{
 		Keys: bson.M{
-			"时间":        1,
+			"时间": 1,
+		},
+		Options: options.Index().SetUnique(false),
+	}
+	if err := createMongoCollectionIdx(mongoCollectionBeiQiVehicle, indexModel); err != nil {
+		panic(err)
+	}
+	indexModel = mongo.IndexModel{
+		Keys: bson.M{
 			"动力电池充放电状态": 1,
 		},
 		Options: options.Index().SetUnique(false),
