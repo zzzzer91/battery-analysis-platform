@@ -73,7 +73,7 @@
             :min="1"
             :max="10"
             :step="1"
-            v-model="newForm.hiddenLayers"
+            v-model="newForm.NnLayers"
             @change="changeLayer"
           ></el-input-number>
         </el-form-item>
@@ -208,7 +208,7 @@ export default {
         loss: 'MSE Loss',
         epochs: 100,
         batchSize: 600,
-        hiddenLayers: 1,
+        NnLayers: 1,
         nn: '普通神经网络',
         nnArchitecture: []
       },
@@ -223,7 +223,7 @@ export default {
         loss: 'MSE Loss',
         epochs: 100,
         batchSize: 600,
-        hiddenLayers: 1,
+        NnLayers: 1,
         nn: '普通神经网络',
         nnArchitecture: [
           {
@@ -264,7 +264,6 @@ export default {
         loss: this.newForm.loss,
         epochs: this.newForm.epochs,
         batchSize: this.newForm.batchSize,
-        hiddenLayers: this.newForm.hiddenLayers,
         nnArchitecture: this.newForm.nnArchitecture,
       }
 
