@@ -19,8 +19,7 @@ go-app-main:
     uri: mongodb://root:123456@127.0.0.1:27017
     database: mytest
   celery:
-    brokerUri: redis://127.0.0.1:6379
-    backendUri: redis://127.0.0.1:6379
+    redisUri: redis://127.0.0.1:6379
 
 # python-app
 py-app-celery:

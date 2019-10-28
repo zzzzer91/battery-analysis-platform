@@ -40,8 +40,7 @@ type RedisConf struct {
 }
 
 type CeleryConf struct {
-	BrokerUri  string `yaml:"brokerUri"`
-	BackendUri string `yaml:"backendUri"`
+	RedisUri string `yaml:"redisUri"`
 }
 
 // Load 载入指定 app 的 yaml 配置，注意 yaml 文件的格式有要求，见 app.example.yml
