@@ -9,7 +9,7 @@ import (
 )
 
 type NnLayer struct {
-	Dim        int    `json:"dim" bson:"dim"`
+	Neurons    int    `json:"neurons" bson:"neurons"`
 	Activation string `json:"activation" bson:"activation"`
 }
 

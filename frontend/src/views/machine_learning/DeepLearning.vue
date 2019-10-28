@@ -84,7 +84,7 @@
         >
           <el-row :gutter="10">
             <el-col :span="10">
-              <el-input v-model.number="layer.dim" size="mini"></el-input>
+              <el-input v-model.number="layer.neurons" size="mini"></el-input>
             </el-col>
             <el-col :span="10">
               <el-select v-model="layer.activation" size="mini" placeholder="请选择">
@@ -227,7 +227,7 @@ export default {
         nn: '普通神经网络',
         nnArchitecture: [
           {
-            dim: 64,
+            neurons: 64,
             activation: 'ReLu'
           }
         ]
@@ -239,7 +239,7 @@ export default {
       if (count > len) {
         for (let i = 0, temp = count - len; i < temp; i++) {
           this.newForm.nnArchitecture.push({
-            dim: 64,
+            neurons: 64,
             activation: 'ReLu'
           })
         }
