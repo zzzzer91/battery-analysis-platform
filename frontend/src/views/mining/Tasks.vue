@@ -20,7 +20,7 @@
             <el-tag v-else-if="scope.row.taskStatus === '失败'" type="danger">{{scope.row.taskStatus}}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="comment" label="备注"></el-table-column>
+        <el-table-column prop="comment" label="备注" show-overflow-tooltip></el-table-column>
         <el-table-column label="操作" width="160">
           <template v-slot:default="scope">
             <el-button
