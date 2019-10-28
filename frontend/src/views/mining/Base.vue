@@ -3,19 +3,18 @@
     <div class="container">
       <el-row>
         <el-col :span="8">
-          <div class="mgb20">
-            <span>数据来源：</span>
+        <el-form ref="form" :model="queryForm" label-width="80px">
+          <el-form-item label="数据来源">
             <el-cascader
               :props="{ expandTrigger: 'hover' }"
-              :options="dataComeFromOptions"
-              v-model="dataComeFrom"
+              :options="formOptions.dataComeFrom"
+              v-model="queryForm.dataComeFrom"
             ></el-cascader>
-          </div>
-          <div class="mgb20">
-            <span>查询参数：</span>
-            <el-select v-model="needParams" multiple collapse-tags placeholder="请选择">
+          </el-form-item>
+          <el-form-item label="查询参数">
+            <el-select v-model="queryForm.needParams" multiple collapse-tags placeholder="请选择">
               <el-option-group
-                v-for="group in requestParamOptions"
+                v-for="group in formOptions.needParams"
                 :key="group.label"
                 :label="group.label"
               >
@@ -27,19 +26,18 @@
                 ></el-option>
               </el-option-group>
             </el-select>
-          </div>
-          <div class="mgb20">
-            <span>起始日期：</span>
-            <el-date-picker v-model="startDate" type="datetime" placeholder="选择起始日期时间"></el-date-picker>
-          </div>
-          <div class="mgb20">
-            <span>数据限制：</span>
-            <el-input-number :min="10" :max="10000" :step="10" v-model="dataLimit"></el-input-number>
-          </div>
-          <div class="mgb20">
+          </el-form-item>
+          <el-form-item label="起始日期">
+            <el-date-picker v-model="queryForm.startDate" type="datetime" placeholder="选择起始日期时间"></el-date-picker>
+          </el-form-item>
+          <el-form-item label="数据限制">
+            <el-input-number :min="10" :max="10000" :step="10" v-model="queryForm.dataLimit"></el-input-number>
+          </el-form-item>
+          <el-form-item>
             <el-button type="primary" @click="getChartData" :loading="buttonLoading">查询</el-button>
             <el-button type="primary" @click="showChartOptionDialog" v-if="showPlotButton">绘制</el-button>
-          </div>
+          </el-form-item>
+        </el-form>
         </el-col>
         <el-col :span="16">
           <el-input
@@ -164,105 +162,107 @@ export default {
       chartOptionDialogVisible: false,
       chartDialogVisible: false,
       showPlotButton: false,
-      dataComeFromOptions: [
-        // {
-        //   value: '北汽',
-        //   label: '北汽',
-        //   children: [
-        //     {
-        //       value: '占位',
-        //       label: '占位'
-        //     }
-        //   ]
-        // },
-        {
-          value: '宇通',
-          label: '宇通',
-          children: [
-            {
-              value: '4F37195C1A908CFBE0532932A8C0EECB',
-              label: '4F37195C1A908CFBE0532932A8C0EECB'
-            }
-          ]
-        }
-      ],
-      requestParamOptions: [
-        // label 长度不要超过 7 个汉字，否则有样式问题
-        {
-          label: '总体',
-          options: [
-            {
-              value: 'bty_t_vol',
-              label: '总电压'
-            },
-            {
-              value: 'bty_t_curr',
-              label: '总电流'
-            },
-            {
-              value: 'met_spd',
-              label: '车速'
-            },
-            {
-              value: 'p_t_p',
-              label: '正向累计电量'
-            },
-            {
-              value: 'r_t_p',
-              label: '反向累计电量'
-            },
-            {
-              value: 'total_mileage',
-              label: '总里程'
-            },
-            {
-              value: 'battery_soc',
-              label: 'SOC'
-            },
-            {
-              value: 'byt_ma_sys_state',
-              label: '状态号'
-            }
-          ]
-        },
-        {
-          label: '单体',
-          options: [
-            {
-              value: 's_b_max_t',
-              label: '单体电池最高温度'
-            },
-            {
-              value: 's_b_min_t',
-              label: '单体电池最低温度'
-            },
-            {
-              value: 's_b_max_v',
-              label: '单体电池最高电压'
-            },
-            {
-              value: 's_b_min_v',
-              label: '单体电池最低电压'
-            },
-            {
-              value: 'max_t_s_b_num',
-              label: '最高温度电池号'
-            },
-            {
-              value: 'min_t_s_b_num',
-              label: '最低温度电池号'
-            },
-            {
-              value: 'max_v_e_core_num',
-              label: '最高电压电池号'
-            },
-            {
-              value: 'min_v_e_core_num',
-              label: '最低电压电池号'
-            }
-          ]
-        }
-      ],
+      formOptions: {
+        dataComeFrom: [
+          // {
+          //   value: '北汽',
+          //   label: '北汽',
+          //   children: [
+          //     {
+          //       value: 'LNBSCU3HXJR884327',
+          //       label: 'LNBSCU3HXJR884327'
+          //     }
+          //   ]
+          // },
+          {
+            value: '宇通',
+            label: '宇通',
+            children: [
+              {
+                value: '4F37195C1A908CFBE0532932A8C0EECB',
+                label: '4F37195C1A908CFBE0532932A8C0EECB'
+              }
+            ]
+          }
+        ],
+        needParams: [
+          // label 长度不要超过 7 个汉字，否则有样式问题
+          {
+            label: '总体',
+            options: [
+              {
+                value: 'bty_t_vol',
+                label: '总电压'
+              },
+              {
+                value: 'bty_t_curr',
+                label: '总电流'
+              },
+              {
+                value: 'met_spd',
+                label: '车速'
+              },
+              {
+                value: 'p_t_p',
+                label: '正向累计电量'
+              },
+              {
+                value: 'r_t_p',
+                label: '反向累计电量'
+              },
+              {
+                value: 'total_mileage',
+                label: '总里程'
+              },
+              {
+                value: 'battery_soc',
+                label: 'SOC'
+              },
+              {
+                value: 'byt_ma_sys_state',
+                label: '状态号'
+              }
+            ]
+          },
+          {
+            label: '单体',
+            options: [
+              {
+                value: 's_b_max_t',
+                label: '单体电池最高温度'
+              },
+              {
+                value: 's_b_min_t',
+                label: '单体电池最低温度'
+              },
+              {
+                value: 's_b_max_v',
+                label: '单体电池最高电压'
+              },
+              {
+                value: 's_b_min_v',
+                label: '单体电池最低电压'
+              },
+              {
+                value: 'max_t_s_b_num',
+                label: '最高温度电池号'
+              },
+              {
+                value: 'min_t_s_b_num',
+                label: '最低温度电池号'
+              },
+              {
+                value: 'max_v_e_core_num',
+                label: '最高电压电池号'
+              },
+              {
+                value: 'min_v_e_core_num',
+                label: '最低电压电池号'
+              }
+            ]
+          }
+        ],
+      },
       mapping: {
         // 表字段名到中文名的映射，这是宇通的，后期如果加其他公司再改
         timestamp: '时间',
@@ -284,10 +284,12 @@ export default {
         min_v_e_core_num: '最低电压电池号'
       },
       // 请求的参数
-      dataComeFrom: ['宇通', '4F37195C1A908CFBE0532932A8C0EECB'],
-      needParams: ['bty_t_vol'],
-      startDate: new Date(2019, 0, 1, 0, 0), // 貌似 js 中月份起始是 0？
-      dataLimit: 500,
+      queryForm: {
+        dataComeFrom: ['宇通', '4F37195C1A908CFBE0532932A8C0EECB'],
+        needParams: ['bty_t_vol'],
+        startDate: new Date(2019, 0, 1, 0, 0), // 貌似 js 中月份起始是 0？
+        dataLimit: 500,
+      },
       buttonLoading: false, // 查询按钮的载入效果
       dataTextArea: '',
       // 绘制选项
@@ -314,12 +316,12 @@ export default {
   },
   methods: {
     getChartData() {
-      if (this.needParams.length === 0) {
+      if (this.queryForm.needParams.length === 0) {
         this.$message.error('查询参数不能为空！')
         return false
       }
 
-      if (this.startDate === null) {
+      if (this.queryForm.startDate === null) {
         this.$message.error('起始日期不能为空！')
         return false
       }
@@ -327,10 +329,10 @@ export default {
       this.buttonLoading = true
 
       let params = {
-        dataComeFrom: this.dataComeFrom.join('_'),
-        startDate: moment(this.startDate).format('YYYY-MM-DD HH:mm:ss'),
-        dataLimit: this.dataLimit,
-        needParams: this.needParams.join(',')
+        dataComeFrom: this.queryForm.dataComeFrom.join('_'),
+        startDate: moment(this.queryForm.startDate).format('YYYY-MM-DD HH:mm:ss'),
+        dataLimit: this.queryForm.dataLimit,
+        needParams: this.queryForm.needParams.join(',')
       }
 
       return (
@@ -345,7 +347,7 @@ export default {
               throw new Error(jd.msg)
             }
 
-            const colNames = ['timestamp'].concat(this.needParams)
+            const colNames = ['timestamp'].concat(this.queryForm.needParams)
             this.chartData = jd.data
             this.chartDataCount = this.chartData.length
 
@@ -453,7 +455,7 @@ export default {
           }
         },
         dataset: {
-          dimensions: [plotOption.xAxisParam].concat(this.needParams),
+          dimensions: [plotOption.xAxisParam].concat(this.queryForm.needParams),
           source: chartData.slice(
             plotOption.dataIndexStart,
             plotOption.dataIndexEnd
