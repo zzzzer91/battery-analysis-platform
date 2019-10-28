@@ -6,5 +6,5 @@ app = Celery(
     'task',
     broker=app_conf['celery']['brokerUri'],
     backend=app_conf['celery']['backendUri'],
-    include=['task.compute']
+    include=['task.mining']
 )

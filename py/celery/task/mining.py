@@ -22,7 +22,7 @@ def _gen_sql(need_fields: str, table_name: str, date_range: str) -> str:
 
 
 # `ignore_result=True` 该任务不会将结果保存在 redis，提高性能
-@app.task(name='task.compute_model', bind=True, ignore_result=True)
+@app.task(name='task.mining.compute_model', bind=True, ignore_result=True)
 def compute_model(self,
                   task_name: str,
                   # 这几个参数传给 SQl 语句
@@ -101,7 +101,7 @@ def compute_model(self,
         )
 
 
-@app.task(name='task.stop_compute_model', ignore_result=True)
+@app.task(name='task.mining.stop_compute_model', ignore_result=True)
 def stop_compute_model(task_id: str) -> None:
     # 取消一个任务，
     # 如果该任务已执行，那么必须设置 `terminate=True` 才能终止它

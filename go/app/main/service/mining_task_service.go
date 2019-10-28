@@ -9,8 +9,8 @@ import (
 
 // support task
 const (
-	miningTaskComputeModel     = "task.compute_model"
-	miningTaskStopComputeModel = "task.stop_compute_model"
+	miningTaskComputeModel     = "task.mining.compute_model"
+	miningTaskStopComputeModel = "task.mining.stop_compute_model"
 )
 
 type MiningTaskCreateService struct {
