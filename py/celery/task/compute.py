@@ -40,7 +40,7 @@ def compute_model(self,
     # 用 celery 产生的 id 做 mongo 主键
     task_id = self.request.id
 
-    collection = mongo['mining_tasks']
+    collection = mongo['mining_task']
 
     # 从连接池取一个连接
     mysql_conn = mysql.connect()
