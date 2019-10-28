@@ -49,7 +49,7 @@
       <el-form ref="form" :model="newForm" label-width="80px">
         <el-form-item label="数据来源">
           <el-cascader
-            expand-trigger="hover"
+            props.expand-trigger="hover"
             :options="formOptions.dataComeFrom"
             v-model="newForm.dataComeFrom"
           ></el-cascader>
