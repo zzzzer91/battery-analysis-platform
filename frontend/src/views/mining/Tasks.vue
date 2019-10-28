@@ -46,18 +46,18 @@
       :close-on-click-modal="false"
       width="40%"
     >
-      <el-form ref="form" :model="newForm">
-        <el-form-item label="数据来源：">
+      <el-form ref="form" :model="newForm" label-width="80px">
+        <el-form-item label="数据来源">
           <el-cascader
             expand-trigger="hover"
-            :options="dataComeFromOptions"
+            :options="formOptions.dataComeFrom"
             v-model="newForm.dataComeFrom"
           ></el-cascader>
         </el-form-item>
-        <el-form-item label="计算模型：">
+        <el-form-item label="计算模型">
           <el-select v-model="newForm.taskName" placeholder="请选择">
             <el-option
-              v-for="item in requestParamOptions"
+              v-for="item in formOptions.taskName"
               :key="item.value"
               :label="item.label"
               :value="item.value"
@@ -71,7 +71,7 @@
             <el-radio :label="2">放电</el-radio>
           </el-radio-group>
         </el-form-item> -->
-        <el-form-item label="起止日期：">
+        <el-form-item label="起止日期">
           <el-date-picker
             v-model="newForm.dateRange"
             type="datetimerange"
@@ -81,7 +81,7 @@
             :disabled="newForm.allData"
           ></el-date-picker>
         </el-form-item>
-        <el-form-item label="所有数据：">
+        <el-form-item label="所有数据">
           <el-checkbox v-model="newForm.allData"></el-checkbox>
         </el-form-item>
       </el-form>
@@ -115,47 +115,49 @@ export default {
       wsTimer: null,
       newTaskDialogVisible: false,
       chartDialogVisible: false,
-      dataComeFromOptions: [
-        // {
-        //   value: '北汽',
-        //   label: '北汽',
-        //   children: [
-        //     {
-        //       value: '占位',
-        //       label: '占位'
-        //     }
-        //   ]
-        // },
-        {
-          value: '宇通',
-          label: '宇通',
-          children: [
-            {
-              value: '4F37195C1A908CFBE0532932A8C0EECB',
-              label: '4F37195C1A908CFBE0532932A8C0EECB'
-            }
-          ]
-        }
-      ],
-      // label 长度不要超过 7 个汉字，否则有样式问题
-      requestParamOptions: [
-        {
-          value: '充电过程',
-          label: '充电过程'
-        },
-        // {
-        //   value: '工况',
-        //   label: '工况'
-        // },
-        {
-          value: '电池统计',
-          label: '电池统计'
-        },
-        {
-          value: 'pearson相关系数',
-          label: 'pearson相关系数'
-        }
-      ],
+      formOptions: {
+        dataComeFrom: [
+          // {
+          //   value: '北汽',
+          //   label: '北汽',
+          //   children: [
+          //     {
+          //       value: '占位',
+          //       label: '占位'
+          //     }
+          //   ]
+          // },
+          {
+            value: '宇通',
+            label: '宇通',
+            children: [
+              {
+                value: '4F37195C1A908CFBE0532932A8C0EECB',
+                label: '4F37195C1A908CFBE0532932A8C0EECB'
+              }
+            ]
+          }
+        ],
+        // label 长度不要超过 7 个汉字，否则有样式问题
+        taskName: [
+          {
+            value: '充电过程',
+            label: '充电过程'
+          },
+          // {
+          //   value: '工况',
+          //   label: '工况'
+          // },
+          {
+            value: '电池统计',
+            label: '电池统计'
+          },
+          {
+            value: 'pearson相关系数',
+            label: 'pearson相关系数'
+          }
+        ],
+      },
       // 请求的参数
       newForm: {
         dataComeFrom: ['宇通', '4F37195C1A908CFBE0532932A8C0EECB'],
