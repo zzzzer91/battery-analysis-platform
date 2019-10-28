@@ -30,6 +30,11 @@ func register(r *gin.Engine) {
 		apiV1.GET("/mining/tasks", api.ListMiningTask)
 		apiV1.GET("/mining/tasks/:taskId", api.ShowMiningTaskData)
 		apiV1.DELETE("/mining/tasks/:taskId", api.DeleteMiningTask)
+
+		apiV1.POST("/dl/tasks", api.CreateDlTask)
+		apiV1.GET("/dl/tasks", api.ListDlTask)
+		apiV1.GET("/dl/tasks/:taskId", api.ShowDlTaskData)
+		apiV1.DELETE("/dl/tasks/:taskId", api.DeleteDlTask)
 	}
 	apiV1NeedAuth := r.Group("/api/v1")
 	apiV1.Use(middleware.PermissionRequired(model.UserTypeSuperUser))

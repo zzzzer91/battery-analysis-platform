@@ -12,12 +12,12 @@ const URL_API_BASE = '/api/v1'
 const URL_API_USERS = URL_API_BASE + '/users'
 const URL_API_MINING_BASE = URL_API_BASE + '/mining/base'
 const URL_API_MINING_TASKS = URL_API_BASE + '/mining/tasks'
-const URL_API_ML_TASKS = URL_API_BASE + '/ml/tasks'
+const URL_API_DL_TASKS = URL_API_BASE + '/dl/tasks'
 
 // websocket url
 const URL_WS_BASE = '/websocket/v1'
 const URL_WS_MINING_TASKS = URL_WS_BASE + '/mining/tasks'
-const URL_WS_ML_TASKS = URL_WS_BASE + '/ml/tasks'
+const URL_WS_DL_TASKS = URL_WS_BASE + '/dl/tasks'
 
 // 返回的 json 状态码
 const SUCCESS = 20000
@@ -56,11 +56,11 @@ export default {
   URL_API_USERS,
   URL_API_MINING_BASE,
   URL_API_MINING_TASKS,
-  URL_API_ML_TASKS,
+  URL_API_DL_TASKS,
   // ws
   URL_WS_BASE,
   URL_WS_MINING_TASKS,
-  URL_WS_ML_TASKS,
+  URL_WS_DL_TASKS,
 
   SUCCESS,
   ERROR,

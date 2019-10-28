@@ -6,7 +6,7 @@
       </div>
       <el-table :data="tableData" border height="500" ref="multipleTable">
         <el-table-column prop="dataset" label="数据集" width="340" sortable></el-table-column>
-        <el-table-column prop="nnName" label="模型" width="180" sortable show-overflow-tooltip></el-table-column>
+        <el-table-column prop="nn" label="模型" width="180" sortable show-overflow-tooltip></el-table-column>
         <el-table-column prop="createTime" label="创建时间" width="180"></el-table-column>
         <el-table-column prop="taskStatus" label="状态" width="100" sortable>
           <template scope="scope">
@@ -42,29 +42,72 @@
       title="新建训练"
       :visible.sync="newTaskDialogVisible"
       :close-on-click-modal="false"
-      width="35%"
+      width="25%"
     >
-      <el-form ref="form" :model="newForm">
+      <el-form ref="newForm" :model="newForm" label-width="80px">
         <el-form-item label="数据集">
-          <el-select v-model="newForm.dataset" placeholder="请选择">
+          <el-cascader
+            props.expand-trigger="hover"
+            :options="formOptions.dataset"
+            v-model="newForm.dataset"
+          ></el-cascader>
+        </el-form-item>
+        <el-form-item label="损失函数">
+          <el-select v-model="newForm.loss" placeholder="请选择">
             <el-option
-              v-for="item in datasetOptions"
+              v-for="item in formOptions.loss"
               :key="item.value"
               :label="item.label"
               :value="item.value"
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="模型">
-          <el-select v-model="newForm.nnName" placeholder="请选择">
+        <el-form-item label="Epochs">
+          <el-input-number :min="10" :max="10000" :step="10" v-model="newForm.epochs"></el-input-number>
+        </el-form-item>
+        <el-form-item label="Batch Size">
+          <el-input-number :min="10" :max="10000" :step="10" v-model="newForm.batchSize"></el-input-number>
+        </el-form-item>
+        <el-form-item label="Layers">
+          <el-input-number
+            :min="1"
+            :max="10"
+            :step="1"
+            v-model="newForm.hiddenLayers"
+            @change="changeLayer"
+          ></el-input-number>
+        </el-form-item>
+        <el-form-item
+          v-for="(layer, index) in newForm.nnArchitecture"
+          :key="index"
+          style="margin-bottom:0px"
+        >
+          <el-row :gutter="10">
+            <el-col :span="10">
+              <el-input v-model.number="layer.dim" size="mini"></el-input>
+            </el-col>
+            <el-col :span="10">
+              <el-select v-model="layer.activation" size="mini" placeholder="请选择">
+                <el-option
+                  v-for="item in formOptions.activation"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                ></el-option>
+              </el-select>
+            </el-col>
+          </el-row>
+        </el-form-item>
+        <!-- <el-form-item label="模型">
+          <el-select v-model="newForm.nn" placeholder="请选择">
             <el-option
-              v-for="item in nnOptions"
+              v-for="item in formOptions.nn"
               :key="item.value"
               :label="item.label"
               :value="item.value"
             ></el-option>
           </el-select>
-        </el-form-item>
+        </el-form-item>-->
       </el-form>
       <span slot="footer">
         <el-button @click="newTaskDialogVisible=false">取 消</el-button>
@@ -95,27 +138,79 @@ export default {
       wsTimer: null,
       newTaskDialogVisible: false,
       chartDialogVisible: false,
-      datasetOptions: [
-        {
-          value: 'Minst',
-          label: 'Minst'
-        },
-        {
-          value: '北汽LNBSCU3HXJR884327',
-          label: '北汽LNBSCU3HXJR884327'
-        },
-      ],
-      // label 长度不要超过 7 个汉字，否则有样式问题
-      nnOptions: [
-        {
-          value: 'BP神经网络',
-          label: 'BP神经网络'
-        }
-      ],
+      formOptions: {
+        dataset: [
+          {
+            value: '北汽',
+            label: '北汽',
+            children: [
+              {
+                value: 'LNBSCU3HXJR884327放电',
+                label: 'LNBSCU3HXJR884327放电'
+              }
+            ]
+          },
+          {
+            value: '测试',
+            label: '测试',
+            children: [
+              {
+                value: 'Minst',
+                label: 'Minst'
+              }
+            ]
+          }
+        ],
+        // label 长度不要超过 7 个汉字，否则有样式问题
+        nn: [
+          {
+            value: '普通神经网络',
+            label: '普通神经网络'
+          }
+        ],
+        loss: [
+          {
+            value: 'MSE Loss',
+            label: 'MSE Loss'
+          },
+          {
+            value: 'L1 Loss',
+            label: 'L1 Loss'
+          },
+          {
+            value: 'Sickle-L1 Loss',
+            label: 'Sickle-L1 Loss'
+          }
+        ],
+        activation: [
+          {
+            value: 'ReLu',
+            label: 'ReLu'
+          },
+          {
+            value: 'Softmax',
+            label: 'Softmax'
+          },
+          {
+            value: 'Sigmoid',
+            label: 'Sigmoid'
+          },
+          {
+            value: 'Linear',
+            label: 'Linear'
+          }
+        ]
+      },
+      formStepActive: 1,
       // 请求的参数
       newForm: {
-        dataset: 'Minst',
-        nnName: 'BP神经网络',
+        dataset: ['测试', 'Minst'],
+        loss: 'MSE Loss',
+        epochs: 100,
+        batchSize: 600,
+        hiddenLayers: 1,
+        nn: '普通神经网络',
+        nnArchitecture: []
       },
       tableData: [],
       chartOption: {}
@@ -124,20 +219,58 @@ export default {
   methods: {
     handleNewForm() {
       this.newForm = {
-        dataset: 'Minst',
-        nnName: 'BP神经网络'
+        dataset: ['测试', 'Minst'],
+        loss: 'MSE Loss',
+        epochs: 100,
+        batchSize: 600,
+        hiddenLayers: 1,
+        nn: '普通神经网络',
+        nnArchitecture: [
+          {
+            dim: 64,
+            activation: 'ReLu'
+          }
+        ]
       }
       this.newTaskDialogVisible = true
     },
+    changeLayer(count) {
+      const len = this.newForm.nnArchitecture.length
+      if (count > len) {
+        for (let i = 0, temp = count - len; i < temp; i++) {
+          this.newForm.nnArchitecture.push({
+            dim: 64,
+            activation: 'ReLu'
+          })
+        }
+      } else if (count < len) {
+        for (let i = 0, temp = len - count; i < temp; i++) {
+          this.newForm.nnArchitecture.pop()
+        }
+      }
+    },
+    _checkNewForm(form) {
+      return null
+    },
     createTask() {
+      const ret = this._checkNewForm(this.newForm)
+      if (ret !== null) {
+        this.$message.error(ret)
+        return
+      }
+
       let params = {
-        dataset: this.newForm.dataset,
-        nnName: this.newForm.nnName,
+        dataset: this.newForm.dataset.join('_'),
+        loss: this.newForm.loss,
+        epochs: this.newForm.epochs,
+        batchSize: this.newForm.batchSize,
+        hiddenLayers: this.newForm.hiddenLayers,
+        nnArchitecture: this.newForm.nnArchitecture,
       }
 
       return (
         this.$axios
-          .post(globals.URL_API_ML_TASKS, params)
+          .post(globals.URL_API_DL_TASKS, params)
           // response 有多种属性
           .then(response => response.data)
           .then(jd => {
@@ -165,7 +298,7 @@ export default {
     },
     doPlot(index, row) {
       this.$axios
-        .get(`${globals.URL_API_ML_TASKS}/${row.taskId}`)
+        .get(`${globals.URL_API_DL_TASKS}/${row.taskId}`)
         .then(response => response.data)
         .then(jd => {
           if (jd.code !== globals.SUCCESS) {
@@ -186,7 +319,7 @@ export default {
       })
         .then(() => {
           this.$axios
-            .delete(`${globals.URL_API_ML_TASKS}/${row.taskId}`)
+            .delete(`${globals.URL_API_DL_TASKS}/${row.taskId}`)
             .then(response => response.data)
             .then(jd => {
               if (jd.code !== globals.SUCCESS) {
@@ -205,7 +338,7 @@ export default {
   },
   created() {
     this.ws = new WebSocket(
-      'ws://' + document.location.host + globals.URL_WS_ML_TASKS
+      'ws://' + document.location.host + globals.URL_WS_DL_TASKS
     )
 
     // 连接成功后的回调
