@@ -170,16 +170,16 @@ export default {
         ],
         loss: [
           {
-            value: 'MSE Loss',
-            label: 'MSE Loss'
+            value: 'MSE',
+            label: 'MSE'
           },
           {
-            value: 'L1 Loss',
-            label: 'L1 Loss'
+            value: 'L1',
+            label: 'L1'
           },
           {
-            value: 'Sickle-L1 Loss',
-            label: 'Sickle-L1 Loss'
+            value: 'Sickle-L1',
+            label: 'Sickle-L1'
           }
         ],
         activation: [
