@@ -15,7 +15,7 @@ var (
 	typeInt     = reflect.TypeOf((*int)(nil))
 	typeString  = reflect.TypeOf((*string)(nil))
 	// 自定义时间类型，用于 json 序列化时格式化时间
-	typeJSONTime = reflect.TypeOf((*jtime.JSONTime)(nil))
+	typeJSONTime = reflect.TypeOf((*jtime.Time)(nil))
 )
 
 func getGoType(databaseTypeName string) (tp reflect.Type) {

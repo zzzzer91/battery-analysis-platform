@@ -26,12 +26,12 @@ type User struct {
 	Password string `json:"-"`
 	Type     int    `json:"userType"`
 	// *string 让其 json 时可以返回 null，否则只能返回字符串零值
-	AvatarName    *string         `json:"avatarName"`
-	LastLoginTime *jtime.JSONTime `json:"lastLoginTime"`
-	Comment       string          `json:"comment"`
-	LoginCount    int             `json:"loginCount"`
-	Status        int             `json:"userStatus"`
-	CreateTime    *jtime.JSONTime `json:"createTime"`
+	AvatarName    *string     `json:"avatarName"`
+	LastLoginTime *jtime.Time `json:"lastLoginTime"`
+	Comment       string      `json:"comment"`
+	LoginCount    int         `json:"loginCount"`
+	Status        int         `json:"userStatus"`
+	CreateTime    *jtime.Time `json:"createTime"`
 }
 
 // SetPassword 设置密码

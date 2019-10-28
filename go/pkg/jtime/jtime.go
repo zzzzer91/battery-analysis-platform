@@ -18,18 +18,18 @@ const (
 	timeLayout = "2006-01-02 15:04:05"
 )
 
-type JSONTime struct {
+type Time struct {
 	time.Time
 }
 
-// MarshalJSON on JSONTime format Time field with %Y-%m-%d %H:%M:%S
-func (t JSONTime) MarshalJSON() ([]byte, error) {
+// MarshalJSON on Time format Time field with %Y-%m-%d %H:%M:%S
+func (t Time) MarshalJSON() ([]byte, error) {
 	formatted := `"` + t.Format(timeLayout) + `"`
 	return []byte(formatted), nil
 }
 
 // Value insert timestamp into mysql need this function.
-func (t JSONTime) Value() (driver.Value, error) {
+func (t Time) Value() (driver.Value, error) {
 	var zeroTime time.Time
 	if t.Time.UnixNano() == zeroTime.UnixNano() {
 		return nil, nil
@@ -38,7 +38,7 @@ func (t JSONTime) Value() (driver.Value, error) {
 }
 
 // Scan valueof time.Time
-func (t *JSONTime) Scan(v interface{}) error {
+func (t *Time) Scan(v interface{}) error {
 	tTmp, ok := v.(time.Time)
 	if !ok {
 		return fmt.Errorf("can not convert %v to timestamp", v)
@@ -48,7 +48,7 @@ func (t *JSONTime) Scan(v interface{}) error {
 }
 
 // UnmarshalBSON 实现 Unmarshaler 接口，支持自定义类型的 mongo 反序列化
-func (t *JSONTime) UnmarshalBSON(b []byte) error {
+func (t *Time) UnmarshalBSON(b []byte) error {
 	// b 字节流有个 4 字节头部，值为 20，可能代表了类型
 	// 还有个 1 字节的尾部，0
 	tTmp, err := time.Parse(timeLayout, string(b[4:len(b)-1]))
@@ -59,9 +59,9 @@ func (t *JSONTime) UnmarshalBSON(b []byte) error {
 	return nil
 }
 
-func Now() *JSONTime {
+func Now() *Time {
 	t := time.Now()
-	return &JSONTime{Time: t}
+	return &Time{Time: t}
 }
 
 func NowStr() string {
