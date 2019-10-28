@@ -14,8 +14,9 @@ const (
 )
 
 const (
-	mongoCollectionMiningTasks = "mining_tasks"
-	mongoCollectionMlTasks     = "ml_tasks"
+	mongoCollectionBeiQiVehicle = "beiqi_vehicle"
+	mongoCollectionMiningTask   = "mining_task"
+	mongoCollectionDlTask       = "deeplearning_task"
 )
 
 // 确保创建 mongo 索引
@@ -30,16 +31,27 @@ func createMongoCollectionIdx(name string, model mongo.IndexModel) error {
 }
 
 func init() {
-	model := mongo.IndexModel{
+	indexModel := mongo.IndexModel{
+		Keys: bson.M{
+			"时间":        1,
+			"动力电池充放电状态": 1,
+		},
+		Options: options.Index().SetUnique(false),
+	}
+	if err := createMongoCollectionIdx(mongoCollectionBeiQiVehicle, indexModel); err != nil {
+		panic(err)
+	}
+
+	indexModel = mongo.IndexModel{
 		Keys: bson.M{
 			"taskId": 1,
 		},
 		Options: options.Index().SetUnique(false),
 	}
-	if err := createMongoCollectionIdx(mongoCollectionMiningTasks, model); err != nil {
+	if err := createMongoCollectionIdx(mongoCollectionMiningTask, indexModel); err != nil {
 		panic(err)
 	}
-	if err := createMongoCollectionIdx(mongoCollectionMlTasks, model); err != nil {
+	if err := createMongoCollectionIdx(mongoCollectionDlTask, indexModel); err != nil {
 		panic(err)
 	}
 }

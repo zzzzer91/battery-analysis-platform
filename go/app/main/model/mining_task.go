@@ -28,7 +28,7 @@ type MiningTask struct {
 }
 
 func CreateMiningTask(id, name, dataComeFrom, dateRange string) (*MiningTask, error) {
-	collection := db.Mongo.Collection(mongoCollectionMiningTasks)
+	collection := db.Mongo.Collection(mongoCollectionMiningTask)
 	task := MiningTask{
 		TaskId:       id,
 		TaskName:     name,
@@ -47,7 +47,7 @@ func CreateMiningTask(id, name, dataComeFrom, dateRange string) (*MiningTask, er
 }
 
 func ListMiningTask() ([]MiningTask, error) {
-	collection := db.Mongo.Collection(mongoCollectionMiningTasks)
+	collection := db.Mongo.Collection(mongoCollectionMiningTask)
 	filter := bson.M{}                  // 过滤记录
 	projection := bson.M{"data": false} // 过滤字段
 	sort := bson.M{"createTime": -1}    // 结果排序
@@ -73,7 +73,7 @@ func ListMiningTask() ([]MiningTask, error) {
 }
 
 func GetMiningTaskData(id string) (bson.A, error) {
-	collection := db.Mongo.Collection(mongoCollectionMiningTasks)
+	collection := db.Mongo.Collection(mongoCollectionMiningTask)
 	filter := bson.M{"taskId": id}
 	projection := bson.M{"_id": false, "data": true} // 注意 _id 默认会返回，需要手动过滤
 	// 注意 bson.E 不能用来映射 mongo 中的 map，
@@ -97,7 +97,7 @@ func GetMiningTaskData(id string) (bson.A, error) {
 }
 
 func DeleteMiningTask(id string) (int64, error) {
-	collection := db.Mongo.Collection(mongoCollectionMiningTasks)
+	collection := db.Mongo.Collection(mongoCollectionMiningTask)
 	filter := bson.M{"taskId": id}
 	ctx, _ := context.WithTimeout(context.Background(), mongoCtxTimeout)
 	ret, err := collection.DeleteOne(ctx, filter)
