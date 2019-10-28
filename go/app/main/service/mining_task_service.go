@@ -60,6 +60,24 @@ func (s *MiningTaskCreateService) Do() (*jd.Response, error) {
 	return jd.Build(jd.SUCCESS, "创建成功", data), nil
 }
 
+type MiningTaskDeleteService struct {
+	Id string
+}
+
+func (s *MiningTaskDeleteService) Do() (*jd.Response, error) {
+	// 因为 gocelery 未提供终止任务的 api，这里把终止行为封装成任务，然后调用它
+	_, err := producer.Celery.Delay(miningTaskStopComputeModel, s.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = model.DeleteMiningTask(s.Id)
+	if err != nil {
+		return nil, err
+	}
+	return jd.Build(jd.SUCCESS, "删除成功", nil), nil
+}
+
 type MiningTaskListService struct {
 }
 
@@ -81,22 +99,4 @@ func (s *MiningTaskShowDataService) Do() (*jd.Response, error) {
 		return nil, err
 	}
 	return jd.Build(jd.SUCCESS, "", data), nil
-}
-
-type MiningTaskDeleteService struct {
-	Id string
-}
-
-func (s *MiningTaskDeleteService) Do() (*jd.Response, error) {
-	// 因为 gocelery 未提供终止任务的 api，这里把终止行为封装成任务，然后调用它
-	_, err := producer.Celery.Delay(miningTaskStopComputeModel, s.Id)
-	if err != nil {
-		return nil, err
-	}
-
-	_, err = model.DeleteMiningTask(s.Id)
-	if err != nil {
-		return nil, err
-	}
-	return jd.Build(jd.SUCCESS, "删除成功", nil), nil
 }

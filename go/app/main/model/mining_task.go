@@ -46,6 +46,17 @@ func CreateMiningTask(id, name, dataComeFrom, dateRange string) (*MiningTask, er
 	return &task, nil
 }
 
+func DeleteMiningTask(id string) (int64, error) {
+	collection := db.Mongo.Collection(mongoCollectionMiningTask)
+	filter := bson.M{"taskId": id}
+	ctx, _ := context.WithTimeout(context.Background(), mongoCtxTimeout)
+	ret, err := collection.DeleteOne(ctx, filter)
+	if err != nil {
+		return 0, err
+	}
+	return ret.DeletedCount, nil
+}
+
 func ListMiningTask() ([]MiningTask, error) {
 	collection := db.Mongo.Collection(mongoCollectionMiningTask)
 	filter := bson.M{}                  // 过滤记录
@@ -94,15 +105,4 @@ func GetMiningTaskData(id string) (bson.A, error) {
 		return nil, err
 	}
 	return result["data"].(bson.A), nil
-}
-
-func DeleteMiningTask(id string) (int64, error) {
-	collection := db.Mongo.Collection(mongoCollectionMiningTask)
-	filter := bson.M{"taskId": id}
-	ctx, _ := context.WithTimeout(context.Background(), mongoCtxTimeout)
-	ret, err := collection.DeleteOne(ctx, filter)
-	if err != nil {
-		return 0, err
-	}
-	return ret.DeletedCount, nil
 }
