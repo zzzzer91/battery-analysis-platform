@@ -60,9 +60,13 @@ def train(self, dataset: str, hyper_parameter: Dict):
         # 划分训练，测试数据集
         sample_num = 72000
         x_train = torch.tensor(x[:sample_num], dtype=torch.float)
-        y_train = torch.tensor(y[:sample_num], dtype=torch.float) / 100  # 百分比转小数
+        y_train = torch.tensor(y[:sample_num], dtype=torch.float)
         x_test = torch.tensor(x[sample_num:], dtype=torch.float)
-        y_test = torch.tensor(y[sample_num:], dtype=torch.float) / 100
+        y_test = torch.tensor(y[sample_num:], dtype=torch.float)
+        # 百分比转小数
+        if hyper_parameter['outputLayerActivation'].lower() == 'sigmoid':
+            y_train /= 100
+            y_test /= 100
         del x
         del y
 

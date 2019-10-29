@@ -6,7 +6,16 @@
       </div>
       <el-table :data="tableData" border height="500" ref="multipleTable">
         <el-table-column prop="dataset" label="数据集" width="340" sortable></el-table-column>
-        <el-table-column prop="nn" label="模型" width="180" sortable show-overflow-tooltip></el-table-column>
+        <el-table-column prop="hyperParameter" label="超参" width="100" show-overflow-tooltip>
+          <template slot-scope="scope">
+            <el-popover trigger="hover" placement="top">
+              <textarea v-html="JSON.stringify(scope.row.hyperParameter,null,4)" readonly rows="16" cols="46"></textarea>
+              <div slot="reference">
+                <el-tag>查看</el-tag>
+              </div>
+            </el-popover>
+          </template>
+        </el-table-column>
         <el-table-column prop="createTime" label="创建时间" width="180"></el-table-column>
         <el-table-column prop="taskStatus" label="状态" width="100" sortable>
           <template scope="scope">
@@ -18,7 +27,7 @@
             <el-tag v-else-if="scope.row.taskStatus === '失败'" type="danger">{{scope.row.taskStatus}}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="comment" label="备注"></el-table-column>
+        <el-table-column prop="comment" label="备注" show-overflow-tooltip></el-table-column>
         <el-table-column label="操作" width="160">
           <template v-slot:default="scope">
             <el-button
