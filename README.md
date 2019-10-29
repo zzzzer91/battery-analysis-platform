@@ -198,11 +198,11 @@ $ ./script/run-release.sh
 
 - 后端字段合法性校验不依赖于 gin 的 ShouldBindxxx，出于逻辑和方便测试 service 上考虑
 
-- service 中的 xxxService 结构体用于接收用户发送的数据；而 model 中结构体是返回给用户的数据格式
+- service 中的 xxxService 结构体用于接收用户发送的数据；而 model 中结构体一般是返回给用户的数据格式
 
-- service 中的 xxxService 结构体字段类型只能是基本类型
+### Git
 
-- service 某些中出现了不宜返回给用户的错误信息，则用 panic 抛出，这时后端会捕获并返回 500
+- commit 时附上版本号，log 中某版本号的最后一个 commit，必须保证可运行
 
 ### 杂
 
@@ -211,10 +211,6 @@ $ ./script/run-release.sh
 - 开发环境需要手动设置环境变量 `CONF_FILE`，指定配置文件路径
 
 - gin 的请求 log 会在请求处理函数结束后打印（记录请求用时），所以请求 websocket 时，打印会很延迟
-
-### Git
-
-- commit 时附上版本号，log 中某版本号的最后一个 commit，必须保证可运行
 
 ## TODO
 
