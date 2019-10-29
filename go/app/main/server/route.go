@@ -33,6 +33,7 @@ func register(r *gin.Engine) {
 
 		apiV1.POST("/dl/tasks", api.CreateDlTask)
 		apiV1.GET("/dl/tasks", api.ListDlTask)
+		apiV1.GET("/dl/tasks/:taskId/training-history", api.ShowDlTaskTraningHistory)
 		apiV1.DELETE("/dl/tasks/:taskId", api.DeleteDlTask)
 	}
 	apiV1NeedAuth := r.Group("/api/v1")

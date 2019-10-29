@@ -1,4 +1,5 @@
 import time
+import random
 from typing import List, Dict
 
 import torch
@@ -28,15 +29,16 @@ def train(self, dataset: str, hyper_parameter: Dict):
     data_collection = mongo['beiqi_vehicle']
     task_collection = mongo['deeplearning_task']
 
-    start = time.perf_counter()
-
     # 固定随机数种子，使结果可以复现
     seed = hyper_parameter['seed']
+    random.seed(seed)
     torch.manual_seed(seed)
     torch.cuda.manual_seed(seed)
 
+    start = time.perf_counter()
+
     if dataset == '北汽_LNBSCU3HXJR884327放电':
-        iter_ = data_collection.find(
+        l_temp = [list(d.values()) for d in data_collection.find(
             {'动力电池充放电状态': 2},
             projection={
                 '_id': False,
@@ -46,21 +48,21 @@ def train(self, dataset: str, hyper_parameter: Dict):
                 '动力电池可用能量': False,
                 '动力电池可用容量': False,
             }
-        )
+        )]
+        random.shuffle(l_temp)
         x = []
         y = []
-        for d in iter_:
-            v = list(d.values())
+        for v in l_temp:
             x.append(v[1:])
             y.append(v[0:1])
-        del iter_
+        del l_temp
 
         # 划分训练，测试数据集
         sample_num = 72000
         x_train = torch.tensor(x[:sample_num], dtype=torch.float)
-        y_train = torch.tensor(y[:sample_num], dtype=torch.float)
+        y_train = torch.tensor(y[:sample_num], dtype=torch.float) / 100  # 百分比转小数
         x_test = torch.tensor(x[sample_num:], dtype=torch.float)
-        y_test = torch.tensor(y[sample_num:], dtype=torch.float)
+        y_test = torch.tensor(y[sample_num:], dtype=torch.float) / 100
         del x
         del y
 
@@ -83,14 +85,15 @@ def train(self, dataset: str, hyper_parameter: Dict):
 
     loss_history = []
     accuracy_history = []
-
     model.train()
     for i in range(1, hyper_parameter['epochs'] + 1):
         loss_value, accuracy_value = train_once(
             model, train_data_iter, optimizer, criterion, accuracy
         )
-        loss_history.append(loss_value / sample_num)
-        accuracy_history.append(accuracy_value / sample_num)
+        loss_value_per_epoch = round(loss_value / sample_num, 4)
+        accuracy_value_per_epoch = round(accuracy_value / sample_num, 4)
+        loss_history.append(loss_value_per_epoch)
+        accuracy_history.append(accuracy_value_per_epoch)
 
     used_time = round(time.perf_counter() - start, 2)
     task_collection.update_one(

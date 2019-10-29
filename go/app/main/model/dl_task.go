@@ -86,3 +86,17 @@ func ListDlTask() ([]DlTask, error) {
 	_ = cur.Close(ctx)
 	return records, nil
 }
+
+func GetDlTaskTrainingHistory(id string) (bson.M, error) {
+	collection := db.Mongo.Collection(mongoCollectionDlTask)
+	filter := bson.M{"taskId": id}
+	projection := bson.M{"_id": false, "trainingHistory": true}
+	var result bson.M
+	ctx, _ := context.WithTimeout(context.Background(), mongoCtxTimeout)
+	err := collection.FindOne(ctx, filter, options.FindOne().
+		SetProjection(projection)).Decode(&result)
+	if err != nil {
+		return nil, err
+	}
+	return result["trainingHistory"].(bson.M), nil
+}

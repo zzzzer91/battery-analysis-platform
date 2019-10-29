@@ -59,7 +59,7 @@ def build_nn(hidden_layer_structure: List[Dict],
         if i != length:
             modules.append(nn.BatchNorm1d(l['output_dim']))
         a = l.get('activation')
-        if a is None or a.strip() == '' or a.lower().strip() == 'linear':
+        if a is None or a.strip() == '' or a.strip().lower() == 'linear':
             continue
         modules.append(get_activation(a.strip()))
         # 最后一层不要dropout
@@ -81,8 +81,8 @@ def train_once(model, data_iter, optimizer, criterion, accuracy) -> Tuple[float,
         # Compute and print loss
         loss = criterion(out, y)
         # item 取出唯一值，转为python的int类型
-        loss_value += loss.item() * len(y)
-        accuracy_value += accuracy(out, y).item() * len(y)
+        loss_value += loss.item()
+        accuracy_value += accuracy(out, y).item()
 
         # Zero gradients, perform a backward pass, and update the weights.
         optimizer.zero_grad()

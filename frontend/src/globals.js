@@ -45,6 +45,14 @@ function leftFillSpace(s, len) {
   return temp + s
 }
 
+function range(start, end, step) {
+  let arr = [];
+  for (let i = start; i < end; i++) {
+    if (i % step == 0) { arr.push(i) }
+  }
+  return arr;
+}
+
 export default {
   URL_LOGIN,
   URL_LOGOUT,
@@ -73,5 +81,6 @@ export default {
 
   RE_SIX_CHARACTER_CHECKER,
 
-  leftFillSpace
+  leftFillSpace,
+  range
 }

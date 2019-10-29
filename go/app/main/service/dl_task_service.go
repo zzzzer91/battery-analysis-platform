@@ -61,3 +61,15 @@ func (DlTaskListService) Do() (*jd.Response, error) {
 	}
 	return jd.Build(jd.SUCCESS, "", data), nil
 }
+
+type DlTaskShowTraningHistoryService struct {
+	Id string
+}
+
+func (s *DlTaskShowTraningHistoryService) Do() (*jd.Response, error) {
+	data, err := model.GetDlTaskTrainingHistory(s.Id)
+	if err != nil {
+		return nil, err
+	}
+	return jd.Build(jd.SUCCESS, "", data), nil
+}

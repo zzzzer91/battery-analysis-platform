@@ -252,7 +252,7 @@ export default {
           hiddenLayerStructure: []
         },
         NnLayers: 1,
-        nn: '普通神经网络',
+        nn: '普通神经网络'
       },
       tableData: [],
       chartOption: {}
@@ -339,16 +339,86 @@ export default {
       this.chartOption = {}
       done()
     },
+    _plotTrainingHistory(data) {
+      return {
+        title: {
+          text: '训练过程',
+          left: 'top'
+        },
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+            type: 'cross',
+            label: {
+              backgroundColor: '#6a7985'
+            }
+          }
+        },
+        toolbox: {
+          feature: {
+            // 使用 dataset 时 dataView 会有显示问题，貌似是官方 bug
+            dataView: { show: true, readOnly: true },
+            restore: {},
+            saveAsImage: {}
+          }
+        },
+        dataZoom: [
+          {
+            show: true,
+            realtime: true
+          },
+          {
+            type: 'inside',
+            realtime: true
+          }
+        ],
+        xAxis: {
+          // name: 'Epochs',
+          // nameLocation: 'start',
+          type: 'category',
+          data: globals.range(1, data['loss'].length+1, 1)
+        },
+        yAxis: [
+          {
+            name: 'Loss',
+            min: 0,
+          },
+          {
+            name: 'Accuracy',
+            min: 0,
+            max: 1,
+            splitNumber: 10
+          }
+        ],
+        series: [
+          {
+            name: 'Loss',
+            type: 'line',
+            data: data['loss'],
+            yAxisIndex: 0
+          },
+          {
+            name: 'Accuracy',
+            type: 'line',
+            data: data['accuracy'],
+            yAxisIndex: 1
+          }
+        ],
+        legend: {
+          data: ['Loss', 'Accuracy']
+        }
+      }
+    },
     doPlot(index, row) {
       this.$axios
-        .get(`${globals.URL_API_DL_TASKS}/${row.taskId}`)
+        .get(`${globals.URL_API_DL_TASKS}/${row.taskId}/training-history`)
         .then(response => response.data)
         .then(jd => {
           if (jd.code !== globals.SUCCESS) {
             throw new Error(jd.msg)
           }
           this.chartDialogVisible = true
-          this.chartOption = null
+          this.chartOption = this._plotTrainingHistory(jd.data)
         })
         .catch(error => {
           this.$message.error(error.message)
