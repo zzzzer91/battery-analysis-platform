@@ -44,7 +44,7 @@
       :close-on-click-modal="false"
       width="25%"
     >
-      <el-form ref="newForm" :model="newForm" label-width="80px">
+      <el-form ref="newForm" :model="newForm" label-width="100px">
         <el-form-item label="数据集" size="small">
           <el-cascader
             props.expand-trigger="hover"
@@ -52,8 +52,18 @@
             v-model="newForm.dataset"
           ></el-cascader>
         </el-form-item>
+        <el-form-item label="输出层激活" size="small">
+          <el-select v-model="newForm.hyperParameter.outputLayerActivation" placeholder="请选择">
+            <el-option
+              v-for="item in formOptions.outputLayerActivation"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item label="损失函数" size="small">
-          <el-select v-model="newForm.loss" placeholder="请选择">
+          <el-select v-model="newForm.hyperParameter.loss" placeholder="请选择">
             <el-option
               v-for="item in formOptions.loss"
               :key="item.value"
@@ -62,16 +72,29 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="Seed" size="small">
-          <el-input-number :step="1" v-model="newForm.seed"></el-input-number>
+        <el-form-item label="随机数种子" size="small">
+          <el-input-number :step="1" v-model="newForm.hyperParameter.seed"></el-input-number>
         </el-form-item>
         <el-form-item label="Batch Size" size="small">
-          <el-input-number :min="10" :max="10000" :step="10" v-model="newForm.batchSize"></el-input-number>
+          <el-input-number
+            :min="10"
+            :max="10000"
+            :step="10"
+            v-model="newForm.hyperParameter.batchSize"
+          ></el-input-number>
         </el-form-item>
         <el-form-item label="Epochs" size="small">
-          <el-input-number :min="10" :max="10000" :step="10" v-model="newForm.epochs"></el-input-number>
+          <el-input-number
+            :min="10"
+            :max="10000"
+            :step="10"
+            v-model="newForm.hyperParameter.epochs"
+          ></el-input-number>
         </el-form-item>
-        <el-form-item label="Layers" size="small">
+        <el-form-item label="学习率" size="small">
+          <el-input-number :min="0" :step="0.001" v-model="newForm.hyperParameter.learningRate"></el-input-number>
+        </el-form-item>
+        <el-form-item label="隐藏层数" size="small">
           <el-input-number
             :min="1"
             :max="10"
@@ -172,6 +195,20 @@ export default {
             label: '普通神经网络'
           }
         ],
+        outputLayerActivation: [
+          {
+            value: 'Softmax',
+            label: 'Softmax'
+          },
+          {
+            value: 'Sigmoid',
+            label: 'Sigmoid'
+          },
+          {
+            value: 'Linear',
+            label: 'Linear'
+          }
+        ],
         loss: [
           {
             value: 'MSE',
@@ -196,10 +233,6 @@ export default {
             label: 'Softmax'
           },
           {
-            value: 'Sigmoid',
-            label: 'Sigmoid'
-          },
-          {
             value: 'Linear',
             label: 'Linear'
           }
@@ -209,10 +242,14 @@ export default {
       // 请求的参数
       newForm: {
         dataset: ['测试', 'Minst'],
-        loss: 'MSE Loss',
-        seed: 1,
-        epochs: 100,
-        batchSize: 600,
+        hyperParameter: {
+          outputLayerActivation: 'Linear',
+          loss: 'MSE Loss',
+          seed: 1,
+          batchSize: 600,
+          epochs: 100,
+          learningRate: 0.001
+        },
         NnLayers: 1,
         nn: '普通神经网络',
         nnArchitecture: []
@@ -225,10 +262,14 @@ export default {
     handleNewForm() {
       this.newForm = {
         dataset: ['测试', 'Minst'],
-        loss: 'MSE Loss',
-        seed: 1,
-        epochs: 100,
-        batchSize: 600,
+        hyperParameter: {
+          outputLayerActivation: 'Linear',
+          loss: 'MSE Loss',
+          seed: 1,
+          batchSize: 600,
+          epochs: 100,
+          learningRate: 0.001
+        },
         NnLayers: 1,
         nn: '普通神经网络',
         nnArchitecture: [
@@ -267,13 +308,8 @@ export default {
 
       let params = {
         dataset: this.newForm.dataset.join('_'),
-        hyperParameter: {
-          loss: this.newForm.loss,
-          seed: this.newForm.seed,
-          epochs: this.newForm.epochs,
-          batchSize: this.newForm.batchSize,
-        },
-        nnArchitecture: this.newForm.nnArchitecture,
+        hyperParameter: this.newForm.hyperParameter,
+        nnArchitecture: this.newForm.nnArchitecture
       }
 
       return (

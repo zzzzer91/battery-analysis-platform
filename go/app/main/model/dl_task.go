@@ -9,10 +9,12 @@ import (
 )
 
 type NnHyperParameter struct {
-	Loss      string `json:"loss" bson:"loss"`
-	Seed      int    `json:"seed" bson:"seed"`
-	BatchSize int    `json:"batchSize" bson:"batchSize"`
-	Epochs    int    `json:"epochs" bson:"epochs"`
+	OutputLayerActivation string  `json:"outputLayerActivation" bson:"outputLayerActivation"`
+	Loss                  string  `json:"loss" bson:"loss"`
+	Seed                  int     `json:"seed" bson:"seed"`
+	BatchSize             int     `json:"batchSize" bson:"batchSize"`
+	Epochs                int     `json:"epochs" bson:"epochs"`
+	LearningRate          float64 `json:"learningRate" bson:"learningRate"`
 }
 
 type NnLayer struct {
