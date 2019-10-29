@@ -180,7 +180,7 @@ $ ./script/run-release.sh
 
 ### 前端
 
-- URI 格式规范：1）URI中尽量使用连字符”-“代替下划线”_”的使用。2）URI中统一使用小写字母。3）用复数名词。一个资源URI可以这样定义：`https://api.example.com/posts/{postId}/comments/{commentId}`
+- URI 格式规范：1）URI中尽量使用连字符”-“代替下划线”_”的使用。2）URI中统一使用小写字母。3）用复数名词。一个资源URI可以这样定义：`https://www.example.com/api/v1/posts/{postId}/comments/{commentId}`
 
 - 前端对后端返回的 JSON 字段的顺序一律假设是无序的
 
