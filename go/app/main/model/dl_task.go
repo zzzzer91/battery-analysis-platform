@@ -8,31 +8,34 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+type NnHyperParameter struct {
+	Loss      string `json:"loss" bson:"loss"`
+	Seed      int    `json:"seed" bson:"seed"`
+	BatchSize int    `json:"batchSize" bson:"batchSize"`
+	Epochs    int    `json:"epochs" bson:"epochs"`
+}
+
 type NnLayer struct {
 	Neurons    int    `json:"neurons" bson:"neurons"`
 	Activation string `json:"activation" bson:"activation"`
 }
 
 type DlTask struct {
-	TaskId         string    `json:"taskId" bson:"taskId"`
-	Dataset        string    `json:"dataset" bson:"dataset"`
-	Loss           string    `json:"loss" bson:"loss"`
-	Epochs         int       `json:"epochs" bson:"epochs"`
-	BatchSize      int       `json:"batchSize" bson:"batchSize"`
-	NnArchitecture []NnLayer `json:"nnArchitecture" bson:"nnArchitecture"`
-	CreateTime     string    `json:"createTime" bson:"createTime"`
-	TaskStatus     string    `json:"taskStatus" bson:"taskStatus"`
-	Comment        string    `json:"comment" bson:"comment"`
+	TaskId         string            `json:"taskId" bson:"taskId"`
+	Dataset        string            `json:"dataset" bson:"dataset"`
+	HyperParameter *NnHyperParameter `json:"hyperParameter" bson:"hyperParameter"`
+	NnArchitecture []NnLayer         `json:"nnArchitecture" bson:"nnArchitecture"`
+	CreateTime     string            `json:"createTime" bson:"createTime"`
+	TaskStatus     string            `json:"taskStatus" bson:"taskStatus"`
+	Comment        string            `json:"comment" bson:"comment"`
 }
 
-func CreateDlTask(id, dataset, loss string, epochs, batchSize int, nnArchitecture []NnLayer) (*DlTask, error) {
+func CreateDlTask(id, dataset string, hyperParameter *NnHyperParameter, nnArchitecture []NnLayer) (*DlTask, error) {
 	collection := db.Mongo.Collection(mongoCollectionDlTask)
 	task := DlTask{
 		TaskId:         id,
 		Dataset:        dataset,
-		Loss:           loss,
-		Epochs:         epochs,
-		BatchSize:      batchSize,
+		HyperParameter: hyperParameter,
 		NnArchitecture: nnArchitecture,
 		CreateTime:     jtime.NowStr(),
 		TaskStatus:     "执行中",

@@ -45,14 +45,14 @@
       width="25%"
     >
       <el-form ref="newForm" :model="newForm" label-width="80px">
-        <el-form-item label="数据集">
+        <el-form-item label="数据集" size="small">
           <el-cascader
             props.expand-trigger="hover"
             :options="formOptions.dataset"
             v-model="newForm.dataset"
           ></el-cascader>
         </el-form-item>
-        <el-form-item label="损失函数">
+        <el-form-item label="损失函数" size="small">
           <el-select v-model="newForm.loss" placeholder="请选择">
             <el-option
               v-for="item in formOptions.loss"
@@ -62,13 +62,16 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="Epochs">
-          <el-input-number :min="10" :max="10000" :step="10" v-model="newForm.epochs"></el-input-number>
+        <el-form-item label="Seed" size="small">
+          <el-input-number :step="1" v-model="newForm.seed"></el-input-number>
         </el-form-item>
-        <el-form-item label="Batch Size">
+        <el-form-item label="Batch Size" size="small">
           <el-input-number :min="10" :max="10000" :step="10" v-model="newForm.batchSize"></el-input-number>
         </el-form-item>
-        <el-form-item label="Layers">
+        <el-form-item label="Epochs" size="small">
+          <el-input-number :min="10" :max="10000" :step="10" v-model="newForm.epochs"></el-input-number>
+        </el-form-item>
+        <el-form-item label="Layers" size="small">
           <el-input-number
             :min="1"
             :max="10"
@@ -80,14 +83,15 @@
         <el-form-item
           v-for="(layer, index) in newForm.nnArchitecture"
           :key="index"
+          size="mini"
           style="margin-bottom:0px"
         >
           <el-row :gutter="10">
             <el-col :span="10">
-              <el-input v-model.number="layer.neurons" size="mini"></el-input>
+              <el-input v-model.number="layer.neurons"></el-input>
             </el-col>
             <el-col :span="10">
-              <el-select v-model="layer.activation" size="mini" placeholder="请选择">
+              <el-select v-model="layer.activation" placeholder="请选择">
                 <el-option
                   v-for="item in formOptions.activation"
                   :key="item.value"
@@ -206,6 +210,7 @@ export default {
       newForm: {
         dataset: ['测试', 'Minst'],
         loss: 'MSE Loss',
+        seed: 1,
         epochs: 100,
         batchSize: 600,
         NnLayers: 1,
@@ -221,6 +226,7 @@ export default {
       this.newForm = {
         dataset: ['测试', 'Minst'],
         loss: 'MSE Loss',
+        seed: 1,
         epochs: 100,
         batchSize: 600,
         NnLayers: 1,
@@ -261,9 +267,12 @@ export default {
 
       let params = {
         dataset: this.newForm.dataset.join('_'),
-        loss: this.newForm.loss,
-        epochs: this.newForm.epochs,
-        batchSize: this.newForm.batchSize,
+        hyperParameter: {
+          loss: this.newForm.loss,
+          seed: this.newForm.seed,
+          epochs: this.newForm.epochs,
+          batchSize: this.newForm.batchSize,
+        },
         nnArchitecture: this.newForm.nnArchitecture,
       }
 
