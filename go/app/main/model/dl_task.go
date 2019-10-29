@@ -23,24 +23,24 @@ type NnLayer struct {
 }
 
 type DlTask struct {
-	TaskId         string            `json:"taskId" bson:"taskId"`
-	Dataset        string            `json:"dataset" bson:"dataset"`
-	HyperParameter *NnHyperParameter `json:"hyperParameter" bson:"hyperParameter"`
-	NnArchitecture []NnLayer         `json:"nnArchitecture" bson:"nnArchitecture"`
-	CreateTime     string            `json:"createTime" bson:"createTime"`
-	TaskStatus     string            `json:"taskStatus" bson:"taskStatus"`
-	Comment        string            `json:"comment" bson:"comment"`
+	TaskId               string            `json:"taskId" bson:"taskId"`
+	Dataset              string            `json:"dataset" bson:"dataset"`
+	HyperParameter       *NnHyperParameter `json:"hyperParameter" bson:"hyperParameter"`
+	HiddenLayerStructure []NnLayer         `json:"hiddenLayerStructure" bson:"hiddenLayerStructure"`
+	CreateTime           string            `json:"createTime" bson:"createTime"`
+	TaskStatus           string            `json:"taskStatus" bson:"taskStatus"`
+	Comment              string            `json:"comment" bson:"comment"`
 }
 
-func CreateDlTask(id, dataset string, hyperParameter *NnHyperParameter, nnArchitecture []NnLayer) (*DlTask, error) {
+func CreateDlTask(id, dataset string, hyperParameter *NnHyperParameter, hiddenLayerStructure []NnLayer) (*DlTask, error) {
 	collection := db.Mongo.Collection(mongoCollectionDlTask)
 	task := DlTask{
-		TaskId:         id,
-		Dataset:        dataset,
-		HyperParameter: hyperParameter,
-		NnArchitecture: nnArchitecture,
-		CreateTime:     jtime.NowStr(),
-		TaskStatus:     "执行中",
+		TaskId:               id,
+		Dataset:              dataset,
+		HyperParameter:       hyperParameter,
+		HiddenLayerStructure: hiddenLayerStructure,
+		CreateTime:           jtime.NowStr(),
+		TaskStatus:           "执行中",
 	}
 	ctx, _ := context.WithTimeout(context.Background(), mongoCtxTimeout)
 	_, err := collection.InsertOne(ctx, task)

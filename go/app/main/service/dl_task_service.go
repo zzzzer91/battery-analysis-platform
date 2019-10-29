@@ -12,22 +12,22 @@ const (
 )
 
 type DlTaskCreateService struct {
-	Dataset        string                  `json:"dataset"`
-	HyperParameter *model.NnHyperParameter `json:"hyperParameter"`
-	NnArchitecture []model.NnLayer         `json:"nnArchitecture"`
+	Dataset              string                  `json:"dataset"`
+	HyperParameter       *model.NnHyperParameter `json:"hyperParameter"`
+	HiddenLayerStructure []model.NnLayer         `json:"hiddenLayerStructure"`
 }
 
 func (s *DlTaskCreateService) Do() (*jd.Response, error) {
 	// TODO 检查输入参数
 
 	asyncResult, err := producer.Celery.Delay(
-		dlTaskTrain, s.Dataset, s.HyperParameter, s.NnArchitecture)
+		dlTaskTrain, s.Dataset, s.HyperParameter, s.HiddenLayerStructure)
 	if err != nil {
 		return nil, err
 	}
 
 	data, err := model.CreateDlTask(
-		asyncResult.TaskID, s.Dataset, s.HyperParameter, s.NnArchitecture)
+		asyncResult.TaskID, s.Dataset, s.HyperParameter, s.HiddenLayerStructure)
 	if err != nil {
 		return nil, err
 	}

@@ -104,7 +104,7 @@
           ></el-input-number>
         </el-form-item>
         <el-form-item
-          v-for="(layer, index) in newForm.nnArchitecture"
+          v-for="(layer, index) in newForm.hiddenLayerStructure"
           :key="index"
           size="mini"
           style="margin-bottom:0px"
@@ -252,7 +252,7 @@ export default {
         },
         NnLayers: 1,
         nn: '普通神经网络',
-        nnArchitecture: []
+        hiddenLayerStructure: []
       },
       tableData: [],
       chartOption: {}
@@ -272,7 +272,7 @@ export default {
         },
         NnLayers: 1,
         nn: '普通神经网络',
-        nnArchitecture: [
+        hiddenLayerStructure: [
           {
             neurons: 64,
             activation: 'ReLu'
@@ -282,17 +282,17 @@ export default {
       this.newTaskDialogVisible = true
     },
     changeLayer(count) {
-      const len = this.newForm.nnArchitecture.length
+      const len = this.newForm.hiddenLayerStructure.length
       if (count > len) {
         for (let i = 0, temp = count - len; i < temp; i++) {
-          this.newForm.nnArchitecture.push({
+          this.newForm.hiddenLayerStructure.push({
             neurons: 64,
             activation: 'ReLu'
           })
         }
       } else if (count < len) {
         for (let i = 0, temp = len - count; i < temp; i++) {
-          this.newForm.nnArchitecture.pop()
+          this.newForm.hiddenLayerStructure.pop()
         }
       }
     },
@@ -309,7 +309,7 @@ export default {
       let params = {
         dataset: this.newForm.dataset.join('_'),
         hyperParameter: this.newForm.hyperParameter,
-        nnArchitecture: this.newForm.nnArchitecture
+        hiddenLayerStructure: this.newForm.hiddenLayerStructure
       }
 
       return (
