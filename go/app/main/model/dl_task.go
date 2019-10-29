@@ -63,9 +63,9 @@ func DeleteDlTask(id string) (int64, error) {
 
 func ListDlTask() ([]DlTask, error) {
 	collection := db.Mongo.Collection(mongoCollectionDlTask)
-	filter := bson.M{}                          // 过滤记录
-	projection := bson.M{"trainHistory": false} // 过滤字段
-	sort := bson.M{"createTime": -1}            // 结果排序
+	filter := bson.M{}                             // 过滤记录
+	projection := bson.M{"trainingHistory": false} // 过滤字段
+	sort := bson.M{"createTime": -1}               // 结果排序
 	// 注意 ctx 不能几个连接复用
 	ctx, _ := context.WithTimeout(context.Background(), mongoCtxTimeout)
 	cur, err := collection.Find(ctx, filter, options.Find().SetProjection(projection).SetSort(sort))

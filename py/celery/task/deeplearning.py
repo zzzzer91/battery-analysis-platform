@@ -98,7 +98,7 @@ def train(self, dataset: str, hyper_parameter: Dict):
         {'$set': {
             'taskStatus': '完成',
             'comment': f'用时 {used_time}s',
-            'trainHistory': {
+            'trainingHistory': {
                 'loss': loss_history,
                 'accuracy': accuracy_history
             }
