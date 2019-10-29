@@ -9,7 +9,12 @@
         <el-table-column prop="hyperParameter" label="超参" width="100" show-overflow-tooltip>
           <template slot-scope="scope">
             <el-popover trigger="hover" placement="top">
-              <textarea v-html="JSON.stringify(scope.row.hyperParameter,null,4)" readonly rows="16" cols="46"></textarea>
+              <textarea
+                v-html="JSON.stringify(scope.row.hyperParameter,null,4)"
+                readonly
+                rows="16"
+                cols="46"
+              ></textarea>
               <div slot="reference">
                 <el-tag>查看</el-tag>
               </div>
@@ -28,14 +33,20 @@
           </template>
         </el-table-column>
         <el-table-column prop="comment" label="备注" show-overflow-tooltip></el-table-column>
-        <el-table-column label="操作" width="160">
+        <el-table-column label="操作" width="300">
           <template v-slot:default="scope">
             <el-button
               type="text"
-              icon="el-icon-pie-chart"
-              @click="doPlot(scope.$index, scope.row)"
+              icon="el-icon-s-promotion"
+              @click="plotTrainingHistory(scope.$index, scope.row)"
               v-show="scope.row.taskStatus==='完成'"
-            >绘制</el-button>
+            >训练过程</el-button>
+            <el-button
+              type="text"
+              icon="el-icon-pie-chart"
+              @click="plotEvalResult(scope.$index, scope.row)"
+              v-show="scope.row.taskStatus==='完成'"
+            >评估结果</el-button>
             <el-button
               type="text"
               icon="el-icon-delete"
@@ -183,16 +194,6 @@ export default {
               {
                 value: 'LNBSCU3HXJR884327放电',
                 label: 'LNBSCU3HXJR884327放电'
-              }
-            ]
-          },
-          {
-            value: '测试',
-            label: '测试',
-            children: [
-              {
-                value: 'Minst',
-                label: 'Minst'
               }
             ]
           }
@@ -348,7 +349,7 @@ export default {
       this.chartOption = {}
       done()
     },
-    _plotTrainingHistory(data) {
+    _buildTrainingHistoryPlotOption(data) {
       return {
         title: {
           text: '训练过程',
@@ -385,12 +386,12 @@ export default {
           // name: 'Epochs',
           // nameLocation: 'start',
           type: 'category',
-          data: globals.range(1, data['loss'].length+1, 1)
+          data: globals.range(1, data['loss'].length + 1, 1)
         },
         yAxis: [
           {
             name: 'Loss',
-            min: 0,
+            min: 0
           },
           {
             name: 'Accuracy',
@@ -418,7 +419,7 @@ export default {
         }
       }
     },
-    doPlot(index, row) {
+    plotTrainingHistory(index, row) {
       this.$axios
         .get(`${globals.URL_API_DL_TASKS}/${row.taskId}/training-history`)
         .then(response => response.data)
@@ -427,7 +428,62 @@ export default {
             throw new Error(jd.msg)
           }
           this.chartDialogVisible = true
-          this.chartOption = this._plotTrainingHistory(jd.data)
+          this.chartOption = this._buildTrainingHistoryPlotOption(jd.data)
+        })
+        .catch(error => {
+          this.$message.error(error.message)
+        })
+    },
+    _buildEvalResultOption(data) {
+      return {
+        title: {
+          text: '模型评估误差分布',
+          //subtext: '子标题',
+          x: 'center'
+        },
+        tooltip: {
+          trigger: 'item',
+          formatter: '{a} <br/>{b} : {c} ({d}%)'
+        },
+        legend: {
+          orient: 'vertical',
+          left: 'left',
+          data: ['误差<1%', '误差1%～2%', '误差2%～3%', '误差3%～4%', '误差>=4%']
+        },
+        series: [
+          {
+            name: '访问来源',
+            type: 'pie',
+            //radius: '55%',
+            //center: ['50%', '60%'],
+            data: [
+              { value: data['a1Count'], name: '误差<1%' },
+              { value: data['a2Count'], name: '误差1%～2%' },
+              { value: data['a3Count'], name: '误差2%～3%' },
+              { value: data['a4Count'], name: '误差3%～4%' },
+              { value: data['aOtherCount'], name: '误差>=4%' }
+            ],
+            itemStyle: {
+              emphasis: {
+                shadowBlur: 10,
+                shadowOffsetX: 0,
+                shadowColor: 'rgba(0, 0, 0, 0.5)'
+              }
+            }
+          }
+        ]
+      }
+    },
+    plotEvalResult(index, row) {
+      this.$axios
+        .get(`${globals.URL_API_DL_TASKS}/${row.taskId}/eval-result`)
+        .then(response => response.data)
+        .then(jd => {
+          if (jd.code !== globals.SUCCESS) {
+            throw new Error(jd.msg)
+          }
+          this.chartDialogVisible = true
+          this.chartOption = this._buildEvalResultOption(jd.data)
         })
         .catch(error => {
           this.$message.error(error.message)

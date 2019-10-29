@@ -100,3 +100,17 @@ func GetDlTaskTrainingHistory(id string) (bson.M, error) {
 	}
 	return result["trainingHistory"].(bson.M), nil
 }
+
+func GetDlTaskEvalResult(id string) (bson.M, error) {
+	collection := db.Mongo.Collection(mongoCollectionDlTask)
+	filter := bson.M{"taskId": id}
+	projection := bson.M{"_id": false, "evalResult": true}
+	var result bson.M
+	ctx, _ := context.WithTimeout(context.Background(), mongoCtxTimeout)
+	err := collection.FindOne(ctx, filter, options.FindOne().
+		SetProjection(projection)).Decode(&result)
+	if err != nil {
+		return nil, err
+	}
+	return result["evalResult"].(bson.M), nil
+}

@@ -12,7 +12,7 @@ import 'echarts/lib/component/visualMap'
 import 'echarts/lib/chart/line'
 import 'echarts/lib/chart/bar'
 import 'echarts/lib/chart/heatmap'
-// import 'echarts/lib/chart/pie'
+import 'echarts/lib/chart/pie'
 // import 'echarts/lib/chart/scatter'
 
 // import 'echarts/theme/roma.js'  // 主题

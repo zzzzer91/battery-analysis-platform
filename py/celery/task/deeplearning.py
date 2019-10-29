@@ -1,6 +1,6 @@
 import time
 import random
-from typing import List, Dict
+from typing import Dict
 
 import torch
 from torch import optim
@@ -87,6 +87,7 @@ def train(self, dataset: str, hyper_parameter: Dict):
     criterion = get_loss(hyper_parameter['loss'])
     optimizer = optim.Adam(model.parameters(), lr=hyper_parameter['learningRate'])
 
+    # 训练
     loss_history = []
     accuracy_history = []
     model.train()
@@ -99,6 +100,15 @@ def train(self, dataset: str, hyper_parameter: Dict):
         loss_history.append(loss_value_per_epoch)
         accuracy_history.append(accuracy_value_per_epoch)
 
+    # 模型评估
+    model.eval()
+    out = model(x_test)
+    a_1_count = accuracy(out, y_test, 0.01).item()
+    a_2_count = accuracy(out, y_test).item() - a_1_count
+    a_3_count = accuracy(out, y_test, 0.03).item() - a_2_count - a_1_count
+    a_4_count = accuracy(out, y_test, 0.04).item() - a_3_count - a_2_count - a_1_count
+    a_other_count = len(y_test) - a_4_count - a_3_count - a_2_count - a_1_count
+
     used_time = round(time.perf_counter() - start, 2)
     task_collection.update_one(
         {'taskId': task_id},
@@ -108,6 +118,13 @@ def train(self, dataset: str, hyper_parameter: Dict):
             'trainingHistory': {
                 'loss': loss_history,
                 'accuracy': accuracy_history
+            },
+            'evalResult': {
+                'a1Count': a_1_count,
+                'a2Count': a_2_count,
+                'a3Count': a_3_count,
+                'a4Count': a_4_count,
+                'aOtherCount': a_other_count,
             }
         }}
     )
