@@ -444,7 +444,7 @@ export default {
     },
     doPlot(index, row) {
       this.$axios
-        .get(`${globals.URL_API_MINING_TASKS}/${row.taskId}`)
+        .get(`${globals.URL_API_MINING_TASKS}/${row.taskId}/data`)
         .then(response => response.data)
         .then(jd => {
           if (jd.code !== globals.SUCCESS) {

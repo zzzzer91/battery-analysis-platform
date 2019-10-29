@@ -28,7 +28,7 @@ func register(r *gin.Engine) {
 
 		apiV1.POST("/mining/tasks", api.CreateMiningTask)
 		apiV1.GET("/mining/tasks", api.ListMiningTask)
-		apiV1.GET("/mining/tasks/:taskId", api.ShowMiningTaskData)
+		apiV1.GET("/mining/tasks/:taskId/data", api.ShowMiningTaskData)
 		apiV1.DELETE("/mining/tasks/:taskId", api.DeleteMiningTask)
 
 		apiV1.POST("/dl/tasks", api.CreateDlTask)
