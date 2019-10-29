@@ -50,14 +50,8 @@ export default new Vuex.Store({
         },
         {
           icon: 'el-icon-aim',
-          index: 'ml',
-          title: '机器学习',
-          subs: [
-            {
-              index: 'deep-learning',
-              title: '深度学习'
-            }
-          ]
+          index: 'deep-learning',
+          title: '深度学习'
         },
         {
           icon: 'el-icon-document',
