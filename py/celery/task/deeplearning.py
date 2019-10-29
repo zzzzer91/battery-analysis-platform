@@ -13,17 +13,13 @@ from .mytorch.metrics import beiqi_accuracy
 
 
 @app.task(name='task.deeplearning.train', bind=True, ignore_result=True)
-def train(self,
-          dataset: str,
-          hyper_parameter: Dict,
-          hidden_layer_structure: List[Dict]):
+def train(self, dataset: str, hyper_parameter: Dict):
     """
     普通神经网络训练。
 
     :param self:
     :param dataset: 数据集名
     :param hyper_parameter: 超参数
-    :param hidden_layer_structure: 神经网络结构
     """
 
     # 用 celery 产生的 id 做 mongo 主键
@@ -78,7 +74,9 @@ def train(self,
     train_data_iter = mini_batch(x_train, y_train, hyper_parameter['batchSize'])
 
     model = build_nn(
-        hidden_layer_structure, input_dim, out_dim, hyper_parameter['outputLayerActivation']
+        hyper_parameter['hiddenLayerStructure'],
+        input_dim, out_dim,
+        hyper_parameter['outputLayerActivation']
     )
     criterion = get_loss(hyper_parameter['loss'])
     optimizer = optim.Adam(model.parameters(), lr=hyper_parameter['learningRate'])

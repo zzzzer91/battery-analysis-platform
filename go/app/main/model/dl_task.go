@@ -8,39 +8,38 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-type NnHyperParameter struct {
-	OutputLayerActivation string  `json:"outputLayerActivation" bson:"outputLayerActivation"`
-	Loss                  string  `json:"loss" bson:"loss"`
-	Seed                  int     `json:"seed" bson:"seed"`
-	BatchSize             int     `json:"batchSize" bson:"batchSize"`
-	Epochs                int     `json:"epochs" bson:"epochs"`
-	LearningRate          float64 `json:"learningRate" bson:"learningRate"`
-}
-
 type NnLayer struct {
 	Neurons    int    `json:"neurons" bson:"neurons"`
 	Activation string `json:"activation" bson:"activation"`
 }
 
-type DlTask struct {
-	TaskId               string            `json:"taskId" bson:"taskId"`
-	Dataset              string            `json:"dataset" bson:"dataset"`
-	HyperParameter       *NnHyperParameter `json:"hyperParameter" bson:"hyperParameter"`
-	HiddenLayerStructure []NnLayer         `json:"hiddenLayerStructure" bson:"hiddenLayerStructure"`
-	CreateTime           string            `json:"createTime" bson:"createTime"`
-	TaskStatus           string            `json:"taskStatus" bson:"taskStatus"`
-	Comment              string            `json:"comment" bson:"comment"`
+type NnHyperParameter struct {
+	HiddenLayerStructure  []NnLayer `json:"hiddenLayerStructure" bson:"hiddenLayerStructure"`
+	OutputLayerActivation string    `json:"outputLayerActivation" bson:"outputLayerActivation"`
+	Loss                  string    `json:"loss" bson:"loss"`
+	Seed                  int       `json:"seed" bson:"seed"`
+	BatchSize             int       `json:"batchSize" bson:"batchSize"`
+	Epochs                int       `json:"epochs" bson:"epochs"`
+	LearningRate          float64   `json:"learningRate" bson:"learningRate"`
 }
 
-func CreateDlTask(id, dataset string, hyperParameter *NnHyperParameter, hiddenLayerStructure []NnLayer) (*DlTask, error) {
+type DlTask struct {
+	TaskId         string            `json:"taskId" bson:"taskId"`
+	Dataset        string            `json:"dataset" bson:"dataset"`
+	HyperParameter *NnHyperParameter `json:"hyperParameter" bson:"hyperParameter"`
+	CreateTime     string            `json:"createTime" bson:"createTime"`
+	TaskStatus     string            `json:"taskStatus" bson:"taskStatus"`
+	Comment        string            `json:"comment" bson:"comment"`
+}
+
+func CreateDlTask(id, dataset string, hyperParameter *NnHyperParameter) (*DlTask, error) {
 	collection := db.Mongo.Collection(mongoCollectionDlTask)
 	task := DlTask{
-		TaskId:               id,
-		Dataset:              dataset,
-		HyperParameter:       hyperParameter,
-		HiddenLayerStructure: hiddenLayerStructure,
-		CreateTime:           jtime.NowStr(),
-		TaskStatus:           "执行中",
+		TaskId:         id,
+		Dataset:        dataset,
+		HyperParameter: hyperParameter,
+		CreateTime:     jtime.NowStr(),
+		TaskStatus:     "执行中",
 	}
 	ctx, _ := context.WithTimeout(context.Background(), mongoCtxTimeout)
 	_, err := collection.InsertOne(ctx, task)

@@ -104,7 +104,7 @@
           ></el-input-number>
         </el-form-item>
         <el-form-item
-          v-for="(layer, index) in newForm.hiddenLayerStructure"
+          v-for="(layer, index) in newForm.hyperParameter.hiddenLayerStructure"
           :key="index"
           size="mini"
           style="margin-bottom:0px"
@@ -241,18 +241,18 @@ export default {
       formStepActive: 1,
       // 请求的参数
       newForm: {
-        dataset: ['测试', 'Minst'],
+        dataset: ['北汽', 'LNBSCU3HXJR884327放电'],
         hyperParameter: {
           outputLayerActivation: 'Linear',
           loss: 'MSE',
           seed: 1,
           batchSize: 600,
           epochs: 100,
-          learningRate: 0.001
+          learningRate: 0.001,
+          hiddenLayerStructure: []
         },
         NnLayers: 1,
         nn: '普通神经网络',
-        hiddenLayerStructure: []
       },
       tableData: [],
       chartOption: {}
@@ -261,38 +261,38 @@ export default {
   methods: {
     handleNewForm() {
       this.newForm = {
-        dataset: ['测试', 'Minst'],
+        dataset: ['北汽', 'LNBSCU3HXJR884327放电'],
         hyperParameter: {
           outputLayerActivation: 'Linear',
           loss: 'MSE',
           seed: 1,
           batchSize: 600,
           epochs: 100,
-          learningRate: 0.001
+          learningRate: 0.001,
+          hiddenLayerStructure: [
+            {
+              neurons: 64,
+              activation: 'ReLu'
+            }
+          ]
         },
         NnLayers: 1,
-        nn: '普通神经网络',
-        hiddenLayerStructure: [
-          {
-            neurons: 64,
-            activation: 'ReLu'
-          }
-        ]
+        nn: '普通神经网络'
       }
       this.newTaskDialogVisible = true
     },
     changeLayer(count) {
-      const len = this.newForm.hiddenLayerStructure.length
+      const len = this.newForm.hyperParameter.hiddenLayerStructure.length
       if (count > len) {
         for (let i = 0, temp = count - len; i < temp; i++) {
-          this.newForm.hiddenLayerStructure.push({
+          this.newForm.hyperParameter.hiddenLayerStructure.push({
             neurons: 64,
             activation: 'ReLu'
           })
         }
       } else if (count < len) {
         for (let i = 0, temp = len - count; i < temp; i++) {
-          this.newForm.hiddenLayerStructure.pop()
+          this.newForm.hyperParameter.hiddenLayerStructure.pop()
         }
       }
     },
@@ -308,8 +308,7 @@ export default {
 
       let params = {
         dataset: this.newForm.dataset.join('_'),
-        hyperParameter: this.newForm.hyperParameter,
-        hiddenLayerStructure: this.newForm.hiddenLayerStructure
+        hyperParameter: this.newForm.hyperParameter
       }
 
       return (
