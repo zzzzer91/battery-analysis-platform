@@ -39,14 +39,3 @@ func ListDlTask(c *gin.Context) {
 	}
 	c.JSON(200, res)
 }
-
-func ShowDlTaskData(c *gin.Context) {
-	var s service.DlTaskShowDataService
-	s.Id = c.Param("taskId")
-	res, err := s.Do()
-	if err != nil {
-		c.AbortWithError(500, err)
-		return
-	}
-	c.JSON(200, res)
-}

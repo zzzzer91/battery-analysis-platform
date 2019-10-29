@@ -64,9 +64,9 @@ func DeleteDlTask(id string) (int64, error) {
 
 func ListDlTask() ([]DlTask, error) {
 	collection := db.Mongo.Collection(mongoCollectionDlTask)
-	filter := bson.M{}                  // 过滤记录
-	projection := bson.M{"data": false} // 过滤字段
-	sort := bson.M{"createTime": -1}    // 结果排序
+	filter := bson.M{}                          // 过滤记录
+	projection := bson.M{"trainHistory": false} // 过滤字段
+	sort := bson.M{"createTime": -1}            // 结果排序
 	// 注意 ctx 不能几个连接复用
 	ctx, _ := context.WithTimeout(context.Background(), mongoCtxTimeout)
 	cur, err := collection.Find(ctx, filter, options.Find().SetProjection(projection).SetSort(sort))
@@ -86,18 +86,4 @@ func ListDlTask() ([]DlTask, error) {
 	}
 	_ = cur.Close(ctx)
 	return records, nil
-}
-
-func GetDlTaskData(id string) (bson.A, error) {
-	collection := db.Mongo.Collection(mongoCollectionDlTask)
-	filter := bson.M{"taskId": id}
-	projection := bson.M{"_id": false, "data": true} // 注意 _id 默认会返回，需要手动过滤
-	var result bson.M
-	ctx, _ := context.WithTimeout(context.Background(), mongoCtxTimeout)
-	err := collection.FindOne(ctx, filter, options.FindOne().
-		SetProjection(projection)).Decode(&result)
-	if err != nil {
-		return nil, err
-	}
-	return result["data"].(bson.A), nil
 }

@@ -1,36 +1,111 @@
 import time
 from typing import List, Dict
 
+import torch
+from torch import optim
+
 from .celery import app
 from .db import mongo
+from .mytorch.nn import build_nn, train_once
+from .mytorch.loss import get_loss
+from .mytorch.data import mini_batch
+from .mytorch.metrics import beiqi_accuracy
 
 
 @app.task(name='task.deeplearning.train', bind=True, ignore_result=True)
 def train(self,
           dataset: str,
-          loss: str,
-          epochs: int,
-          batch_size: int,
-          nn_architecture: List[Dict]):
+          hyper_parameter: Dict,
+          hidden_layer_structure: List[Dict]):
     """
     普通神经网络训练。
 
     :param self:
     :param dataset: 数据集名
-    :param loss: 损失函数名
-    :param epochs: 迭代次数
-    :param batch_size:
-    :param nn_architecture: 神经网络结构
+    :param hyper_parameter: 超参数
+    :param hidden_layer_structure: 神经网络结构
     """
 
     # 用 celery 产生的 id 做 mongo 主键
     task_id = self.request.id
 
-    collection = mongo['mining_task']
+    data_collection = mongo['beiqi_vehicle']
+    task_collection = mongo['deeplearning_task']
 
     start = time.perf_counter()
 
-    # TODO
+    # 固定随机数种子，使结果可以复现
+    seed = hyper_parameter['seed']
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+
+    if dataset == '北汽_LNBSCU3HXJR884327放电':
+        iter_ = data_collection.find(
+            {'动力电池充放电状态': 2},
+            projection={
+                '_id': False,
+                '时间': False,
+                'MSODO总里程': False,
+                '动力电池充放电状态': False,
+                '动力电池可用能量': False,
+                '动力电池可用容量': False,
+            }
+        )
+        x = []
+        y = []
+        for d in iter_:
+            v = list(d.values())
+            x.append(v[1:])
+            y.append(v[0:1])
+        del iter_
+
+        # 划分训练，测试数据集
+        sample_num = 72000
+        x_train = torch.tensor(x[:sample_num], dtype=torch.float)
+        y_train = torch.tensor(y[:sample_num], dtype=torch.float)
+        x_test = torch.tensor(x[sample_num:], dtype=torch.float)
+        y_test = torch.tensor(y[sample_num:], dtype=torch.float)
+        del x
+        del y
+
+        input_dim = x_train.size(1)
+        out_dim = 1
+
+        accuracy = beiqi_accuracy
+    else:
+        raise ValueError('Non-supported dataset')
+
+    train_data_iter = mini_batch(x_train, y_train, hyper_parameter['batchSize'])
+
+    model = build_nn(
+        hidden_layer_structure, input_dim, out_dim, hyper_parameter['outputLayerActivation']
+    )
+    criterion = get_loss(hyper_parameter['loss'])
+    optimizer = optim.Adam(model.parameters(), lr=hyper_parameter['learningRate'])
+
+    loss_history = []
+    accuracy_history = []
+
+    model.train()
+    for i in range(1, hyper_parameter['epochs'] + 1):
+        loss_value, accuracy_value = train_once(
+            model, train_data_iter, optimizer, criterion, accuracy
+        )
+        loss_history.append(loss_value / sample_num)
+        accuracy_history.append(accuracy_value / sample_num)
+
+    used_time = round(time.perf_counter() - start, 2)
+    task_collection.update_one(
+        {'taskId': task_id},
+        {'$set': {
+            'taskStatus': '完成',
+            'comment': f'用时 {used_time}s',
+            'trainHistory': {
+                'loss': loss_history,
+                'accuracy': accuracy_history
+            }
+        }}
+    )
 
 
 @app.task(name='task.deeplearning.stop_train', ignore_result=True)

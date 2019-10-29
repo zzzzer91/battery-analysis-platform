@@ -244,7 +244,7 @@ export default {
         dataset: ['测试', 'Minst'],
         hyperParameter: {
           outputLayerActivation: 'Linear',
-          loss: 'MSE Loss',
+          loss: 'MSE',
           seed: 1,
           batchSize: 600,
           epochs: 100,
@@ -264,7 +264,7 @@ export default {
         dataset: ['测试', 'Minst'],
         hyperParameter: {
           outputLayerActivation: 'Linear',
-          loss: 'MSE Loss',
+          loss: 'MSE',
           seed: 1,
           batchSize: 600,
           epochs: 100,
