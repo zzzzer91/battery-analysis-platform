@@ -14,7 +14,7 @@ from .mytorch.data import mini_batch
 from .mytorch.metrics import beiqi_accuracy
 
 
-@app.task(name='task.deeplearning.train', bind=True, ignore_result=True)
+@app.task(name='task.deeplearning.train', bind=True)
 def train(self, dataset: str, hyper_parameter: Dict):
     """
     普通神经网络训练。
@@ -87,6 +87,13 @@ def train(self, dataset: str, hyper_parameter: Dict):
     )
     criterion = get_loss(hyper_parameter['loss'])
     optimizer = optim.Adam(model.parameters(), lr=hyper_parameter['learningRate'])
+
+    task_collection.update_one(
+        {'taskId': task_id},
+        {'$set': {
+            'taskStatus': const.TASK_STATUS_PROCESSING,
+        }}
+    )
 
     # 训练
     loss_history = []

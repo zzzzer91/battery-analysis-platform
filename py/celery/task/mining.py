@@ -48,6 +48,13 @@ def compute_model(self,
 
     start = time.perf_counter()
 
+    collection.update_one(
+        {'taskId': task_id},
+        {'$set': {
+            'taskStatus': const.TASK_STATUS_PROCESSING,
+        }}
+    )
+
     # 处理数据
     data = None
     if task_name == '充电过程':
