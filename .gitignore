@@ -4,6 +4,7 @@ node_modules/
 database/
 __pycache__/
 build/
+bin/
 resource/
 dist/
 media/
