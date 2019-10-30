@@ -20,22 +20,22 @@ else
 fi
 
 # 生成 .env，会覆盖原来的
-echo "# docker-compose.yml 中使用的环境变量" > ${ENV_FILE}
-echo "# 注意值两边的单双引号，会被当作值的一部分，这在 docker-compose 中会出现问题" >> ${ENV_FILE}
+echo "# docker-compose.yml 中使用的环境变量" > "${ENV_FILE}"
+echo "# 注意值两边的单双引号，会被当作值的一部分，这在 docker-compose 中会出现问题" >> "${ENV_FILE}"
 #
-echo "PROJECT_DIR=${ABSOLUTE_PROJECT_PATH}" >> ${ENV_FILE}
+echo "PROJECT_DIR=${ABSOLUTE_PROJECT_PATH}" >> "${ENV_FILE}"
 #
-echo "# docker 映射数据库数据" >> ${ENV_FILE}
-echo "DATABASE_DATA_DIR=${ABSOLUTE_PROJECT_PATH}/database" >> ${ENV_FILE}
+echo "# docker 映射数据库数据" >> "${ENV_FILE}"
+echo "DATABASE_DATA_DIR=${ABSOLUTE_PROJECT_PATH}/database" >> "${ENV_FILE}"
 #
-echo "# MySQL" >> ${ENV_FILE}
-echo "MYSQL_ROOT_PASSWORD=${mysql_root_password}" >> ${ENV_FILE}
+echo "# MySQL" >> "${ENV_FILE}"
+echo "MYSQL_ROOT_PASSWORD=${mysql_root_password}" >> "${ENV_FILE}"
 #
-echo "# Mongo" >> ${ENV_FILE}
-echo "MONGO_INITDB_ROOT_USERNAME=root" >> ${ENV_FILE}
-echo "MONGO_INITDB_ROOT_PASSWORD=${mongo_root_password}" >> ${ENV_FILE}
+echo "# Mongo" >> "${ENV_FILE}"
+echo "MONGO_INITDB_ROOT_USERNAME=root" >> "${ENV_FILE}"
+echo "MONGO_INITDB_ROOT_PASSWORD=${mongo_root_password}" >> "${ENV_FILE}"
 #
-echo "# Redis" >> ${ENV_FILE}
+echo "# Redis" >> "${ENV_FILE}"
 #
 echo "${ENV_FILE} 生成完毕！"
 
