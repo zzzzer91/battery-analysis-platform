@@ -7,6 +7,7 @@ type appConf struct {
 	Gorm   conf.GormConf   `yaml:"gorm"`
 	Mongo  conf.MongoConf  `yaml:"mongo"`
 	Celery conf.CeleryConf `yaml:"celery"`
+	Redis  conf.RedisConf  `yaml:"redis"`
 }
 
 var App appConf
