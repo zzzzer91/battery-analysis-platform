@@ -13,10 +13,8 @@
         <el-table-column prop="taskStatus" label="状态" width="100" sortable>
           <template scope="scope">
             <el-tag v-if="scope.row.taskStatus === 6" type="success">完成</el-tag>
-            <el-tag
-              v-else-if="scope.row.taskStatus === 0"
-              type="warning"
-            >执行中</el-tag>
+            <el-tag v-else-if="scope.row.taskStatus === 0" type="warning">创建中</el-tag>
+            <el-tag v-else-if="scope.row.taskStatus === 1" type="warning">执行中</el-tag>
             <el-tag v-else-if="scope.row.taskStatus === 7" type="danger">失败</el-tag>
           </template>
         </el-table-column>
@@ -27,7 +25,7 @@
               type="text"
               icon="el-icon-pie-chart"
               @click="doPlot(scope.$index, scope.row)"
-              v-show="scope.row.taskStatus==='完成'"
+              v-show="scope.row.taskStatus===6"
             >绘制</el-button>
             <el-button
               type="text"
@@ -70,7 +68,7 @@
             <el-radio :label="1">充电</el-radio>
             <el-radio :label="2">放电</el-radio>
           </el-radio-group>
-        </el-form-item> -->
+        </el-form-item>-->
         <el-form-item label="起止日期">
           <el-date-picker
             v-model="newForm.dateRange"
@@ -156,7 +154,7 @@ export default {
             value: 'pearson相关系数',
             label: 'pearson相关系数'
           }
-        ],
+        ]
       },
       // 请求的参数
       newForm: {
@@ -372,8 +370,14 @@ export default {
     _buildHeatMap(taskName, data) {
       // 字段名不能太长，否则会显示不全
       const xy = [
-        '总电压', '总电流', '车速', 'SOC',
-        '单体最高温度', '单体最低温度', '单体最高电压', '单体最低电压'
+        '总电压',
+        '总电流',
+        '车速',
+        'SOC',
+        '单体最高温度',
+        '单体最低温度',
+        '单体最高电压',
+        '单体最低电压'
       ]
       return {
         title: {
@@ -385,7 +389,7 @@ export default {
         },
         animation: false,
         grid: {
-          height: '70%',
+          height: '70%'
         },
         xAxis: {
           type: 'category',

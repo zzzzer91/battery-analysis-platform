@@ -25,10 +25,8 @@
         <el-table-column prop="taskStatus" label="状态" width="100" sortable>
           <template scope="scope">
             <el-tag v-if="scope.row.taskStatus === 6" type="success">完成</el-tag>
-            <el-tag
-              v-else-if="scope.row.taskStatus === 0"
-              type="warning"
-            >执行中</el-tag>
+            <el-tag v-else-if="scope.row.taskStatus === 0" type="warning">创建中</el-tag>
+            <el-tag v-else-if="scope.row.taskStatus === 1" type="warning">执行中</el-tag>
             <el-tag v-else-if="scope.row.taskStatus === 7" type="danger">失败</el-tag>
           </template>
         </el-table-column>
@@ -39,13 +37,13 @@
               type="text"
               icon="el-icon-s-promotion"
               @click="plotTrainingHistory(scope.$index, scope.row)"
-              v-show="scope.row.taskStatus==='完成'"
+              v-show="scope.row.taskStatus===6"
             >训练过程</el-button>
             <el-button
               type="text"
               icon="el-icon-pie-chart"
               @click="plotEvalResult(scope.$index, scope.row)"
-              v-show="scope.row.taskStatus==='完成'"
+              v-show="scope.row.taskStatus===6"
             >评估结果</el-button>
             <el-button
               type="text"
@@ -450,7 +448,13 @@ export default {
         legend: {
           orient: 'vertical',
           left: 'left',
-          data: ['误差<1%', '误差1%～2%', '误差2%～3%', '误差3%～4%', '误差>=4%']
+          data: [
+            '误差<1%',
+            '误差1%～2%',
+            '误差2%～3%',
+            '误差3%～4%',
+            '误差>=4%'
+          ]
         },
         series: [
           {
