@@ -35,3 +35,5 @@ py-app-celery:
   celery:
     brokerUri: redis://127.0.0.1:6379
     backendUri: redis://127.0.0.1:6379
+  redis:
+    uri: redis://127.0.0.1:6379

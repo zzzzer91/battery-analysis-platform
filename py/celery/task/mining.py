@@ -2,12 +2,15 @@ import time
 
 import pandas as pd
 
-from . import const
+from . import status
 from .celery import app
 from .db import mysql, mongo
 from .algorithm import compute_battery_statistic, \
     compute_charging_process, compute_working_condition, \
     compute_correlation
+
+TASK_NAME = 'miningTask'
+SIG_LIST_NAME = f'{TASK_NAME}:sigList'
 
 
 def _gen_sql(need_fields: str, table_name: str, date_range: str) -> str:
@@ -51,9 +54,10 @@ def compute_model(self,
     collection.update_one(
         {'taskId': task_id},
         {'$set': {
-            'taskStatus': const.TASK_STATUS_PROCESSING,
+            'taskStatus': status.TASK_STATUS_PROCESSING,
         }}
     )
+    status.send_status_change_sig(SIG_LIST_NAME)
 
     # 处理数据
     data = None
@@ -93,7 +97,7 @@ def compute_model(self,
         collection.update_one(
             {'taskId': task_id},
             {'$set': {
-                'taskStatus': const.TASK_STATUS_FAILURE,
+                'taskStatus': status.TASK_STATUS_FAILURE,
                 'comment': '无可用数据',
             }}
         )
@@ -102,11 +106,12 @@ def compute_model(self,
         collection.update_one(
             {'taskId': task_id},
             {'$set': {
-                'taskStatus': const.TASK_STATUS_SUCCESS,
+                'taskStatus': status.TASK_STATUS_SUCCESS,
                 'comment': f'用时 {used_time}s',
                 'data': data
             }}
         )
+    status.send_status_change_sig(SIG_LIST_NAME)
 
 
 @app.task(name='task.mining.stop_compute_model', ignore_result=True)

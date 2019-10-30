@@ -5,7 +5,7 @@ from typing import Dict
 import torch
 from torch import optim
 
-from . import const
+from . import status
 from .celery import app
 from .db import mongo
 from .mytorch.nn import build_nn, train_once
@@ -13,8 +13,11 @@ from .mytorch.loss import get_loss
 from .mytorch.data import mini_batch
 from .mytorch.metrics import beiqi_accuracy
 
+TASK_NAME = 'deeplearningTask'
+SIG_LIST_NAME = f'{TASK_NAME}:sigList'
 
-@app.task(name='task.deeplearning.train', bind=True)
+
+@app.task(name='task.deeplearning.train', bind=True, ignore_result=True)
 def train(self, dataset: str, hyper_parameter: Dict):
     """
     普通神经网络训练。
@@ -91,7 +94,7 @@ def train(self, dataset: str, hyper_parameter: Dict):
     task_collection.update_one(
         {'taskId': task_id},
         {'$set': {
-            'taskStatus': const.TASK_STATUS_PROCESSING,
+            'taskStatus': status.TASK_STATUS_PROCESSING,
         }}
     )
 
@@ -121,7 +124,7 @@ def train(self, dataset: str, hyper_parameter: Dict):
     task_collection.update_one(
         {'taskId': task_id},
         {'$set': {
-            'taskStatus': const.TASK_STATUS_SUCCESS,
+            'taskStatus': status.TASK_STATUS_SUCCESS,
             'comment': f'用时 {used_time}s',
             'trainingHistory': {
                 'loss': loss_history,

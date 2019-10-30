@@ -1,10 +1,11 @@
 package websocket
 
 import (
+	"battery-analysis-platform/app/main/db"
+	"battery-analysis-platform/app/main/model"
 	"battery-analysis-platform/app/main/service"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"time"
 )
 
 func ListMiningTask(c *gin.Context) {
@@ -16,16 +17,9 @@ func ListMiningTask(c *gin.Context) {
 	defer conn.Close()
 
 	for {
-		// read 指定时间后超时返回
-		err := conn.SetReadDeadline(time.Now().Add(6 * time.Second))
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-		if _, _, err = conn.ReadMessage(); err != nil {
-			fmt.Println(err)
-			return
-		}
+		// 等待数据改变
+		db.Redis.BRPop(model.TaskWaitSigTimeout, "miningTask:sigList")
+
 		var s service.MiningTaskListService
 		res, err := s.Do()
 		if err != nil {
@@ -36,7 +30,5 @@ func ListMiningTask(c *gin.Context) {
 			fmt.Println(err)
 			return
 		}
-		// 服务端也做速度控制
-		time.Sleep(time.Second * 3)
 	}
 }

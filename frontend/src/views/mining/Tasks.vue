@@ -488,18 +488,40 @@ export default {
             })
         })
         .catch(() => {})
+    },
+    getTaskList() {
+      this.$axios
+        .get(globals.URL_API_MINING_TASKS)
+        .then(response => response.data)
+        .then(jd => {
+          if (jd.code !== globals.SUCCESS) {
+            throw new Error(jd.msg)
+          }
+          return jd.data
+        })
+        .catch(error => {
+          this.$message.error(error.message)
+        })
     }
   },
   created() {
+    // 先填充一次数据
+    this.$axios
+      .get(globals.URL_API_MINING_TASKS)
+      .then(response => response.data)
+      .then(jd => {
+        if (jd.code !== globals.SUCCESS) {
+          throw new Error(jd.msg)
+        }
+        this.tableData = jd.data
+      })
+      .catch(error => {
+        this.$message.error(error.message)
+      })
+
     this.ws = new WebSocket(
       'ws://' + document.location.host + globals.URL_WS_MINING_TASKS
     )
-
-    // 连接成功后的回调
-    this.ws.onopen = () => {
-      this.ws.send('ping')
-      this.wsTimer = window.setInterval(() => this.ws.send('ping'), 3000)
-    }
 
     // 收到服务器数据后的回调函数
     // 这里要用箭头函数，不然 this 的指向不对
@@ -514,17 +536,11 @@ export default {
     this.ws.onclose = () => {
       // 这里代码不能少，如果遇到异常关闭，会走 onclose
       if (this.wsTimer !== null) {
-        window.clearInterval(this.wsTimer)
         this.wsTimer = null
       }
     }
   },
   beforeDestroy() {
-    // 如果没有这一步判断，当 ws 关闭时，定时器可能还在运作，控制台会报个错
-    if (this.wsTimer !== null) {
-      window.clearInterval(this.wsTimer)
-      this.wsTimer = null
-    }
     this.ws.close()
     this.ws = null
   }
