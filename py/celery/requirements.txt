@@ -1,9 +1,10 @@
+torch
 celery
-pymongo
-pymysql
+numpy
+scipy
+pandas
 pyyaml
 redis
+pymongo
+pymysql
 sqlalchemy
-numpy
-pandas
-scipy
