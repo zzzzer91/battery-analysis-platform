@@ -57,6 +57,7 @@ def compute_model(self,
             'taskStatus': status.TASK_STATUS_PROCESSING,
         }}
     )
+    # 发送信号，websocket相关代码会读取到信号，然后发送数据给前端
     status.send_status_change_sig(SIG_LIST_NAME)
 
     # 处理数据

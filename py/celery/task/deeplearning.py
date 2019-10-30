@@ -97,6 +97,7 @@ def train(self, dataset: str, hyper_parameter: Dict):
             'taskStatus': status.TASK_STATUS_PROCESSING,
         }}
     )
+    status.send_status_change_sig(SIG_LIST_NAME)
 
     # 训练
     loss_history = []
@@ -139,6 +140,7 @@ def train(self, dataset: str, hyper_parameter: Dict):
             }
         }}
     )
+    status.send_status_change_sig(SIG_LIST_NAME)
 
 
 @app.task(name='task.deeplearning.stop_train', ignore_result=True)

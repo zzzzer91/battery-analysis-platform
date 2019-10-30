@@ -4,7 +4,6 @@ import (
 	"battery-analysis-platform/app/main/db"
 	"context"
 	"go.mongodb.org/mongo-driver/bson"
-	"time"
 )
 
 const (
@@ -12,10 +11,6 @@ const (
 	TaskStatusProcessing = 1
 	TaskStatusSuccess    = 6
 	TaskStatusFailure    = 7
-)
-
-const (
-	TaskWaitSigTimeout = time.Second * 30
 )
 
 // 注意：
