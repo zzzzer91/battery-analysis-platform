@@ -71,7 +71,7 @@ func (s *MiningTaskDeleteService) Do() (*jd.Response, error) {
 		return nil, err
 	}
 
-	_, err = model.DeleteMiningTask(s.Id)
+	err = model.DeleteMiningTask(s.Id)
 	if err != nil {
 		return nil, err
 	}

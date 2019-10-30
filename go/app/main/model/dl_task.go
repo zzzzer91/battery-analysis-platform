@@ -24,41 +24,28 @@ type NnHyperParameter struct {
 }
 
 type DlTask struct {
-	TaskId         string            `json:"taskId" bson:"taskId"`
+	BaseTask       `bson:",inline"`
 	Dataset        string            `json:"dataset" bson:"dataset"`
 	HyperParameter *NnHyperParameter `json:"hyperParameter" bson:"hyperParameter"`
-	CreateTime     string            `json:"createTime" bson:"createTime"`
-	TaskStatus     string            `json:"taskStatus" bson:"taskStatus"`
-	Comment        string            `json:"comment" bson:"comment"`
 }
 
 func CreateDlTask(id, dataset string, hyperParameter *NnHyperParameter) (*DlTask, error) {
-	collection := db.Mongo.Collection(mongoCollectionDlTask)
 	task := DlTask{
-		TaskId:         id,
+		BaseTask: BaseTask{
+			TaskId:     id,
+			CreateTime: jtime.NowStr(),
+			TaskStatus: "执行中",
+		},
 		Dataset:        dataset,
 		HyperParameter: hyperParameter,
-		CreateTime:     jtime.NowStr(),
-		TaskStatus:     "执行中",
 	}
-	ctx, _ := context.WithTimeout(context.Background(), mongoCtxTimeout)
-	_, err := collection.InsertOne(ctx, task)
-	if err != nil {
-		return nil, err
-	}
+	err := creatTask(mongoCollectionDlTask, task)
 
-	return &task, nil
+	return &task, err
 }
 
-func DeleteDlTask(id string) (int64, error) {
-	collection := db.Mongo.Collection(mongoCollectionDlTask)
-	filter := bson.M{"taskId": id}
-	ctx, _ := context.WithTimeout(context.Background(), mongoCtxTimeout)
-	ret, err := collection.DeleteOne(ctx, filter)
-	if err != nil {
-		return 0, err
-	}
-	return ret.DeletedCount, nil
+func DeleteDlTask(id string) error {
+	return deleteTask(mongoCollectionDlTask, id)
 }
 
 func ListDlTask() ([]DlTask, error) {

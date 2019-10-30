@@ -18,43 +18,30 @@ var MiningSupportTaskSet = map[string]struct{}{
 
 // 不包含任务数据，这个 model 用来做任务列表的元素，所以不需要
 type MiningTask struct {
-	TaskId       string `json:"taskId" bson:"taskId"`
+	BaseTask     `bson:",inline"`
 	TaskName     string `json:"taskName" bson:"taskName"`
 	DataComeFrom string `json:"dataComeFrom" bson:"dataComeFrom"`
 	DateRange    string `json:"dateRange" bson:"dateRange"`
-	CreateTime   string `json:"createTime" bson:"createTime"`
-	TaskStatus   string `json:"taskStatus" bson:"taskStatus"`
-	Comment      string `json:"comment" bson:"comment"`
 }
 
 func CreateMiningTask(id, name, dataComeFrom, dateRange string) (*MiningTask, error) {
-	collection := db.Mongo.Collection(mongoCollectionMiningTask)
 	task := MiningTask{
-		TaskId:       id,
+		BaseTask: BaseTask{
+			TaskId:     id,
+			CreateTime: jtime.NowStr(),
+			TaskStatus: "执行中",
+		},
 		TaskName:     name,
 		DataComeFrom: dataComeFrom,
 		DateRange:    dateRange,
-		CreateTime:   jtime.NowStr(),
-		TaskStatus:   "执行中",
 	}
-	ctx, _ := context.WithTimeout(context.Background(), mongoCtxTimeout)
-	_, err := collection.InsertOne(ctx, task)
-	if err != nil {
-		return nil, err
-	}
+	err := creatTask(mongoCollectionMiningTask, task)
 
-	return &task, nil
+	return &task, err
 }
 
-func DeleteMiningTask(id string) (int64, error) {
-	collection := db.Mongo.Collection(mongoCollectionMiningTask)
-	filter := bson.M{"taskId": id}
-	ctx, _ := context.WithTimeout(context.Background(), mongoCtxTimeout)
-	ret, err := collection.DeleteOne(ctx, filter)
-	if err != nil {
-		return 0, err
-	}
-	return ret.DeletedCount, nil
+func DeleteMiningTask(id string) error {
+	return deleteTask(mongoCollectionMiningTask, id)
 }
 
 func ListMiningTask() ([]MiningTask, error) {

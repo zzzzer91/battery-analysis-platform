@@ -44,7 +44,7 @@ func (s *DlTaskDeleteService) Do() (*jd.Response, error) {
 		return nil, err
 	}
 
-	_, err = model.DeleteDlTask(s.Id)
+	err = model.DeleteDlTask(s.Id)
 	if err != nil {
 		return nil, err
 	}
