@@ -6,6 +6,13 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
+const (
+	TaskStatusPreparing  = 0
+	TaskStatusProcessing = 1
+	TaskStatusSuccess    = 6
+	TaskStatusFailure    = 7
+)
+
 // 注意：
 // 结构体嵌入其他结构体时，要指定 `bson:",inline"`（注意有个逗号）标签才能正确读入 bson，
 // 同时该结构体要public；
@@ -14,7 +21,7 @@ import (
 type BaseTask struct {
 	TaskId     string `json:"taskId" bson:"taskId"`
 	CreateTime string `json:"createTime" bson:"createTime"`
-	TaskStatus string `json:"taskStatus" bson:"taskStatus"`
+	TaskStatus int    `json:"taskStatus" bson:"taskStatus"`
 	Comment    string `json:"comment" bson:"comment"`
 }
 

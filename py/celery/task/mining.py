@@ -2,6 +2,7 @@ import time
 
 import pandas as pd
 
+from . import const
 from .celery import app
 from .db import mysql, mongo
 from .algorithm import compute_battery_statistic, \
@@ -85,7 +86,7 @@ def compute_model(self,
         collection.update_one(
             {'taskId': task_id},
             {'$set': {
-                'taskStatus': '失败',
+                'taskStatus': const.TASK_STATUS_FAILURE,
                 'comment': '无可用数据',
             }}
         )
@@ -94,7 +95,7 @@ def compute_model(self,
         collection.update_one(
             {'taskId': task_id},
             {'$set': {
-                'taskStatus': '完成',
+                'taskStatus': const.TASK_STATUS_SUCCESS,
                 'comment': f'用时 {used_time}s',
                 'data': data
             }}

@@ -24,12 +24,12 @@
         <el-table-column prop="createTime" label="创建时间" width="180"></el-table-column>
         <el-table-column prop="taskStatus" label="状态" width="100" sortable>
           <template scope="scope">
-            <el-tag v-if="scope.row.taskStatus === '完成'" type="success">{{scope.row.taskStatus}}</el-tag>
+            <el-tag v-if="scope.row.taskStatus === 6" type="success">完成</el-tag>
             <el-tag
-              v-else-if="scope.row.taskStatus === '执行中'"
+              v-else-if="scope.row.taskStatus === 0"
               type="warning"
-            >{{scope.row.taskStatus}}</el-tag>
-            <el-tag v-else-if="scope.row.taskStatus === '失败'" type="danger">{{scope.row.taskStatus}}</el-tag>
+            >执行中</el-tag>
+            <el-tag v-else-if="scope.row.taskStatus === 7" type="danger">失败</el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="comment" label="备注" show-overflow-tooltip></el-table-column>
@@ -420,8 +420,10 @@ export default {
       }
     },
     plotTrainingHistory(index, row) {
+      const status = row.status
+      const url = `${globals.URL_API_DL_TASKS}/${row.taskId}/training-history`
       this.$axios
-        .get(`${globals.URL_API_DL_TASKS}/${row.taskId}/training-history`)
+        .get(url)
         .then(response => response.data)
         .then(jd => {
           if (jd.code !== globals.SUCCESS) {

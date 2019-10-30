@@ -34,7 +34,7 @@ func CreateDlTask(id, dataset string, hyperParameter *NnHyperParameter) (*DlTask
 		BaseTask: BaseTask{
 			TaskId:     id,
 			CreateTime: jtime.NowStr(),
-			TaskStatus: "执行中",
+			TaskStatus: TaskStatusPreparing,
 		},
 		Dataset:        dataset,
 		HyperParameter: hyperParameter,

@@ -29,7 +29,7 @@ func CreateMiningTask(id, name, dataComeFrom, dateRange string) (*MiningTask, er
 		BaseTask: BaseTask{
 			TaskId:     id,
 			CreateTime: jtime.NowStr(),
-			TaskStatus: "执行中",
+			TaskStatus: TaskStatusPreparing,
 		},
 		TaskName:     name,
 		DataComeFrom: dataComeFrom,

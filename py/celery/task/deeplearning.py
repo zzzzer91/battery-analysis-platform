@@ -5,6 +5,7 @@ from typing import Dict
 import torch
 from torch import optim
 
+from . import const
 from .celery import app
 from .db import mongo
 from .mytorch.nn import build_nn, train_once
@@ -113,7 +114,7 @@ def train(self, dataset: str, hyper_parameter: Dict):
     task_collection.update_one(
         {'taskId': task_id},
         {'$set': {
-            'taskStatus': '完成',
+            'taskStatus': const.TASK_STATUS_SUCCESS,
             'comment': f'用时 {used_time}s',
             'trainingHistory': {
                 'loss': loss_history,
