@@ -188,6 +188,8 @@ $ ./script/run-release.sh
 
 - URI 格式规范：1）URI中尽量使用连字符”-“代替下划线”_”的使用。2）URI中统一使用小写字母。3）用复数名词。一个资源URI可以这样定义：`https://www.example.com/api/v1/posts/{postId}/comments/{commentId}?过滤条件`
 
+- 上一条的 URI 中的过滤条件采用小驼峰法命名
+
 - 前端对后端返回的 JSON 字段的顺序一律假设是无序的
 
 - 提交和返回的 JSON 使用小驼峰法命名
