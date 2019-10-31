@@ -121,6 +121,7 @@ def train(self, dataset: str, hyper_parameter: Dict):
         # 存入redis
         redis.rpush(redis_training_history_loss, loss_value_per_epoch)
         redis.rpush(redis_training_history_accuracy, accuracy_value_per_epoch)
+        # 发送数据更新信号，用于通知 websocket
         status.send_status_change_sig(redis_training_history_sig_list)
 
     # 模型评估
@@ -159,6 +160,7 @@ def train(self, dataset: str, hyper_parameter: Dict):
     # 删除暂时存入 Redis 的数据
     redis.delete(redis_training_history_loss)
     redis.delete(redis_training_history_accuracy)
+    redis.delete(redis_training_history_sig_list)
 
 
 @app.task(name='task.deeplearning.stop_train', ignore_result=True)
