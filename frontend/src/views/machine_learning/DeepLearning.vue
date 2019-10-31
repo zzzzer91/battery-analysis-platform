@@ -24,9 +24,9 @@
         <el-table-column prop="createTime" label="创建时间" width="180"></el-table-column>
         <el-table-column prop="taskStatus" label="状态" width="100" sortable>
           <template scope="scope">
-            <el-tag v-if="scope.row.taskStatus === 6" type="success">完成</el-tag>
-            <el-tag v-else-if="scope.row.taskStatus === 0" type="warning">创建中</el-tag>
+            <el-tag v-if="scope.row.taskStatus === 0" type="warning">创建中</el-tag>
             <el-tag v-else-if="scope.row.taskStatus === 1" type="warning">执行中</el-tag>
+            <el-tag v-else-if="scope.row.taskStatus === 6" type="success">完成</el-tag>
             <el-tag v-else-if="scope.row.taskStatus === 7" type="danger">失败</el-tag>
           </template>
         </el-table-column>
@@ -44,7 +44,7 @@
               icon="el-icon-pie-chart"
               @click="plotEvalResult(scope.$index, scope.row)"
               v-show="scope.row.taskStatus===6"
-            >评估结果</el-button>
+            >模型评估</el-button>
             <el-button
               type="text"
               icon="el-icon-delete"
