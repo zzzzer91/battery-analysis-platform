@@ -1,6 +1,20 @@
 # 动力电池数据分析系统
 
-动力电池数据分析系统，RESTful 设计风格，前后端分离。
+## 亮点
+
+- 100%容器化 ，一键打包项目
+
+- RESTful 设计风格，前后端分离
+
+- 基于 Echarts.js，强大的可视化功能
+
+- 基于 Celery，异步创建计算任务
+
+- 支持创建神经网络训练，并可实时画出训练过程
+
+- 内置一个强大的 Markdown 编辑器，能够插入数学公式和图片，并支持导出为 PDF
+
+- 多用户管理，以及权限控制
 
 ## 项目结构
 
@@ -120,7 +134,7 @@ $ ./script/run-debug.sh
 ```
 在 Pycharm 中配置 run template，
 选择要执行的 py 模块 celery，
-输入运行参数 `-A task worker --concurrency=2`，
+输入运行参数 `-A task worker --concurrency=1`，
 最后指定好环境变量 CONF_FILE。
 ```
 
@@ -140,21 +154,15 @@ npm run serve
 
 ### 生产环境
 
-1、编译前端：
+1、`./script/pack-project.sh` 打包项目
 
-```bash
-npm run build
-```
+2、`scp` 到服务器
 
-2、把 *frontend* 下编译出来的 *dist* 文件夹放入 *resource* 文件夹中。
+3、执行 `./script/init-project.sh`，初始化相关配置
 
-3、执行：
+4、创建相应表
 
-```bash
-$ ./script/run-release.sh
-```
-
-4、访问 `127.0.0.1:3389`
+5、执行 `./script/run-release.sh` 启动项目
 
 ## 数据库管理
 
