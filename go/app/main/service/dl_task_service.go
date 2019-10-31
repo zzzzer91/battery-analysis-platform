@@ -63,11 +63,12 @@ func (DlTaskListService) Do() (*jd.Response, error) {
 }
 
 type DlTaskShowTraningHistoryService struct {
-	Id string
+	Id            string
+	ReadFromRedis bool
 }
 
 func (s *DlTaskShowTraningHistoryService) Do() (*jd.Response, error) {
-	data, err := model.GetDlTaskTrainingHistory(s.Id)
+	data, err := model.GetDlTaskTrainingHistory(s.Id, s.ReadFromRedis)
 	if err != nil {
 		return nil, err
 	}

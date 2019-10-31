@@ -43,6 +43,7 @@ func ListDlTask(c *gin.Context) {
 func ShowDlTaskTraningHistory(c *gin.Context) {
 	var s service.DlTaskShowTraningHistoryService
 	s.Id = c.Param("taskId")
+	s.ReadFromRedis = false
 	res, err := s.Do()
 	if err != nil {
 		c.AbortWithError(500, err)

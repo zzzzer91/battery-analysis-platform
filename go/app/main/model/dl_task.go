@@ -2,6 +2,7 @@ package model
 
 import (
 	"battery-analysis-platform/app/main/db"
+	"battery-analysis-platform/pkg/conv"
 	"battery-analysis-platform/pkg/jtime"
 	"context"
 	"go.mongodb.org/mongo-driver/bson"
@@ -89,18 +90,48 @@ func ListDlTask() ([]DlTask, error) {
 	return records, nil
 }
 
-func GetDlTaskTrainingHistory(id string) (*NnTrainingHistory, error) {
-	collection := db.Mongo.Collection(mongoCollectionDlTask)
-	filter := bson.M{"taskId": id}
-	projection := bson.M{"_id": false, "trainingHistory": true}
-	var result DlTask
-	ctx, _ := context.WithTimeout(context.Background(), mongoCtxTimeout)
-	err := collection.FindOne(ctx, filter, options.FindOne().
-		SetProjection(projection)).Decode(&result)
-	if err != nil {
-		return nil, err
+func GetDlTaskTrainingHistory(id string, readFromRedis bool) (*NnTrainingHistory, error) {
+	if readFromRedis {
+		lossStrList, err := db.Redis.LRange(
+			"deeplearningTask:trainingHistory:"+id+":loss",
+			0, -1).Result()
+		if err != nil {
+			return nil, err
+		}
+		accuracyStrList, err := db.Redis.LRange(
+			"deeplearningTask:trainingHistory:"+id+":accuracy",
+			0, -1).Result()
+		if err != nil {
+			return nil, err
+		}
+
+		// 转换为 float
+		lossList, err := conv.StringSlice2FloatSlice(lossStrList)
+		if err != nil {
+			return nil, err
+		}
+		accuracyList, err := conv.StringSlice2FloatSlice(accuracyStrList)
+		if err != nil {
+			return nil, err
+		}
+
+		return &NnTrainingHistory{
+			Loss:     lossList,
+			Accuracy: accuracyList,
+		}, nil
+	} else {
+		collection := db.Mongo.Collection(mongoCollectionDlTask)
+		filter := bson.M{"taskId": id}
+		projection := bson.M{"_id": false, "trainingHistory": true}
+		var result DlTask
+		ctx, _ := context.WithTimeout(context.Background(), mongoCtxTimeout)
+		err := collection.FindOne(ctx, filter, options.FindOne().
+			SetProjection(projection)).Decode(&result)
+		if err != nil {
+			return nil, err
+		}
+		return result.TrainingHistory, nil
 	}
-	return result.TrainingHistory, nil
 }
 
 func GetDlTaskEvalResult(id string) (*NnEvalResult, error) {
