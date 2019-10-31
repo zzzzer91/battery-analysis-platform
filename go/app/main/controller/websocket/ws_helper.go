@@ -25,16 +25,11 @@ func upgradeHttpConn(writer http.ResponseWriter, request *http.Request) (*websoc
 // 收到包的一方也必须回一个关闭包，整个 TCP 连接才会关闭，
 // 所以不能把监控 TCP 关闭的方法应用在 WebSocket。
 // 监测对端是否关闭的方法，只有读对端
-func wsClientClosed(conn *websocket.Conn) chan struct{} {
+func monitorWsClosed(conn *websocket.Conn) chan struct{} {
 	closed := make(chan struct{})
 	go func() {
-		for {
-			_, _, err := conn.ReadMessage()
-			if err != nil {
-				closed <- struct{}{}
-				return
-			}
-		}
+		_, _, _ = conn.ReadMessage()
+		closed <- struct{}{}
 	}()
 	return closed
 }

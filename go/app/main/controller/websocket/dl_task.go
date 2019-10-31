@@ -15,18 +15,26 @@ func ListDlTask(c *gin.Context) {
 	}
 	defer conn.Close()
 
+	closed := monitorWsClosed(conn)
 	for {
 		db.Redis.BRPop(taskWaitSigTimeout, "deeplearningTask:sigList")
 
-		var s service.DlTaskListService
-		res, err := s.Do()
-		if err != nil {
-			fmt.Println(err)
+		select {
+		case <-closed:
+			// 注意这里不能用 break，break只能跳出 select
+			// 要用 return
 			return
-		}
-		if err = conn.WriteJSON(res); err != nil {
-			fmt.Println(err)
-			return
+		default:
+			var s service.DlTaskListService
+			res, err := s.Do()
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+			if err = conn.WriteJSON(res); err != nil {
+				fmt.Println(err)
+				return
+			}
 		}
 	}
 }
