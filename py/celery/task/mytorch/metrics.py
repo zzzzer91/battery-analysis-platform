@@ -1,5 +1,7 @@
+from typing import Callable
+
 import torch
 
 
-def beiqi_accuracy(y_hat, y, alpha: float = 0.02):
-    return (torch.abs(y_hat - y) < alpha).sum()
+def beiqi_accuracy(alpha: float) -> Callable:
+    return lambda y_hat, y: (torch.abs(y_hat - y) < alpha).sum()

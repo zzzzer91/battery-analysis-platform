@@ -20,20 +20,16 @@ func ListMiningTask(c *gin.Context) {
 	}
 	defer conn.Close()
 
+	var s service.MiningTaskListService
+
 	closed := monitorWsClosed(conn)
 	for {
-		// 等待数据改变
-		// 注意：
-		// 超时必须设置，不然前端关闭连接后，websocket会永久阻塞
-		db.Redis.BLPop(taskWaitSigTimeout, "miningTask:sigList")
-
 		select {
 		case <-closed:
 			// 注意这里不能用 break，break只能跳出 select
 			// 要用 return
 			return
 		default:
-			var s service.MiningTaskListService
 			res, err := s.Do()
 			if err != nil {
 				fmt.Println(err)
@@ -44,5 +40,9 @@ func ListMiningTask(c *gin.Context) {
 				return
 			}
 		}
+		// 等待数据改变
+		// 注意：
+		// 超时必须设置，不然前端关闭连接后，websocket会永久阻塞
+		db.Redis.BLPop(taskWaitSigTimeout, "miningTask:sigList")
 	}
 }

@@ -7,7 +7,7 @@ from torch import optim
 
 from . import status
 from .celery import app
-from .db import mongo
+from .db import mongo, redis
 from .mytorch.nn import build_nn, train_once
 from .mytorch.loss import get_loss
 from .mytorch.data import mini_batch
@@ -15,6 +15,7 @@ from .mytorch.metrics import beiqi_accuracy
 
 TASK_NAME = 'deeplearningTask'
 SIG_LIST_NAME = f'{TASK_NAME}:sigList'
+TRAINING_HISTORY_NAME = f'{TASK_NAME}:trainingHistory'
 
 
 @app.task(name='task.deeplearning.train', bind=True, ignore_result=True)
@@ -29,6 +30,10 @@ def train(self, dataset: str, hyper_parameter: Dict):
 
     # 用 celery 产生的 id 做 mongo 主键
     task_id = self.request.id
+
+    redis_training_history_loss = f'{TRAINING_HISTORY_NAME}:{task_id}:loss'
+    redis_training_history_accuracy = f'{TRAINING_HISTORY_NAME}:{task_id}:accuracy'
+    redis_training_history_sig_list = f'{TRAINING_HISTORY_NAME}:{task_id}:sigList'
 
     data_collection = mongo['beiqi_vehicle']
     task_collection = mongo['deeplearning_task']
@@ -67,17 +72,19 @@ def train(self, dataset: str, hyper_parameter: Dict):
         y_train = torch.tensor(y[:sample_num], dtype=torch.float)
         x_test = torch.tensor(x[sample_num:], dtype=torch.float)
         y_test = torch.tensor(y[sample_num:], dtype=torch.float)
+        alpha_scale = 100
         # 百分比转小数
         if hyper_parameter['outputLayerActivation'].lower() == 'sigmoid':
             y_train /= 100
             y_test /= 100
+            alpha_scale = 1
         del x
         del y
 
         input_dim = x_train.size(1)
         out_dim = 1
 
-        accuracy = beiqi_accuracy
+        accuracy = beiqi_accuracy(0.02 * alpha_scale)
     else:
         raise ValueError('Non-supported dataset')
 
@@ -111,14 +118,22 @@ def train(self, dataset: str, hyper_parameter: Dict):
         accuracy_value_per_epoch = round(accuracy_value / sample_num, 4)
         loss_history.append(loss_value_per_epoch)
         accuracy_history.append(accuracy_value_per_epoch)
+        # 存入redis
+        redis.rpush(redis_training_history_loss, loss_value_per_epoch)
+        redis.rpush(redis_training_history_accuracy, accuracy_value_per_epoch)
+        status.send_status_change_sig(redis_training_history_sig_list)
 
     # 模型评估
     model.eval()
     out = model(x_test)
-    a_1_count = accuracy(out, y_test, 0.01).item()
+    accuracy = beiqi_accuracy(0.01 * alpha_scale)
+    a_1_count = accuracy(out, y_test).item()
+    accuracy = beiqi_accuracy(0.02 * alpha_scale)
     a_2_count = accuracy(out, y_test).item() - a_1_count
-    a_3_count = accuracy(out, y_test, 0.03).item() - a_2_count - a_1_count
-    a_4_count = accuracy(out, y_test, 0.04).item() - a_3_count - a_2_count - a_1_count
+    accuracy = beiqi_accuracy(0.03 * alpha_scale)
+    a_3_count = accuracy(out, y_test).item() - a_2_count - a_1_count
+    accuracy = beiqi_accuracy(0.04 * alpha_scale)
+    a_4_count = accuracy(out, y_test).item() - a_3_count - a_2_count - a_1_count
     a_other_count = len(y_test) - a_4_count - a_3_count - a_2_count - a_1_count
 
     used_time = round(time.perf_counter() - start, 2)
@@ -141,6 +156,9 @@ def train(self, dataset: str, hyper_parameter: Dict):
         }}
     )
     status.send_status_change_sig(SIG_LIST_NAME)
+    # 删除暂时存入 Redis 的数据
+    redis.delete(redis_training_history_loss)
+    redis.delete(redis_training_history_accuracy)
 
 
 @app.task(name='task.deeplearning.stop_train', ignore_result=True)

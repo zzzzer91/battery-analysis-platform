@@ -37,7 +37,7 @@
               type="text"
               icon="el-icon-s-promotion"
               @click="plotTrainingHistory(scope.$index, scope.row)"
-              v-show="scope.row.taskStatus===6"
+              v-show="scope.row.taskStatus===1 || scope.row.taskStatus===6"
             >训练过程</el-button>
             <el-button
               type="text"
@@ -180,6 +180,7 @@ export default {
   data() {
     return {
       ws: null, // websocket 对象
+      trainingHistoryWs: null,
       wsTimer: null,
       newTaskDialogVisible: false,
       chartDialogVisible: false,
@@ -263,6 +264,7 @@ export default {
         nn: '普通神经网络'
       },
       tableData: [],
+      trainingHistoryData: null,
       chartOption: {}
     }
   },
@@ -340,6 +342,13 @@ export default {
       )
     },
     beforeChartDialogClose(done) {
+      // 关闭 ws
+      if (this.trainingHistoryWs !== null) {
+        this.trainingHistoryWs.close()
+        this.trainingHistoryWs = null
+      }
+      // 清空临时数据
+      this.trainingHistoryData = null
       // Dialog 设置了 destroy-on-close="true"，
       // 会在关闭时销毁其中的元素，但这在与 echarts 配合时，会有一些问题，
       // 销毁元素后，echarts 会侦测到 this.chartOption 有数据，它会在销毁元素后马上进行绘制，
@@ -347,7 +356,7 @@ export default {
       this.chartOption = {}
       done()
     },
-    _buildTrainingHistoryPlotOption(data) {
+    _buildTrainingHistoryPlotOption(epochs, data) {
       return {
         title: {
           text: '训练过程',
@@ -384,7 +393,7 @@ export default {
           // name: 'Epochs',
           // nameLocation: 'start',
           type: 'category',
-          data: globals.range(1, data['loss'].length + 1, 1)
+          data: globals.range(1, epochs + 1, 1)
         },
         yAxis: [
           {
@@ -418,21 +427,59 @@ export default {
       }
     },
     plotTrainingHistory(index, row) {
-      const status = row.status
+      const status = row.taskStatus
+      const epochs = row.hyperParameter.epochs
+      console.log(status)
       const url = `${globals.URL_API_DL_TASKS}/${row.taskId}/training-history`
-      this.$axios
-        .get(url)
-        .then(response => response.data)
-        .then(jd => {
+      if (status === 6) {
+        this.$axios
+          .get(url)
+          .then(response => response.data)
+          .then(jd => {
+            if (jd.code !== globals.SUCCESS) {
+              throw new Error(jd.msg)
+            }
+            this.chartDialogVisible = true
+            this.chartOption = this._buildTrainingHistoryPlotOption(
+              epochs,
+              jd.data
+            )
+          })
+          .catch(error => {
+            this.$message.error(error.message)
+          })
+      } else if (status === 1) {
+        this.trainingHistoryWs = new WebSocket(
+          `ws://${document.location.host}${globals.URL_WS_DL_TASKS}/${row.taskId}/training-history`
+        )
+
+        this.trainingHistoryWs.onmessage = event => {
+          let jd = JSON.parse(event.data)
           if (jd.code !== globals.SUCCESS) {
-            throw new Error(jd.msg)
+            return
           }
-          this.chartDialogVisible = true
-          this.chartOption = this._buildTrainingHistoryPlotOption(jd.data)
-        })
-        .catch(error => {
-          this.$message.error(error.message)
-        })
+          if (this.trainingHistoryData === null) {
+            this.trainingHistoryData = jd.data
+            this.chartDialogVisible = true
+            this.chartOption = this._buildTrainingHistoryPlotOption(
+              row.hyperParameter.epochs,
+              this.trainingHistoryData
+            )
+          } else {
+            this.trainingHistoryData.loss.push(
+              ...jd.data.loss.slice(this.trainingHistoryData.loss.length)
+            )
+            this.trainingHistoryData.accuracy.push(
+              ...jd.data.accuracy.slice(this.trainingHistoryData.accuracy.length)
+            )
+          }
+          // 数据已读完，关闭ws
+          if (this.trainingHistoryData.loss.length === epochs) {
+            this.trainingHistoryWs.close()
+            this.trainingHistoryWs = null
+          }
+        }
+      }
     },
     _buildEvalResultOption(data) {
       return {
@@ -521,19 +568,6 @@ export default {
     }
   },
   created() {
-    this.$axios
-      .get(globals.URL_API_DL_TASKS)
-      .then(response => response.data)
-      .then(jd => {
-        if (jd.code !== globals.SUCCESS) {
-          throw new Error(jd.msg)
-        }
-        this.tableData = jd.data
-      })
-      .catch(error => {
-        this.$message.error(error.message)
-      })
-
     this.ws = new WebSocket(
       'ws://' + document.location.host + globals.URL_WS_DL_TASKS
     )
@@ -546,13 +580,6 @@ export default {
         return
       }
       this.tableData = jd.data
-    }
-
-    this.ws.onclose = () => {
-      // 这里代码不能少，如果遇到异常关闭，会走 onclose
-      if (this.wsTimer !== null) {
-        this.wsTimer = null
-      }
     }
   },
   beforeDestroy() {

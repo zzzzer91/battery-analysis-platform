@@ -51,5 +51,6 @@ func register(r *gin.Engine) {
 		//wsV1.GET("/sys-info", websocket.ShowSysInfo)
 		wsV1.GET("/mining/tasks", websocket.ListMiningTask)
 		wsV1.GET("/dl/tasks", websocket.ListDlTask)
+		wsV1.GET("/dl/tasks/:taskId/training-history", websocket.ShowDlTaskTraningHistory)
 	}
 }

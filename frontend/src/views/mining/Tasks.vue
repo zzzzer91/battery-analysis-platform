@@ -505,20 +505,6 @@ export default {
     }
   },
   created() {
-    // 先填充一次数据
-    this.$axios
-      .get(globals.URL_API_MINING_TASKS)
-      .then(response => response.data)
-      .then(jd => {
-        if (jd.code !== globals.SUCCESS) {
-          throw new Error(jd.msg)
-        }
-        this.tableData = jd.data
-      })
-      .catch(error => {
-        this.$message.error(error.message)
-      })
-
     this.ws = new WebSocket(
       'ws://' + document.location.host + globals.URL_WS_MINING_TASKS
     )
@@ -531,13 +517,6 @@ export default {
         return
       }
       this.tableData = jd.data
-    }
-
-    this.ws.onclose = () => {
-      // 这里代码不能少，如果遇到异常关闭，会走 onclose
-      if (this.wsTimer !== null) {
-        this.wsTimer = null
-      }
     }
   },
   beforeDestroy() {
