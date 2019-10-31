@@ -23,10 +23,25 @@ type NnHyperParameter struct {
 	LearningRate          float64   `json:"learningRate" bson:"learningRate"`
 }
 
+type NnTrainingHistory struct {
+	Loss     []float64 `json:"loss" bson:"loss"`
+	Accuracy []float64 `json:"accuracy" bson:"accuracy"`
+}
+
+type NnEvalResult struct {
+	A1Count     int `json:"a1Count" bson:"a1Count"`
+	A2Count     int `json:"a2Count" bson:"a2Count"`
+	A3Count     int `json:"a3Count" bson:"a3Count"`
+	A4Count     int `json:"a4Count" bson:"a4Count"`
+	AOtherCount int `json:"aOtherCount" bson:"aOtherCount"`
+}
+
 type DlTask struct {
-	BaseTask       `bson:",inline"`
-	Dataset        string            `json:"dataset" bson:"dataset"`
-	HyperParameter *NnHyperParameter `json:"hyperParameter" bson:"hyperParameter"`
+	BaseTask        `bson:",inline"`
+	Dataset         string             `json:"dataset" bson:"dataset"`
+	HyperParameter  *NnHyperParameter  `json:"hyperParameter" bson:"hyperParameter"`
+	TrainingHistory *NnTrainingHistory `json:"-" bson:"trainingHistory"`
+	EvalResult      *NnEvalResult      `json:"-" bson:"evalResult"`
 }
 
 func CreateDlTask(id, dataset string, hyperParameter *NnHyperParameter) (*DlTask, error) {
@@ -50,9 +65,9 @@ func DeleteDlTask(id string) error {
 
 func ListDlTask() ([]DlTask, error) {
 	collection := db.Mongo.Collection(mongoCollectionDlTask)
-	filter := bson.M{}                             // 过滤记录
-	projection := bson.M{"trainingHistory": false} // 过滤字段
-	sort := bson.M{"createTime": -1}               // 结果排序
+	filter := bson.M{}                                                  // 过滤记录
+	projection := bson.M{"trainingHistory": false, "evalResult": false} // 过滤字段
+	sort := bson.M{"createTime": -1}                                    // 结果排序
 	// 注意 ctx 不能几个连接复用
 	ctx, _ := context.WithTimeout(context.Background(), mongoCtxTimeout)
 	cur, err := collection.Find(ctx, filter, options.Find().SetProjection(projection).SetSort(sort))
@@ -74,30 +89,30 @@ func ListDlTask() ([]DlTask, error) {
 	return records, nil
 }
 
-func GetDlTaskTrainingHistory(id string) (bson.M, error) {
+func GetDlTaskTrainingHistory(id string) (*NnTrainingHistory, error) {
 	collection := db.Mongo.Collection(mongoCollectionDlTask)
 	filter := bson.M{"taskId": id}
 	projection := bson.M{"_id": false, "trainingHistory": true}
-	var result bson.M
+	var result DlTask
 	ctx, _ := context.WithTimeout(context.Background(), mongoCtxTimeout)
 	err := collection.FindOne(ctx, filter, options.FindOne().
 		SetProjection(projection)).Decode(&result)
 	if err != nil {
 		return nil, err
 	}
-	return result["trainingHistory"].(bson.M), nil
+	return result.TrainingHistory, nil
 }
 
-func GetDlTaskEvalResult(id string) (bson.M, error) {
+func GetDlTaskEvalResult(id string) (*NnEvalResult, error) {
 	collection := db.Mongo.Collection(mongoCollectionDlTask)
 	filter := bson.M{"taskId": id}
 	projection := bson.M{"_id": false, "evalResult": true}
-	var result bson.M
+	var result DlTask
 	ctx, _ := context.WithTimeout(context.Background(), mongoCtxTimeout)
 	err := collection.FindOne(ctx, filter, options.FindOne().
 		SetProjection(projection)).Decode(&result)
 	if err != nil {
 		return nil, err
 	}
-	return result["evalResult"].(bson.M), nil
+	return result.EvalResult, nil
 }

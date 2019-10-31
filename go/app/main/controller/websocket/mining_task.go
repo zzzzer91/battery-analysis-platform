@@ -25,7 +25,7 @@ func ListMiningTask(c *gin.Context) {
 		// 等待数据改变
 		// 注意：
 		// 超时必须设置，不然前端关闭连接后，websocket会永久阻塞
-		db.Redis.BRPop(taskWaitSigTimeout, "miningTask:sigList")
+		db.Redis.BLPop(taskWaitSigTimeout, "miningTask:sigList")
 
 		select {
 		case <-closed:

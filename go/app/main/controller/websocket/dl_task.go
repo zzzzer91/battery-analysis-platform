@@ -17,7 +17,7 @@ func ListDlTask(c *gin.Context) {
 
 	closed := monitorWsClosed(conn)
 	for {
-		db.Redis.BRPop(taskWaitSigTimeout, "deeplearningTask:sigList")
+		db.Redis.BLPop(taskWaitSigTimeout, "deeplearningTask:sigList")
 
 		select {
 		case <-closed:
