@@ -12,7 +12,7 @@
     "core-js": "^2.6.10",
     "echarts": "^4.4.0",
     "element-ui": "^2.12.0",
-    "mavon-editor": "^2.7.5",
+    "mavon-editor": "^2.7.7",
     "moment": "^2.24.0",
     "vue": "^2.6.10",
     "vue-echarts": "^4.0.3",
