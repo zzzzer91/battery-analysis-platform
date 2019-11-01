@@ -38,6 +38,7 @@ func ListDlTask(c *gin.Context) {
 		db.Redis.BLPop(taskWaitSigTimeout, "deeplearningTask:sigList")
 	}
 }
+
 func ShowDlTaskTraningHistory(c *gin.Context) {
 	conn, err := upgradeHttpConn(c.Writer, c.Request)
 	if err != nil {

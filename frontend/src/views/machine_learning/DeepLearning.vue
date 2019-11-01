@@ -505,7 +505,7 @@ export default {
         },
         series: [
           {
-            name: '访问来源',
+            name: '误差分布',
             type: 'pie',
             //radius: '55%',
             //center: ['50%', '60%'],
