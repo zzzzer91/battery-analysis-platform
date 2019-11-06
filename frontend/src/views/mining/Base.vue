@@ -3,41 +3,41 @@
     <div class="container">
       <el-row>
         <el-col :span="8">
-        <el-form ref="form" :model="queryForm" label-width="80px">
-          <el-form-item label="数据来源">
-            <el-cascader
-              :props="{ expandTrigger: 'hover' }"
-              :options="formOptions.dataComeFrom"
-              v-model="queryForm.dataComeFrom"
-            ></el-cascader>
-          </el-form-item>
-          <el-form-item label="查询参数">
-            <el-select v-model="queryForm.needParams" multiple collapse-tags placeholder="请选择">
-              <el-option-group
-                v-for="group in formOptions.needParams"
-                :key="group.label"
-                :label="group.label"
-              >
-                <el-option
-                  v-for="item in group.options"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                ></el-option>
-              </el-option-group>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="起始日期">
-            <el-date-picker v-model="queryForm.startDate" type="datetime" placeholder="选择起始日期时间"></el-date-picker>
-          </el-form-item>
-          <el-form-item label="数据限制">
-            <el-input-number :min="10" :max="10000" :step="10" v-model="queryForm.dataLimit"></el-input-number>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" @click="getChartData" :loading="buttonLoading">查询</el-button>
-            <el-button type="primary" @click="showChartOptionDialog" v-if="showPlotButton">绘制</el-button>
-          </el-form-item>
-        </el-form>
+          <el-form ref="form" :model="queryForm" label-width="80px">
+            <el-form-item label="数据来源">
+              <el-cascader
+                :props="{ expandTrigger: 'hover' }"
+                :options="formOptions.dataComeFrom"
+                v-model="queryForm.dataComeFrom"
+              ></el-cascader>
+            </el-form-item>
+            <el-form-item label="查询参数">
+              <el-select v-model="queryForm.needParams" multiple collapse-tags placeholder="请选择">
+                <el-option-group
+                  v-for="group in formOptions.needParams"
+                  :key="group.label"
+                  :label="group.label"
+                >
+                  <el-option
+                    v-for="item in group.options"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  ></el-option>
+                </el-option-group>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="起始日期">
+              <el-date-picker v-model="queryForm.startDate" type="datetime" placeholder="选择起始日期时间"></el-date-picker>
+            </el-form-item>
+            <el-form-item label="数据限制">
+              <el-input-number :min="10" :max="10000" :step="10" v-model="queryForm.dataLimit"></el-input-number>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" @click="getChartData" :loading="buttonLoading">查询</el-button>
+              <el-button type="primary" @click="showChartOptionDialog" v-if="showPlotButton">绘制</el-button>
+            </el-form-item>
+          </el-form>
         </el-col>
         <el-col :span="16">
           <el-input
@@ -59,55 +59,83 @@
       width="50%"
     >
       <el-row>
-        <el-col :span="12">
-          <div class="mgb20">
-            <span>X 轴：</span>
-            <el-select v-model="plotOption.xAxisParam" placeholder="请选择">
-              <el-option
-                v-for="item in plotOption.xAxisParamOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              ></el-option>
-            </el-select>
-          </div>
-          <!-- <div class="mgb20">
-              <span>X 轴类型：</span>
-              <el-radio v-model="plotOption.xAxisType" label="category">类目</el-radio>
-              <el-radio v-model="plotOption.xAxisType" label="value">数值</el-radio>
-          </div>-->
-          <div class="mgb20">
-            <span>Y 轴：</span>
-            <el-select
-              v-model="plotOption.yAxisParams"
-              :multiple-limit="plotOption.yAxisDataLimit"
-              multiple
-              collapse-tags
-              placeholder="请选择"
-            >
-              <el-option
-                v-for="item in plotOption.yAxisParamOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              ></el-option>
-            </el-select>
-          </div>
-          <div class="mgb20">
-            <span>Y 轴选项：</span>
-            <el-checkbox v-model="plotOption.doubleYAxis" @change="changeYAxisDataLimit">双 Y 轴</el-checkbox>
-            <el-checkbox v-model="plotOption.yAxisAutoChange">Y 轴根据数据上下限调整</el-checkbox>
-          </div>
-          <div class="mgb20">
-            <span>线段类型：</span>
-            <el-radio-group v-model="plotOption.lineType">
-              <el-radio-button label="直线"></el-radio-button>
-              <el-radio-button label="阶梯线"></el-radio-button>
-              <el-radio-button label="曲线"></el-radio-button>
-            </el-radio-group>
-          </div>
+        <el-col :span="15">
+          <el-tabs v-model="plotOption.plotTabActiveName" tab-position="left">
+            <el-tab-pane label="折线图" name="plotLineTab">
+              <!-- <div class="mgb20">
+                <span>X 轴：</span>
+                <el-select v-model="plotOption.xAxisParam" placeholder="请选择">
+                  <el-option
+                    v-for="item in plotOption.xAxisParamOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  ></el-option>
+                </el-select>
+              </div>-->
+              <!-- <div class="mgb20">
+                  <span>X 轴类型：</span>
+                  <el-radio v-model="plotOption.xAxisType" label="category">类目</el-radio>
+                  <el-radio v-model="plotOption.xAxisType" label="value">数值</el-radio>
+              </div>-->
+              <div class="mgb20">
+                <span>Y轴：</span>
+                <el-select
+                  v-model="plotOption.yAxisParams"
+                  :multiple-limit="plotOption.yAxisDataLimit"
+                  multiple
+                  collapse-tags
+                  placeholder="请选择"
+                >
+                  <el-option
+                    v-for="item in plotOption.yAxisParamOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  ></el-option>
+                </el-select>
+              </div>
+              <div class="mgb20">
+                <span>选项：</span>
+                <el-checkbox v-model="plotOption.doubleYAxis" @change="changeYAxisDataLimit">双Y轴</el-checkbox>
+                <el-checkbox v-model="plotOption.yAxisAutoChange">Y轴自动调整</el-checkbox>
+              </div>
+              <div class="mgb20">
+                <span>线段：</span>
+                <el-radio-group v-model="plotOption.lineType">
+                  <el-radio-button label="直线"></el-radio-button>
+                  <el-radio-button label="阶梯线"></el-radio-button>
+                  <el-radio-button label="曲线"></el-radio-button>
+                </el-radio-group>
+              </div>
+            </el-tab-pane>
+            <el-tab-pane label="3D散点图" name="plot3dScatterTab">
+              <div class="mgb20">
+                <span>X轴：</span>
+                <el-select v-model="plotOption.xAxis3dParam" placeholder="请选择">
+                  <el-option
+                    v-for="item in plotOption.yAxisParamOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  ></el-option>
+                </el-select>
+              </div>
+              <div class="mgb20">
+                <span>Y轴：</span>
+                <el-select v-model="plotOption.yAxis3dParam" placeholder="请选择">
+                  <el-option
+                    v-for="item in plotOption.yAxisParamOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  ></el-option>
+                </el-select>
+              </div>
+            </el-tab-pane>
+          </el-tabs>
         </el-col>
-        <el-col :span="12">
+        <el-col :span="9">
           <div class="mgb20">
             <span>数据开始索引：</span>
             <el-input-number
@@ -261,7 +289,7 @@ export default {
               }
             ]
           }
-        ],
+        ]
       },
       mapping: {
         // 表字段名到中文名的映射，这是宇通的，后期如果加其他公司再改
@@ -288,7 +316,7 @@ export default {
         dataComeFrom: ['宇通', '4F37195C1A908CFBE0532932A8C0EECB'],
         needParams: ['bty_t_vol'],
         startDate: new Date(2019, 0, 1, 0, 0), // 貌似 js 中月份起始是 0？
-        dataLimit: 500,
+        dataLimit: 500
       },
       buttonLoading: false, // 查询按钮的载入效果
       dataTextArea: '',
@@ -305,8 +333,12 @@ export default {
         lineType: '直线', // 线段类型，有直线，阶梯线，曲线
         xAxisType: 'category',
         // 绘图前需重新设置
+        plotTabActiveName: 'plotLineTab',
         xAxisParam: 'timestamp', // 单选，值是个字符串
-        yAxisParams: [] // 多选，值是个列表
+        yAxisParams: [], // 多选，值是个列表
+        xAxis3dParam: null, // 3d
+        yAxis3dParam: null,
+        zAxis3dParam: 'timestamp'
       },
       // 图表数据
       chartData: [],
@@ -330,7 +362,9 @@ export default {
 
       let params = {
         dataComeFrom: this.queryForm.dataComeFrom.join('_'),
-        startDate: moment(this.queryForm.startDate).format('YYYY-MM-DD HH:mm:ss'),
+        startDate: moment(this.queryForm.startDate).format(
+          'YYYY-MM-DD HH:mm:ss'
+        ),
         dataLimit: this.queryForm.dataLimit,
         needParams: this.queryForm.needParams.join(',')
       }
@@ -362,10 +396,12 @@ export default {
                 value: name
               })
               // 填充 y 轴数据选项
-              yAxisParamOptions.push({
-                label: this.mapping[name],
-                value: name
-              })
+              if (name !== 'timestamp') {
+                yAxisParamOptions.push({
+                  label: this.mapping[name],
+                  value: name
+                })
+              }
             }
 
             this.plotOption.xAxisParamOptions = xAxisParamOptions
@@ -389,7 +425,9 @@ export default {
       for (let colName of colNames) {
         temp.push(this.mapping[colName])
       }
-      let s = [`                  ${temp[0]}             ${temp.slice(1).join('    ')}`]
+      let s = [
+        `                  ${temp[0]}             ${temp.slice(1).join('    ')}`
+      ]
       let i = 0
       for (let row of data) {
         let temp = `${globals.leftFillSpace(i.toString(), 6)}    `
@@ -408,8 +446,12 @@ export default {
       return s.join('\n')
     },
     showChartOptionDialog() {
+      this.plotOption.plotTabActiveName = 'plotLineTab'
       this.plotOption.xAxisParam = 'timestamp'
       this.plotOption.yAxisParams = []
+      this.plotOption.xAxis3dParam = null
+      this.plotOption.yAxis3dParam = null
+      this.plotOption.zAxis3dParam = 'timestamp'
       this.chartOptionDialogVisible = true
     },
     changeYAxisDataLimit() {
@@ -427,7 +469,7 @@ export default {
       this.chartOption = {}
       done()
     },
-    _checkPlotOption(plotOption) {
+    _checkLinePlotOption(plotOption) {
       if (plotOption.dataIndexStart >= plotOption.dataIndexEnd) {
         return '请重新指定数据起止范围！'
       }
@@ -447,7 +489,23 @@ export default {
 
       return null
     },
-    _buildChartOption(plotOption, chartData) {
+    _check3dScatterPlotOption(plotOption) {
+      if (plotOption.dataIndexStart >= plotOption.dataIndexEnd) {
+        return '请重新指定数据起止范围！'
+      }
+
+      if (plotOption.xAxis3dParam === null) {
+        return 'X 轴不能为空！'
+      }
+      if (plotOption.yAxis3dParam === null) {
+        return 'Y 轴不能为空！'
+      }
+      if (plotOption.zAxis3dParam === null) {
+        return 'Z 轴不能为空！'
+      }
+      return null
+    },
+    _buildLineChartOption(plotOption, chartData) {
       let chartOption = {
         toolbox: {
           feature: {
@@ -551,16 +609,62 @@ export default {
       // vue 不会监控某个对象的成员，要改变整个对象才能响应式
       return chartOption
     },
-    doPlot() {
-      const ret = this._checkPlotOption(this.plotOption)
-      if (ret !== null) {
-        this.$message.error(ret)
-        return
+    _build3dScatterChartOption(plotOption, chartData) {
+      const xName = plotOption.xAxis3dParam
+      const yName = plotOption.yAxis3dParam
+      const zName = plotOption.zAxis3dParam
+      let data = []
+      for (let i = plotOption.dataIndexStart; i < plotOption.dataIndexEnd; i++) {
+        data.push([chartData[i][xName], chartData[i][yName], i])
       }
-
+      return {
+        grid3D: {},
+        xAxis3D: {
+          type: 'value',
+          name: this.mapping[xName],
+        },
+        yAxis3D: {
+          type: 'value',
+          name: this.mapping[yName],
+        },
+        zAxis3D: {
+          type: 'value',
+          name: this.mapping[zName],
+        },
+        series: [
+          {
+            type: 'scatter3D',
+            symbolSize: 2.5,
+            data: data
+          }
+        ]
+      }
+    },
+    doPlot() {
+      let chartOption = null
+      if (this.plotOption.plotTabActiveName === 'plotLineTab') {
+        const ret = this._checkLinePlotOption(this.plotOption)
+        if (ret !== null) {
+          this.$message.error(ret)
+          return
+        }
+        chartOption = this._buildLineChartOption(
+          this.plotOption,
+          this.chartData
+        )
+      } else if (this.plotOption.plotTabActiveName === 'plot3dScatterTab') {
+        const ret = this._check3dScatterPlotOption(this.plotOption)
+        if (ret !== null) {
+          this.$message.error(ret)
+          return
+        }
+        chartOption = this._build3dScatterChartOption(
+          this.plotOption,
+          this.chartData
+        )
+      }
       this.chartDialogVisible = true
-
-      this.chartOption = this._buildChartOption(this.plotOption, this.chartData)
+      this.chartOption = chartOption
     }
   }
 }

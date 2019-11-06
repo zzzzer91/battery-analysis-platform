@@ -6,7 +6,7 @@
 
 - RESTful 设计风格，前后端分离
 
-- 基于 Echarts.js，强大的可视化功能
+- 基于 Echarts.js，持 2D 和 3D 及动态可视化
 
 - 基于 Celery，异步创建计算任务
 

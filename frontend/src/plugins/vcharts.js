@@ -17,4 +17,7 @@ import 'echarts/lib/chart/pie'
 
 // import 'echarts/theme/roma.js'  // 主题
 
+// 3D
+import 'echarts-gl'
+
 Vue.component('v-chart', ECharts)
