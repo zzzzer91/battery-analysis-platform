@@ -96,17 +96,17 @@
                 </el-select>
               </div>
               <div class="mgb20">
-                <span>选项：</span>
-                <el-checkbox v-model="plotOption.doubleYAxis" @change="changeYAxisDataLimit">双Y轴</el-checkbox>
-                <el-checkbox v-model="plotOption.yAxisAutoChange">Y轴自动调整</el-checkbox>
-              </div>
-              <div class="mgb20">
                 <span>线段：</span>
-                <el-radio-group v-model="plotOption.lineType">
+                <el-radio-group v-model="plotOption.lineType" size="small">
                   <el-radio-button label="直线"></el-radio-button>
                   <el-radio-button label="阶梯线"></el-radio-button>
                   <el-radio-button label="曲线"></el-radio-button>
                 </el-radio-group>
+              </div>
+              <div class="mgb20">
+                <span>选项：</span>
+                <el-checkbox v-model="plotOption.doubleYAxis" @change="changeYAxisDataLimit">双Y轴</el-checkbox>
+                <el-checkbox v-model="plotOption.yAxisAutoChange">Y轴自动调整</el-checkbox>
               </div>
             </el-tab-pane>
             <el-tab-pane label="3D散点图" name="plot3dScatterTab">
@@ -447,6 +447,7 @@ export default {
     },
     showChartOptionDialog() {
       this.plotOption.plotTabActiveName = 'plotLineTab'
+      this.plotOption.dataIndexStart = 0
       this.plotOption.xAxisParam = 'timestamp'
       this.plotOption.yAxisParams = []
       this.plotOption.xAxis3dParam = null
