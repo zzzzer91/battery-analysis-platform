@@ -623,10 +623,14 @@ export default {
         xAxis3D: {
           type: 'value',
           name: this.mapping[xName],
+          // min: 'dataMin',
+          // max: 'dataMax',
         },
         yAxis3D: {
           type: 'value',
           name: this.mapping[yName],
+          // min: 'dataMin',
+          // max: 'dataMax',
         },
         zAxis3D: {
           type: 'value',
