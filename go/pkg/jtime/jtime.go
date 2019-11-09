@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	timeLayout = "2006-01-02 15:04:05"
+	FormatLayout = "2006-01-02 15:04:05"
 )
 
 type Time struct {
@@ -24,7 +24,7 @@ type Time struct {
 
 // MarshalJSON on Time format Time field with %Y-%m-%d %H:%M:%S
 func (t Time) MarshalJSON() ([]byte, error) {
-	formatted := `"` + t.Format(timeLayout) + `"`
+	formatted := `"` + t.Format(FormatLayout) + `"`
 	return []byte(formatted), nil
 }
 
@@ -51,7 +51,7 @@ func (t *Time) Scan(v interface{}) error {
 func (t *Time) UnmarshalBSON(b []byte) error {
 	// b 字节流有个 4 字节头部，值为 20，可能代表了类型
 	// 还有个 1 字节的尾部，0
-	tTmp, err := time.Parse(timeLayout, string(b[4:len(b)-1]))
+	tTmp, err := time.Parse(FormatLayout, string(b[4:len(b)-1]))
 	if err != nil {
 		return err
 	}
@@ -59,11 +59,16 @@ func (t *Time) UnmarshalBSON(b []byte) error {
 	return nil
 }
 
-func Now() *Time {
-	t := time.Now()
-	return &Time{Time: t}
+func Wrap(t time.Time) Time {
+	return Time{
+		Time: t,
+	}
+}
+
+func Now() Time {
+	return Wrap(time.Now())
 }
 
 func NowStr() string {
-	return time.Now().Format(timeLayout)
+	return time.Now().Format(FormatLayout)
 }

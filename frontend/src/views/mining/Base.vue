@@ -9,12 +9,13 @@
                 :props="{ expandTrigger: 'hover' }"
                 :options="formOptions.dataComeFrom"
                 v-model="queryForm.dataComeFrom"
+                @change="dataComeFromChange"
               ></el-cascader>
             </el-form-item>
             <el-form-item label="查询参数">
               <el-select v-model="queryForm.needParams" multiple collapse-tags placeholder="请选择">
                 <el-option-group
-                  v-for="group in formOptions.needParams"
+                  v-for="group in formOptions.needParams[queryForm.dataComeFrom[0]]"
                   :key="group.label"
                   :label="group.label"
                 >
@@ -132,6 +133,11 @@
                   ></el-option>
                 </el-select>
               </div>
+              <div class="mgb20">
+                <span>选项：</span>
+                <el-checkbox v-model="plotOption.xAxis3dAutoChange">X轴自动调整</el-checkbox>
+                <el-checkbox v-model="plotOption.yAxis3dAutoChange">Y轴自动调整</el-checkbox>
+              </div>
             </el-tab-pane>
           </el-tabs>
         </el-col>
@@ -192,16 +198,6 @@ export default {
       showPlotButton: false,
       formOptions: {
         dataComeFrom: [
-          // {
-          //   value: '北汽',
-          //   label: '北汽',
-          //   children: [
-          //     {
-          //       value: 'LNBSCU3HXJR884327',
-          //       label: 'LNBSCU3HXJR884327'
-          //     }
-          //   ]
-          // },
           {
             value: '宇通',
             label: '宇通',
@@ -211,111 +207,133 @@ export default {
                 label: '4F37195C1A908CFBE0532932A8C0EECB'
               }
             ]
-          }
-        ],
-        needParams: [
-          // label 长度不要超过 7 个汉字，否则有样式问题
+          },
           {
-            label: '总体',
-            options: [
+            value: '北汽',
+            label: '北汽',
+            children: [
               {
-                value: 'bty_t_vol',
-                label: '总电压'
-              },
-              {
-                value: 'bty_t_curr',
-                label: '总电流'
-              },
-              {
-                value: 'met_spd',
-                label: '车速'
-              },
-              {
-                value: 'p_t_p',
-                label: '正向累计电量'
-              },
-              {
-                value: 'r_t_p',
-                label: '反向累计电量'
-              },
-              {
-                value: 'total_mileage',
-                label: '总里程'
-              },
-              {
-                value: 'battery_soc',
-                label: 'SOC'
-              },
-              {
-                value: 'byt_ma_sys_state',
-                label: '状态号'
+                value: 'LNBSCU3HXJR884327',
+                label: 'LNBSCU3HXJR884327'
               }
             ]
           },
-          {
-            label: '单体',
-            options: [
-              {
-                value: 's_b_max_t',
-                label: '单体电池最高温度'
-              },
-              {
-                value: 's_b_min_t',
-                label: '单体电池最低温度'
-              },
-              {
-                value: 's_b_max_v',
-                label: '单体电池最高电压'
-              },
-              {
-                value: 's_b_min_v',
-                label: '单体电池最低电压'
-              },
-              {
-                value: 'max_t_s_b_num',
-                label: '最高温度电池号'
-              },
-              {
-                value: 'min_t_s_b_num',
-                label: '最低温度电池号'
-              },
-              {
-                value: 'max_v_e_core_num',
-                label: '最高电压电池号'
-              },
-              {
-                value: 'min_v_e_core_num',
-                label: '最低电压电池号'
-              }
-            ]
-          }
-        ]
-      },
-      mapping: {
-        // 表字段名到中文名的映射，这是宇通的，后期如果加其他公司再改
-        timestamp: '时间',
-        bty_t_vol: '总电压',
-        bty_t_curr: '总电流',
-        met_spd: '车速',
-        p_t_p: '正向累计电量',
-        r_t_p: '反向累计电量',
-        total_mileage: '总里程',
-        battery_soc: 'SOC',
-        byt_ma_sys_state: '状态号',
-        s_b_max_t: '单体最高温度',
-        s_b_min_t: '单体最低温度',
-        s_b_max_v: '单体最高电压',
-        s_b_min_v: '单体最低电压',
-        max_t_s_b_num: '最高温度电池号',
-        min_t_s_b_num: '最低温度电池号',
-        max_v_e_core_num: '最高电压电池号',
-        min_v_e_core_num: '最低电压电池号'
+        ],
+        needParams: {
+          宇通: [
+            // label 长度不要超过 7 个汉字，否则有样式问题
+            {
+              label: '总体',
+              options: [
+                {
+                  value: '总电压',
+                  label: '总电压'
+                },
+                {
+                  value: '总电流',
+                  label: '总电流'
+                },
+                {
+                  value: '车速',
+                  label: '车速'
+                },
+                {
+                  value: '正向累计电量',
+                  label: '正向累计电量'
+                },
+                {
+                  value: '反向累计电量',
+                  label: '反向累计电量'
+                },
+                {
+                  value: '总里程',
+                  label: '总里程'
+                },
+                {
+                  value: 'SOC',
+                  label: 'SOC'
+                },
+                {
+                  value: '状态号',
+                  label: '状态号'
+                }
+              ]
+            },
+            {
+              label: '单体',
+              options: [
+                {
+                  value: '单体最高温度',
+                  label: '单体最高温度'
+                },
+                {
+                  value: '单体最低温度',
+                  label: '单体最低温度'
+                },
+                {
+                  value: '单体最高电压',
+                  label: '单体最高电压'
+                },
+                {
+                  value: '单体最低电压',
+                  label: '单体最低电压'
+                },
+                {
+                  value: '最高温度电池号',
+                  label: '最高温度电池号'
+                },
+                {
+                  value: '最低温度电池号',
+                  label: '最低温度电池号'
+                },
+                {
+                  value: '最高电压电池号',
+                  label: '最高电压电池号'
+                },
+                {
+                  value: '最低电压电池号',
+                  label: '最低电压电池号'
+                }
+              ]
+            }
+          ],
+          北汽: [
+            {
+              options: [
+                {
+                  value: '动力电池内部总电压V1',
+                  label: '动力电池内部总电压V1'
+                },
+                {
+                  value: '动力电池充/放电电流',
+                  label: '总动力电池充/放电电流'
+                },
+                {
+                  value: '动力电池可用能量',
+                  label: '动力电池可用容量'
+                },
+                {
+                  value: '动力电池剩余电量SOC',
+                  label: '动力电池剩余电量SOC'
+                },
+                {
+                  value: '动力电池充放电状态',
+                  label: '动力电池充放电状态'
+                },
+                {
+                  value: 'MSODO总里程',
+                  label: 'MSODO总里程'
+                }
+              ]
+            }
+          ]
+        }
       },
       // 请求的参数
       queryForm: {
         dataComeFrom: ['宇通', '4F37195C1A908CFBE0532932A8C0EECB'],
-        needParams: ['bty_t_vol'],
-        startDate: new Date(2019, 0, 1, 0, 0), // 貌似 js 中月份起始是 0？
+        needParams: [],
+        startDate: new Date(2018, 11, 1, 0, 0), // 貌似 js 中月份起始是 0？
         dataLimit: 500
       },
       buttonLoading: false, // 查询按钮的载入效果
@@ -334,11 +352,13 @@ export default {
         xAxisType: 'category',
         // 绘图前需重新设置
         plotTabActiveName: 'plotLineTab',
-        xAxisParam: 'timestamp', // 单选，值是个字符串
+        xAxisParam: '时间', // 单选，值是个字符串
         yAxisParams: [], // 多选，值是个列表
         xAxis3dParam: null, // 3d
         yAxis3dParam: null,
-        zAxis3dParam: 'timestamp'
+        zAxis3dParam: '时间',
+        xAxis3dAutoChange: false, // X 轴根据数据上下限自动调整
+        yAxis3dAutoChange: false, // Y 轴根据数据上下限自动调整
       },
       // 图表数据
       chartData: [],
@@ -347,6 +367,10 @@ export default {
     }
   },
   methods: {
+    // 更换数据来源后，清空选择的参数项
+    dataComeFromChange() {
+      this.queryForm.needParams = []
+    },
     getChartData() {
       if (this.queryForm.needParams.length === 0) {
         this.$message.error('查询参数不能为空！')
@@ -381,7 +405,7 @@ export default {
               throw new Error(jd.msg)
             }
 
-            const colNames = ['timestamp'].concat(this.queryForm.needParams)
+            const colNames = ['时间'].concat(this.queryForm.needParams)
             this.chartData = jd.data
             this.chartDataCount = this.chartData.length
 
@@ -392,13 +416,13 @@ export default {
             for (let name of colNames) {
               // 填充 x 轴数据选项
               xAxisParamOptions.push({
-                label: this.mapping[name],
+                label: name,
                 value: name
               })
-              // 填充 y 轴数据选项
-              if (name !== 'timestamp') {
+              if (name !== '时间') {
+                // 填充 y 轴数据选项
                 yAxisParamOptions.push({
-                  label: this.mapping[name],
+                  label: name,
                   value: name
                 })
               }
@@ -423,7 +447,7 @@ export default {
     buildDataTextArea(colNames, data) {
       let temp = []
       for (let colName of colNames) {
-        temp.push(this.mapping[colName])
+        temp.push(colName)
       }
       let s = [
         `                  ${temp[0]}             ${temp.slice(1).join('    ')}`
@@ -448,11 +472,11 @@ export default {
     showChartOptionDialog() {
       this.plotOption.plotTabActiveName = 'plotLineTab'
       this.plotOption.dataIndexStart = 0
-      this.plotOption.xAxisParam = 'timestamp'
+      this.plotOption.xAxisParam = '时间'
       this.plotOption.yAxisParams = []
       this.plotOption.xAxis3dParam = null
       this.plotOption.yAxis3dParam = null
-      this.plotOption.zAxis3dParam = 'timestamp'
+      this.plotOption.zAxis3dParam = '时间'
       this.chartOptionDialogVisible = true
     },
     changeYAxisDataLimit() {
@@ -539,7 +563,7 @@ export default {
 
       // 创建 series 对象
       for (let k of plotOption.yAxisParams) {
-        let name = this.mapping[k]
+        let name = k
         // 创建 series 对象
         chartOption.series.push({
           smooth,
@@ -615,26 +639,45 @@ export default {
       const yName = plotOption.yAxis3dParam
       const zName = plotOption.zAxis3dParam
       let data = []
-      for (let i = plotOption.dataIndexStart; i < plotOption.dataIndexEnd; i++) {
+      for (
+        let i = plotOption.dataIndexStart;
+        i < plotOption.dataIndexEnd;
+        i++
+      ) {
         data.push([chartData[i][xName], chartData[i][yName], i])
       }
+
+      // 是否根据数据上下限调整 X 轴 和 Y 轴
+      let xMin = null
+      let xMax = null
+      if (plotOption.xAxis3dAutoChange) {
+        xMin = 'dataMin'
+        xMax = 'dataMax'
+      }
+      let yMin = null
+      let yMax = null
+      if (plotOption.yAxis3dAutoChange) {
+        yMin = 'dataMin'
+        yMax = 'dataMax'
+      }
+
       return {
         grid3D: {},
         xAxis3D: {
           type: 'value',
-          name: this.mapping[xName],
-          // min: 'dataMin',
-          // max: 'dataMax',
+          name: xName,
+          min: xMin,
+          max: xMax,
         },
         yAxis3D: {
           type: 'value',
-          name: this.mapping[yName],
-          // min: 'dataMin',
-          // max: 'dataMax',
+          name: yName,
+          min: yMin,
+          max: yMax,
         },
         zAxis3D: {
           type: 'value',
-          name: this.mapping[zName],
+          name: zName
         },
         series: [
           {

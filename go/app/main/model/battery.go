@@ -2,55 +2,99 @@ package model
 
 import (
 	"battery-analysis-platform/app/main/db"
-	"battery-analysis-platform/pkg/mysqlx"
-	"strings"
+	"battery-analysis-platform/pkg/jtime"
+	"context"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	"time"
 )
 
-type mysqlTable struct {
-	Name        string
-	FieldToName map[string]string
+type dbTable struct {
+	Name     string
+	FieldSet map[string]struct{}
 }
 
-var BatteryMysqlNameToTable map[string]mysqlTable
+var BatteryNameToTable map[string]dbTable
 
 func init() {
-	yutongFieldToName := map[string]string{
-		"timestamp":        "时间",
-		"bty_t_vol":        "总电压",
-		"bty_t_curr":       "总电流",
-		"met_spd":          "车速",
-		"p_t_p":            "正向累计电量",
-		"r_t_p":            "反向累计电量",
-		"total_mileage":    "总里程",
-		"battery_soc":      "SOC",
-		"byt_ma_sys_state": "状态号",
-		"s_b_max_t":        "单体最高温度",
-		"s_b_min_t":        "单体最低温度",
-		"s_b_max_v":        "单体最高电压",
-		"s_b_min_v":        "单体最低电压",
-		"max_t_s_b_num":    "最高温度电池号",
-		"min_t_s_b_num":    "最低温度电池号",
-		"max_v_e_core_num": "最高电压电池号",
-		"min_v_e_core_num": "最低电压电池号",
+	yutongFieldSet := map[string]struct{}{
+		"时间":      {},
+		"总电压":     {},
+		"总电流":     {},
+		"车速":      {},
+		"正向累计电量":  {},
+		"反向累计电量":  {},
+		"总里程":     {},
+		"SOC":     {},
+		"状态号":     {},
+		"单体最高温度":  {},
+		"单体最低温度":  {},
+		"单体最高电压":  {},
+		"单体最低电压":  {},
+		"最高温度电池号": {},
+		"最低温度电池号": {},
+		"最高电压电池号": {},
+		"最低电压电池号": {},
 	}
 
-	BatteryMysqlNameToTable = map[string]mysqlTable{
+	beiqiFieldSet := map[string]struct{}{
+		"时间":          {},
+		"动力电池内部总电压V1": {},
+		"动力电池充/放电电流":  {},
+		"动力电池可用能量":    {},
+		"动力电池可用容量":    {},
+		"动力电池剩余电量SOC": {},
+		"动力电池充放电状态":   {},
+		"MSODO总里程":    {},
+	}
+
+	BatteryNameToTable = map[string]dbTable{
 		"宇通_4F37195C1A908CFBE0532932A8C0EECB": {
-			Name: "yutong_vehicle1", FieldToName: yutongFieldToName,
+			Name: mongoCollectionYuTongVehicle, FieldSet: yutongFieldSet,
+		},
+		"北汽_LNBSCU3HXJR884327": {
+			Name: mongoCollectionBeiQiVehicle, FieldSet: beiqiFieldSet,
 		},
 	}
 }
 
-func GetBatteryData(tableName, startDate string, limit int, fields []string) ([]map[string]interface{}, error) {
-	rows, err := db.Gorm.Table(tableName).
-		Where("timestamp >= ?", startDate).
-		Select("timestamp," + strings.Join(fields, ",")).
-		Limit(limit).
-		Rows()
+func GetBatteryData(tableName, startDate string, limit int, fields []string) ([]bson.M, error) {
+	collection := db.Mongo.Collection(tableName)
+
+	// 查询指定范围时间的数据
+	sDate, err := time.Parse(jtime.FormatLayout, startDate)
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	// filter := bson.M{"时间": bson.M{"$gte": sDate, "$lt": eDate}}
+	filter := bson.M{"时间": bson.M{"$gte": sDate}}
 
-	return mysqlx.GetRecords(rows)
+	projection := bson.M{"_id": false, "时间": true}
+	for _, field := range fields {
+		projection[field] = true
+	}
+
+	ctx, _ := context.WithTimeout(context.Background(), mongoCtxTimeout)
+	cur, err := collection.Find(ctx, filter,
+		options.Find().SetProjection(projection).SetLimit(int64(limit)))
+	if err != nil {
+		return nil, err
+	}
+	// 为了使其找不到时返回空列表，而不是 nil
+	records := make([]bson.M, 0)
+	ctx, _ = context.WithTimeout(context.Background(), mongoCtxTimeout)
+	for cur.Next(ctx) {
+		result := make(bson.M)
+		err := cur.Decode(&result)
+		if err != nil {
+			return nil, err
+		}
+		// 为了使 json 序列化时得到想要格式
+		temp := result["时间"].(primitive.DateTime)
+		result["时间"] = jtime.Wrap(temp.Time())
+		records = append(records, result)
+	}
+	_ = cur.Close(ctx)
+	return records, nil
 }

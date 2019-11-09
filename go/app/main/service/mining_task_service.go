@@ -27,7 +27,7 @@ func (s *MiningTaskCreateService) Do() (*jd.Response, error) {
 		return jd.Err("参数 TaskName 不合法"), nil
 	}
 
-	table, ok := model.BatteryMysqlNameToTable[s.DataComeFrom]
+	table, ok := model.BatteryNameToTable[s.DataComeFrom]
 	if !ok {
 		return jd.Err("参数 dataComeFrom 不合法"), nil
 	}

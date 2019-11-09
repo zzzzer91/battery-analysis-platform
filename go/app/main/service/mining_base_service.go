@@ -16,13 +16,13 @@ type MiningBaseShowDataService struct {
 
 func (s *MiningBaseShowDataService) Do() (*jd.Response, error) {
 	// 校验字段合法性
-	table, ok := model.BatteryMysqlNameToTable[s.DataComeFrom]
+	table, ok := model.BatteryNameToTable[s.DataComeFrom]
 	if !ok {
 		return jd.Err("参数 dataComeFrom 不合法"), nil
 	}
 	fields := strings.Split(s.NeedParams, ",")
 	for _, field := range fields {
-		_, ok = table.FieldToName[field]
+		_, ok = table.FieldSet[field]
 		if !ok {
 			return jd.Err("参数 needParams 不合法"), nil
 		}
