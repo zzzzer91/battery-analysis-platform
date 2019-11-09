@@ -64,7 +64,7 @@ func init() {
 	}
 	indexModel = mongo.IndexModel{
 		Keys: bson.M{
-			"动力电池充放电状态": 1,
+			"状态号": 1,
 		},
 		Options: options.Index().SetUnique(false),
 	}

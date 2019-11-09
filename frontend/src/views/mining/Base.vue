@@ -217,7 +217,7 @@ export default {
                 label: 'LNBSCU3HXJR884327'
               }
             ]
-          },
+          }
         ],
         needParams: {
           宇通: [
@@ -252,10 +252,6 @@ export default {
                 {
                   value: 'SOC',
                   label: 'SOC'
-                },
-                {
-                  value: '状态号',
-                  label: '状态号'
                 }
               ]
             },
@@ -317,10 +313,6 @@ export default {
                   label: '动力电池剩余电量SOC'
                 },
                 {
-                  value: '动力电池充放电状态',
-                  label: '动力电池充放电状态'
-                },
-                {
                   value: 'MSODO总里程',
                   label: 'MSODO总里程'
                 }
@@ -358,7 +350,7 @@ export default {
         yAxis3dParam: null,
         zAxis3dParam: '时间',
         xAxis3dAutoChange: false, // X 轴根据数据上下限自动调整
-        yAxis3dAutoChange: false, // Y 轴根据数据上下限自动调整
+        yAxis3dAutoChange: false // Y 轴根据数据上下限自动调整
       },
       // 图表数据
       chartData: [],
@@ -405,28 +397,26 @@ export default {
               throw new Error(jd.msg)
             }
 
-            const colNames = ['时间'].concat(this.queryForm.needParams)
-            this.chartData = jd.data
-            this.chartDataCount = this.chartData.length
-
-            this.dataTextArea = this.buildDataTextArea(colNames, this.chartData)
-
             let xAxisParamOptions = []
             let yAxisParamOptions = []
-            for (let name of colNames) {
+            for (let name of this.queryForm.needParams) {
               // 填充 x 轴数据选项
               xAxisParamOptions.push({
                 label: name,
                 value: name
               })
-              if (name !== '时间') {
-                // 填充 y 轴数据选项
-                yAxisParamOptions.push({
-                  label: name,
-                  value: name
-                })
-              }
+              // 填充 y 轴数据选项
+              yAxisParamOptions.push({
+                label: name,
+                value: name
+              })
             }
+
+            const colNames = ['时间', '状态号'].concat(this.queryForm.needParams)
+            this.chartData = jd.data
+            this.chartDataCount = this.chartData.length
+
+            this.dataTextArea = this.buildDataTextArea(colNames, this.chartData)
 
             this.plotOption.xAxisParamOptions = xAxisParamOptions
             this.plotOption.yAxisParamOptions = yAxisParamOptions
@@ -667,13 +657,13 @@ export default {
           type: 'value',
           name: xName,
           min: xMin,
-          max: xMax,
+          max: xMax
         },
         yAxis3D: {
           type: 'value',
           name: yName,
           min: yMin,
-          max: yMax,
+          max: yMax
         },
         zAxis3D: {
           type: 'value',

@@ -27,7 +27,6 @@ func init() {
 		"反向累计电量":  {},
 		"总里程":     {},
 		"SOC":     {},
-		"状态号":     {},
 		"单体最高温度":  {},
 		"单体最低温度":  {},
 		"单体最高电压":  {},
@@ -45,7 +44,6 @@ func init() {
 		"动力电池可用能量":    {},
 		"动力电池可用容量":    {},
 		"动力电池剩余电量SOC": {},
-		"动力电池充放电状态":   {},
 		"MSODO总里程":    {},
 	}
 
@@ -70,7 +68,7 @@ func GetBatteryData(tableName, startDate string, limit int, fields []string) ([]
 	// filter := bson.M{"时间": bson.M{"$gte": sDate, "$lt": eDate}}
 	filter := bson.M{"时间": bson.M{"$gte": sDate}}
 
-	projection := bson.M{"_id": false, "时间": true}
+	projection := bson.M{"_id": false, "时间": true, "状态号": true}
 	for _, field := range fields {
 		projection[field] = true
 	}

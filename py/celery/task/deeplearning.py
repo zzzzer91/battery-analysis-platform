@@ -48,12 +48,12 @@ def train(self, dataset: str, hyper_parameter: Dict):
 
     if dataset == '北汽_LNBSCU3HXJR884327放电':
         l_temp = [list(d.values()) for d in data_collection.find(
-            {'动力电池充放电状态': 2},
+            {'状态号': 2},
             projection={
                 '_id': False,
                 '时间': False,
                 'MSODO总里程': False,
-                '动力电池充放电状态': False,
+                '状态号': False,
                 '动力电池可用能量': False,
                 '动力电池可用容量': False,
             }
