@@ -51,7 +51,7 @@ func (t *Time) Scan(v interface{}) error {
 func (t *Time) UnmarshalBSON(b []byte) error {
 	// b 字节流有个 4 字节头部，值为 20，可能代表了类型
 	// 还有个 1 字节的尾部，0
-	tTmp, err := time.Parse(FormatLayout, string(b[4:len(b)-1]))
+	tTmp, err := time.ParseInLocation(FormatLayout, string(b[4:len(b)-1]), time.Local)
 	if err != nil {
 		return err
 	}

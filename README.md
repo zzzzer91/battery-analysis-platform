@@ -178,7 +178,7 @@ npm run serve
 
 浏览器访问 `<ip>:8079` 端口
 
-## 设计规范
+## 设计规范及注意点
 
 仅供自己参考。
 
@@ -227,6 +227,10 @@ npm run serve
 - 开发环境需要手动设置环境变量 `CONF_FILE`，指定配置文件路径
 
 - gin 的请求 log 会在请求处理函数结束后打印（记录请求用时），所以请求 websocket 时，打印会很延迟
+
+- 貌似，从 MySQL 中读取 datetime 类型到 Python 的 `datetime.datetime` 类型中，会以本地时区解析（如插入 `2018-12-12 09:38:40`，那么其CST时区时间会减8个小时）；同样的，插入 MongoDB 的时间字符串会以本地时区解析，并以 Unix 时间戳格式存入数据库
+
+- 注意，go 中把用本地时区的时间字符串解析成 `time.Time` 类型时，要用 `time.ParseInLocation`
 
 ## TODO
 

@@ -306,6 +306,10 @@ export default {
                 },
                 {
                   value: '动力电池可用能量',
+                  label: '动力电池可用能量'
+                },
+                {
+                  value: '动力电池可用容量',
                   label: '动力电池可用容量'
                 },
                 {
@@ -412,7 +416,9 @@ export default {
               })
             }
 
-            const colNames = ['时间', '状态号'].concat(this.queryForm.needParams)
+            const colNames = ['时间', '状态号'].concat(
+              this.queryForm.needParams
+            )
             this.chartData = jd.data
             this.chartDataCount = this.chartData.length
 
@@ -624,18 +630,43 @@ export default {
       // vue 不会监控某个对象的成员，要改变整个对象才能响应式
       return chartOption
     },
-    _build3dScatterChartOption(plotOption, chartData) {
+    _build3dScatterChartOption(dataComeFrom, plotOption, chartData) {
       const xName = plotOption.xAxis3dParam
       const yName = plotOption.yAxis3dParam
       const zName = plotOption.zAxis3dParam
-      let data = []
+
+      let mapping = null
+      if (dataComeFrom === '北汽') {
+        mapping = {
+          charge: 1,
+          discharge: 2
+        }
+      } else if (dataComeFrom === '宇通') {
+        mapping = {
+          charge: 6,
+          discharge: 4
+        }
+      }
+
+      let chargeData = []
+      let dischargeData = []
+      let otherData = []
       for (
         let i = plotOption.dataIndexStart;
         i < plotOption.dataIndexEnd;
         i++
       ) {
-        data.push([chartData[i][xName], chartData[i][yName], i])
+        let row = chartData[i]
+        const status = row['状态号']
+        if (status === mapping['charge']) {
+          chargeData.push([row[xName], row[yName], i])
+        } else if (status === mapping['discharge']) {
+          dischargeData.push([row[xName], row[yName], i])
+        } else {
+          otherData.push([row[xName], row[yName], i])
+        }
       }
+      console.log(otherData)
 
       // 是否根据数据上下限调整 X 轴 和 Y 轴
       let xMin = null
@@ -651,7 +682,18 @@ export default {
         yMax = 'dataMax'
       }
 
+      const scatterSize = 2.5
+
       return {
+        toolbox: {
+          feature: {
+            saveAsImage: {},
+            restore: {}
+          }
+        },
+        legend: {
+          data: ['充电', '放电', '其他']
+        },
         grid3D: {},
         xAxis3D: {
           type: 'value',
@@ -671,9 +713,22 @@ export default {
         },
         series: [
           {
+            name: '充电',
             type: 'scatter3D',
-            symbolSize: 2.5,
-            data: data
+            symbolSize: scatterSize,
+            data: chargeData
+          },
+          {
+            name: '放电',
+            type: 'scatter3D',
+            symbolSize: scatterSize,
+            data: dischargeData
+          },
+          {
+            name: '其他',
+            type: 'scatter3D',
+            symbolSize: scatterSize,
+            data: otherData
           }
         ]
       }
@@ -697,6 +752,7 @@ export default {
           return
         }
         chartOption = this._build3dScatterChartOption(
+          this.queryForm.dataComeFrom[0],
           this.plotOption,
           this.chartData
         )
