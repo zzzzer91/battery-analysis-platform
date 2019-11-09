@@ -6,31 +6,6 @@ import (
 	"strings"
 )
 
-//type YutongBattery struct {
-//	Id                        int             `json:"-"`
-//	Province                  string          `json:"-"`
-//	City                      string          `json:"-"`
-//	Timestamp                 *jtime.JSONTime `json:"timestamp"`
-//	Bty_t_vol                 float64         `json:"bty_t_vol"`
-//	Bty_t_curr                float64         `json:"bty_t_curr"`
-//	BatterySoc                float64         `json:"battery_soc"`
-//	S_b_max_t                 int             `json:"s_b_max_t"`
-//	Max_t_s_b_num             int             `json:"max_t_s_b_num"`
-//	S_b_min_t                 int             `json:"s_b_min_t"`
-//	Min_t_s_b_num             int             `json:"min_t_s_b_num"`
-//	S_b_max_v                 float64         `json:"s_b_max_v"`
-//	Max_v_e_core_num          int             `json:"max_v_e_core_num"`
-//	S_b_min_v                 float64         `json:"s_b_min_v"`
-//	Min_v_e_core_num          int             `json:"min_v_e_core_num"`
-//	P_t_p                     float64         `json:"p_t_p"`
-//	R_t_p                     float64         `json:"r_t_p"`
-//	TotalMileage              int             `json:"total_mileage"`
-//	Bty_sys_rated_capacity    int             `json:"bty_sys_rated_capacity"`
-//	Bty_sys_rated_consumption int             `json:"bty_sys_rated_consumption"`
-//	Met_spd                   int             `json:"met_spd"`
-//	Byt_ma_sys_state          int             `json:"byt_ma_sys_state"`
-//}
-
 type mysqlTable struct {
 	Name        string
 	FieldToName map[string]string

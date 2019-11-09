@@ -14,9 +14,10 @@ const (
 )
 
 const (
-	mongoCollectionBeiQiVehicle = "beiqi_vehicle"
-	mongoCollectionMiningTask   = "mining_task"
-	mongoCollectionDlTask       = "deeplearning_task"
+	mongoCollectionYuTongVehicle = "yutong_vehicle"
+	mongoCollectionBeiQiVehicle  = "beiqi_vehicle"
+	mongoCollectionMiningTask    = "mining_task"
+	mongoCollectionDlTask        = "deeplearning_task"
 )
 
 // 确保创建 mongo 索引
@@ -31,7 +32,28 @@ func createMongoCollectionIdx(name string, model mongo.IndexModel) error {
 }
 
 func init() {
+	// yutong_vehicle
 	indexModel := mongo.IndexModel{
+		Keys: bson.M{
+			"时间": 1,
+		},
+		Options: options.Index().SetUnique(false),
+	}
+	if err := createMongoCollectionIdx(mongoCollectionYuTongVehicle, indexModel); err != nil {
+		panic(err)
+	}
+	indexModel = mongo.IndexModel{
+		Keys: bson.M{
+			"状态号": 1,
+		},
+		Options: options.Index().SetUnique(false),
+	}
+	if err := createMongoCollectionIdx(mongoCollectionYuTongVehicle, indexModel); err != nil {
+		panic(err)
+	}
+
+	// beiqi_vehicle
+	indexModel = mongo.IndexModel{
 		Keys: bson.M{
 			"时间": 1,
 		},
