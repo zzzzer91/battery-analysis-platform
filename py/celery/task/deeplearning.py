@@ -28,6 +28,8 @@ def train(self, dataset: str, hyper_parameter: Dict):
     :param hyper_parameter: 超参数
     """
 
+    start = time.perf_counter()
+
     # 用 celery 产生的 id 做 mongo 主键
     task_id = self.request.id
 
@@ -44,10 +46,8 @@ def train(self, dataset: str, hyper_parameter: Dict):
     torch.manual_seed(seed)
     torch.cuda.manual_seed(seed)
 
-    start = time.perf_counter()
-
     if dataset == '北汽_LNBSCU3HXJR884327放电':
-        l_temp = [list(d.values()) for d in data_collection.find(
+        l_temp = (list(d.values()) for d in data_collection.find(
             {'状态号': 2},
             projection={
                 '_id': False,
@@ -57,7 +57,7 @@ def train(self, dataset: str, hyper_parameter: Dict):
                 '动力电池可用能量': False,
                 '动力电池可用容量': False,
             }
-        )]
+        ))
         random.shuffle(l_temp)
         x = []
         y = []

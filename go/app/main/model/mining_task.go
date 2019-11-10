@@ -49,7 +49,7 @@ func ListMiningTask() ([]MiningTask, error) {
 	filter := bson.M{}                  // 过滤记录
 	projection := bson.M{"data": false} // 过滤字段
 	sort := bson.M{"createTime": -1}    // 结果排序
-	// 注意 ctx 不能几个连接复用
+	// 注意 ctx 不能几个连接复用，原因见 `context.WithTimeout` 源码
 	ctx, _ := context.WithTimeout(context.Background(), mongoCtxTimeout)
 	cur, err := collection.Find(ctx, filter, options.Find().SetProjection(projection).SetSort(sort))
 	if err != nil {
@@ -86,8 +86,8 @@ func GetMiningTaskData(id string) (bson.A, error) {
 	// 若要代表一个列表，类似 Python 中 list，不限定类型，使用 bson.A，即 []interface{}。
 	var result bson.M
 	ctx, _ := context.WithTimeout(context.Background(), mongoCtxTimeout)
-	err := collection.FindOne(ctx, filter, options.FindOne().
-		SetProjection(projection)).Decode(&result)
+	err := collection.FindOne(ctx, filter,
+		options.FindOne().SetProjection(projection)).Decode(&result)
 	if err != nil {
 		return nil, err
 	}

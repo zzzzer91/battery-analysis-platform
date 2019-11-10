@@ -192,6 +192,8 @@ npm run serve
 
 - MySQL，Redis，MongoDB key 名使用小驼峰法命名
 
+- MongoDB 中 key 可以用中文，但最好是英文
+
 ### 前端
 
 - URI 格式规范：1）URI中尽量使用连字符”-“代替下划线”_”的使用。2）URI中统一使用小写字母。3）用复数名词。一个资源URI可以这样定义：`https://www.example.com/api/v1/posts/{postId}/comments/{commentId}?过滤条件`
@@ -205,6 +207,8 @@ npm run serve
 ### 后端
 
 - 数据库表不由某个 ORM 创建，而是手工创建
+
+- 字典的 key 都假设是无序的（即使在 Python 中是有序的）
 
 - 字段前后端都要校验
 
@@ -228,9 +232,9 @@ npm run serve
 
 - gin 的请求 log 会在请求处理函数结束后打印（记录请求用时），所以请求 websocket 时，打印会很延迟
 
-- 貌似，从 MySQL 中读取 datetime 类型到 Python 的 `datetime.datetime` 类型中，会以本地时区解析（如插入 `2018-12-12 09:38:40`，那么其CST时区时间会减8个小时）；同样的，插入 MongoDB 的时间字符串会以本地时区解析，并以 Unix 时间戳格式存入数据库
+- 从 MySQL 中读取 datetime 类型到 Python 的 `datetime.datetime` 类型中，会以本地时区解析（如读取 `2018-12-12 09:38:40`，那么其 UTC 时区时间是 `2018-12-12 01:38:40`）；同样的，插入 MongoDB 的时间字符串会以本地时区解析，并以 Unix 时间戳格式存入数据库
 
-- 注意，go 中把用本地时区的时间字符串解析成 `time.Time` 类型时，要用 `time.ParseInLocation`
+- Python 中的时间类型 `datetime.datetime` 用的是本地时区；时间字符串使用 `datetime.datetime.strptime` 解析，直接转换成本地时区。但注意，go 中把本地时区的时间字符串解析成 `time.Time` 类型时，要用 `time.ParseInLocation` 而不是 `time.Parse` 
 
 ## TODO
 

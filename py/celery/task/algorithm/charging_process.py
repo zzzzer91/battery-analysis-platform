@@ -1,42 +1,38 @@
-from typing import Dict, List, Tuple, Iterator
+from typing import Dict, List, Tuple, Iterable
 
 
-def compute_charging_process(rows: Iterator[Tuple]) -> List[Dict]:
+def compute_charging_process(rows: Iterable[Dict]) -> List[Dict]:
     """计算充电过程。注意：若 row 字段顺序改变，算法必须修改，所以添加新字段要追加在最后"""
 
-    lst1: List[List[Tuple]] = []
+    lst1: List[List[Dict]] = []
     i = -1
-    pre = -1
+    pre = -1  # 状态号
     for row in rows:
-        if row[4] != pre:
-            pre = row[4]
+        if row['状态号'] != pre:  # 状态号与前一个数据不同，说明冲放电状态改变
+            pre = row['状态号']
             lst1.append([])
             i += 1
         lst1[i].append(row)
 
     lst2 = []
     for row in lst1:
-        if row[0][4] == 6:
+        if row[0]['状态号'] == 6:  # 充电
             lst2.append(row)
 
     data = []
     for i, row in enumerate(lst2, 1):
-        max_vol = max(row, key=lambda x: x[0])[0]
-        last_vol = row[-1][0]
+        max_vol = max(row, key=lambda x: x['总电压'])['总电压']
+        last_vol = row[-1]['总电压']
         sub_vol = max_vol - last_vol
-        init_soc = row[0][2]
-        last_soc = row[-1][2]
-        first_id = row[0][3]
-        last_id = row[-1][3]
+        init_soc = row[0]['SOC']
+        last_soc = row[-1]['SOC']
         data.append({
-            'index': i,
-            'max_vol': float(max_vol),
-            'last_vol': float(last_vol),
-            'sub_vol': float(sub_vol),
-            'init_soc': float(init_soc),
-            'last_soc': float(last_soc),
-            'first_id': first_id,
-            'last_id': last_id,
+            '充电序号': i,
+            '最大电压': round(float(max_vol), 1),
+            '终止电压': round(float(last_vol), 1),
+            '压差': round(float(sub_vol), 1),
+            '初始SOC': round(float(init_soc), 1),
+            '终止SOC': round(float(last_soc), 1),
         })
 
     return data

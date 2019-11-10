@@ -251,48 +251,25 @@ export default {
       return obj
     },
     _buildLineOrBar(taskName, data) {
-      let mapping = null // 变量名到中文名的映射
       let dimensions = null // 用于保持数据顺序
       let xAxisName = null // X 轴名
       let boundaryGap = false // 坐标轴两边留不留白
       let seriesType = null // 图表类型
       let magicType = null // 切换图表样式时用，支持折线和柱状图
       if (taskName === '充电过程') {
-        mapping = {
-          init_soc: '初始SOC',
-          last_soc: '终止SOC',
-          last_vol: '终止电压',
-          max_vol: '最大电压',
-          sub_vol: '压差'
-        }
-        dimensions = [
-          // 不要改，用于保持数据顺序
-          'index',
-          'init_soc',
-          'last_soc',
-          'last_vol',
-          'sub_vol',
-          'max_vol'
-        ]
-        xAxisName = '充电次数'
+        // 不要改，用于保持数据顺序
+        dimensions = ['初始SOC', '终止SOC', '终止电压', '压差', '最大电压']
+        xAxisName = '充电序号'
         seriesType = 'line'
         magicType = ['line', 'bar']
       } else if (taskName === '电池统计') {
-        mapping = {
-          max_t_count: '最大温度次数',
-          min_t_count: '最小温度次数'
-        }
-        dimensions = ['number', 'max_t_count', 'min_t_count']
+        dimensions = ['最大温度次数', '最小温度次数']
         xAxisName = '电池号'
         boundaryGap = true // 柱状图要设为 true，来留白，不然有显示问题
         seriesType = 'bar'
         magicType = ['stack', 'tiled']
       } else if (taskName === '工况') {
-        mapping = {
-          speed: '速度',
-          cur: '电流'
-        }
-        dimensions = ['time', 'speed', 'cur']
+        dimensions = ['速度', '电流']
         xAxisName = '时间'
         seriesType = 'line'
         magicType = ['line', 'bar']
@@ -305,18 +282,17 @@ export default {
         name: xAxisName,
         type: 'category',
         boundaryGap: boundaryGap,
-        data: transformedData[dimensions[0]]
+        data: transformedData[xAxisName]
       }
 
       // 构建 series
       let series = []
       let legendData = []
-      for (let k of dimensions.slice(1)) {
-        let name = mapping[k]
+      for (let name of dimensions) {
         series.push({
           name: name,
           type: seriesType,
-          data: transformedData[k]
+          data: transformedData[name]
         })
         legendData.push(name)
       }
@@ -369,6 +345,7 @@ export default {
     },
     _buildHeatMap(taskName, data) {
       // 字段名不能太长，否则会显示不全
+      // 字段顺序不能变
       const xy = [
         '总电压',
         '总电流',

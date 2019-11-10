@@ -1,5 +1,5 @@
-from typing import Dict, List, Tuple, Iterator
+from typing import Dict, List, Iterable
 
 
-def compute_working_condition(rows: Iterator[Tuple]) -> List[Dict]:
+def compute_working_condition(rows: Iterable[Dict]) -> List[Dict]:
     pass

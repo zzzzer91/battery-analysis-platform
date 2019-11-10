@@ -1,10 +1,10 @@
 import time
-
-import pandas as pd
+from datetime import datetime
+from typing import Callable, Optional, Iterable, List
 
 from . import status
 from .celery import app
-from .db import mysql, mongo
+from .db import mongo
 from .algorithm import compute_battery_statistic, \
     compute_charging_process, compute_working_condition, \
     compute_correlation
@@ -12,17 +12,7 @@ from .algorithm import compute_battery_statistic, \
 TASK_NAME = 'miningTask'
 SIG_LIST_NAME = f'{TASK_NAME}:sigList'
 
-
-def _gen_sql(need_fields: str, table_name: str, date_range: str) -> str:
-    """防 sql 注入的工作由创建任务者检查"""
-
-    if date_range == '所有数据':
-        sql = f'SELECT {need_fields} FROM {table_name}'
-    else:
-        start_date, end_date = date_range.split(' - ')
-        sql = f'SELECT {need_fields} FROM {table_name} ' \
-              f'WHERE timestamp >= "{start_date}" and timestamp <= "{end_date}"'
-    return sql
+DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 
 
 # `ignore_result=True` 该任务不会将结果保存在 redis，提高性能
@@ -41,17 +31,15 @@ def compute_model(self,
     :param date_range: 数据查询起止日期，格式有：["所有数据"] 和 ["起 - 止"]。
     """
 
+    start = time.perf_counter()
+
     # 用 celery 产生的 id 做 mongo 主键
     task_id = self.request.id
 
-    collection = mongo['mining_task']
+    data_collection = mongo[table_name]
+    task_collection = mongo['mining_task']
 
-    # 从连接池取一个连接
-    mysql_conn = mysql.connect()
-
-    start = time.perf_counter()
-
-    collection.update_one(
+    task_collection.update_one(
         {'taskId': task_id},
         {'$set': {
             'taskStatus': status.TASK_STATUS_PROCESSING,
@@ -61,41 +49,59 @@ def compute_model(self,
     status.send_status_change_sig(SIG_LIST_NAME)
 
     # 处理数据
-    data = None
     if task_name == '充电过程':
-        # needFields 字符串中字段的顺序不能变，追加新字段，必须放在最后
-        need_fields = 'bty_t_vol, bty_t_curr, battery_soc, id, byt_ma_sys_state'
-        sql = _gen_sql(need_fields, table_name, date_range)
-        # sqlalchemy 默认返回 row 是元组，可以用 `dict(row)` 转换成字典
-        rows = mysql_conn.execute(sql)
-        if rows.rowcount != 0:
-            data = compute_charging_process(rows)
+        # projection 字符串中字段的顺序不能变，追加新字段，必须放在最后
+        projection = {
+            '_id': False,
+            '状态号': True,
+            '总电压': True,
+            'SOC': True,
+        }
+        compute_alg = compute_charging_process
     elif task_name == '工况':
-        need_fields = 'timestamp, bty_t_curr, met_spd'
-        sql = _gen_sql(need_fields, table_name, date_range)
-        rows = mysql_conn.execute(sql)
-        if rows.rowcount != 0:
-            data = compute_working_condition(rows)
+        projection = {
+            '_id': False,
+            '时间': True,
+            '总电压': True,
+            '车速': True,
+        }
+        compute_alg = compute_working_condition
     elif task_name == '电池统计':
-        need_fields = 'max_t_s_b_num, min_t_s_b_num'
-        sql = _gen_sql(need_fields, table_name, date_range)
-        rows = mysql_conn.execute(sql)
-        if rows.rowcount != 0:
-            data = compute_battery_statistic(rows)
+        projection = {
+            '_id': False,
+            '最高温度电池号': True,
+            '最低温度电池号': True,
+        }
+        compute_alg = compute_battery_statistic
     elif task_name == 'pearson相关系数':
-        need_fields = 'bty_t_vol,bty_t_curr,met_spd,battery_soc,' \
-                      's_b_max_t,s_b_min_t,s_b_max_v,s_b_min_v'
-        sql = _gen_sql(need_fields, table_name, date_range)
-        rows = pd.read_sql(sql, con=mysql_conn).corr('pearson').values.tolist()
-        data = compute_correlation(rows)
+        projection = {
+            '_id': False,
+            '总电压': True,
+            '总电流': True,
+            '车速': True,
+            'SOC': True,
+            '单体最高温度': True,
+            '单体最低温度': True,
+            '单体最高电压': True,
+            '单体最低电压': True,
+        }
+        compute_alg = compute_correlation
     else:
         return
 
-    # 放回连接
-    mysql_conn.close()
-
-    if data is None or len(data) == 0:
-        collection.update_one(
+    if date_range == '所有数据':
+        mongo_filter = {}
+    else:
+        start_date, end_date = date_range.split(' - ')
+        mongo_filter = {
+            '时间': {
+                '$gte': datetime.strptime(start_date, DATETIME_FORMAT),
+                '$lte': datetime.strptime(end_date, DATETIME_FORMAT),
+            }
+        }
+    rows = data_collection.find(filter=mongo_filter, projection=projection)
+    if rows.count() == 0:
+        task_collection.update_one(
             {'taskId': task_id},
             {'$set': {
                 'taskStatus': status.TASK_STATUS_FAILURE,
@@ -103,8 +109,9 @@ def compute_model(self,
             }}
         )
     else:
+        data = compute_alg(rows)
         used_time = round(time.perf_counter() - start, 2)
-        collection.update_one(
+        task_collection.update_one(
             {'taskId': task_id},
             {'$set': {
                 'taskStatus': status.TASK_STATUS_SUCCESS,
