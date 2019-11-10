@@ -47,7 +47,7 @@ def train(self, dataset: str, hyper_parameter: Dict):
     torch.cuda.manual_seed(seed)
 
     if dataset == '北汽_LNBSCU3HXJR884327放电':
-        l_temp = (list(d.values()) for d in data_collection.find(
+        l_temp = [list(d.values()) for d in data_collection.find(
             {'状态号': 2},
             projection={
                 '_id': False,
@@ -57,7 +57,7 @@ def train(self, dataset: str, hyper_parameter: Dict):
                 '动力电池可用能量': False,
                 '动力电池可用容量': False,
             }
-        ))
+        )]
         random.shuffle(l_temp)
         x: List[List] = []
         y: List[List] = []
