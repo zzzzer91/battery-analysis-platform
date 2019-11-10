@@ -1,6 +1,6 @@
 import time
 import random
-from typing import Dict
+from typing import Dict, List
 
 import torch
 from torch import optim
@@ -59,8 +59,8 @@ def train(self, dataset: str, hyper_parameter: Dict):
             }
         ))
         random.shuffle(l_temp)
-        x = []
-        y = []
+        x: List[List] = []
+        y: List[List] = []
         for v in l_temp:
             x.append(v[1:])
             y.append(v[0:1])
@@ -107,8 +107,8 @@ def train(self, dataset: str, hyper_parameter: Dict):
     status.send_status_change_sig(SIG_LIST_NAME)
 
     # 训练
-    loss_history = []
-    accuracy_history = []
+    loss_history: List[float] = []
+    accuracy_history: List[float] = []
     model.train()
     for i in range(1, hyper_parameter['epochs'] + 1):
         loss_value, accuracy_value = train_once(

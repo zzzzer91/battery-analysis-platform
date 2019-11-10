@@ -19,7 +19,7 @@ def compute_charging_process(rows: Iterable[Dict]) -> List[Dict]:
         if row[0]['状态号'] == 6:  # 充电
             lst2.append(row)
 
-    data = []
+    data: List[Dict] = []
     for i, row in enumerate(lst2, 1):
         max_vol = max(row, key=lambda x: x['总电压'])['总电压']
         last_vol = row[-1]['总电压']

@@ -14,7 +14,7 @@ def compute_battery_statistic(rows: Iterable[Dict]) -> List[Dict]:
             battery_statistic.setdefault(min_t_s_b_num, [0, 0])[1] += 1
 
     battery_statistic_sorted = sorted(battery_statistic.items(), key=lambda x: x[0])
-    data = []
+    data: List[Dict] = []
     for number, (max_t_count, min_t_count) in battery_statistic_sorted:
         data.append({
             '电池号': f'{number}号',
