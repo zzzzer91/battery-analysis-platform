@@ -22,7 +22,7 @@
         <div slot="header" class="clearfix">
           <h3>系统信息</h3>
         </div>
-        <div class="mgb20 text">版本：V1.0</div>
+        <div class="mgb20 text">版本：V2.0</div>
         <div class="mgb20 text">开发：zzzzer91@gmail.com</div>
       </el-card>
     </el-col>

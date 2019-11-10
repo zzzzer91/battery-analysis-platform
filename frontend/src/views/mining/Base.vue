@@ -709,7 +709,9 @@ export default {
         },
         zAxis3D: {
           type: 'value',
-          name: zName
+          name: zName,
+          min: 'dataMin',
+          max: 'dataMax'
         },
         series: [
           {
