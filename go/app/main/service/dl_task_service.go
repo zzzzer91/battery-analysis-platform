@@ -54,7 +54,7 @@ func (s *DlTaskDeleteService) Do() (*jd.Response, error) {
 type DlTaskListService struct {
 }
 
-func (DlTaskListService) Do() (*jd.Response, error) {
+func (s *DlTaskListService) Do() (*jd.Response, error) {
 	data, err := model.ListDlTask()
 	if err != nil {
 		return nil, err

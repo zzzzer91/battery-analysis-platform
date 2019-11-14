@@ -8,7 +8,7 @@ import (
 type SysInfoShowService struct {
 }
 
-func (SysInfoShowService) Do() (*jd.Response, error) {
+func (s *SysInfoShowService) Do() (*jd.Response, error) {
 	data, err := model.GetSysInfo()
 	if err != nil {
 		return nil, err

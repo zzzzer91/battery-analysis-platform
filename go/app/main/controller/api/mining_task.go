@@ -1,6 +1,7 @@
 package api
 
 import (
+	"battery-analysis-platform/app/main/controller"
 	"battery-analysis-platform/app/main/service"
 	"github.com/gin-gonic/gin"
 )
@@ -11,42 +12,22 @@ func CreateMiningTask(c *gin.Context) {
 		c.AbortWithError(500, err)
 		return
 	}
-	res, err := s.Do()
-	if err != nil {
-		c.AbortWithError(500, err)
-		return
-	}
-	c.JSON(200, res)
+	controller.GinResponse(c, &s)
 }
 
 func DeleteMiningTask(c *gin.Context) {
 	var s service.MiningTaskDeleteService
 	s.Id = c.Param("taskId")
-	res, err := s.Do()
-	if err != nil {
-		c.AbortWithError(500, err)
-		return
-	}
-	c.JSON(200, res)
+	controller.GinResponse(c, &s)
 }
 
 func ListMiningTask(c *gin.Context) {
 	var s service.MiningTaskListService
-	res, err := s.Do()
-	if err != nil {
-		c.AbortWithError(500, err)
-		return
-	}
-	c.JSON(200, res)
+	controller.GinResponse(c, &s)
 }
 
 func ShowMiningTaskData(c *gin.Context) {
 	var s service.MiningTaskShowDataService
 	s.Id = c.Param("taskId")
-	res, err := s.Do()
-	if err != nil {
-		c.AbortWithError(500, err)
-		return
-	}
-	c.JSON(200, res)
+	controller.GinResponse(c, &s)
 }

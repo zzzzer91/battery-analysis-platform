@@ -58,6 +58,6 @@ func (s *LoginByCookieService) Do() (*jd.Response, error) {
 type LogoutService struct {
 }
 
-func (LogoutService) Do() (*jd.Response, error) {
+func (s *LogoutService) Do() (*jd.Response, error) {
 	return jd.Build(jd.SUCCESS, "", nil), nil
 }

@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"battery-analysis-platform/app/main/controller"
 	"battery-analysis-platform/app/main/service"
 	"battery-analysis-platform/pkg/jd"
 	"errors"
@@ -17,12 +18,7 @@ func Login(c *gin.Context) {
 			return
 		}
 		s := service.LoginByCookieService{UserName: userName.(string)}
-		res, err := s.Do()
-		if err != nil {
-			c.AbortWithError(500, err)
-			return
-		}
-		c.JSON(200, res)
+		controller.GinResponse(c, &s)
 	} else if c.Request.Method == "POST" {
 		var s service.LoginService
 		// ShouldBind() 会检测是否满足设置的 bind 标签要求
@@ -53,10 +49,5 @@ func Logout(c *gin.Context) {
 	session.Clear()
 	_ = session.Save()
 	var s service.LogoutService
-	res, err := s.Do()
-	if err != nil {
-		c.AbortWithError(500, err)
-		return
-	}
-	c.JSON(200, res)
+	controller.GinResponse(c, &s)
 }

@@ -1,6 +1,7 @@
 package api
 
 import (
+	"battery-analysis-platform/app/main/controller"
 	"battery-analysis-platform/app/main/service"
 	"github.com/gin-gonic/gin"
 )
@@ -11,12 +12,7 @@ func CreateUser(c *gin.Context) {
 		c.AbortWithError(500, err)
 		return
 	}
-	res, err := s.Do()
-	if err != nil {
-		c.AbortWithError(500, err)
-		return
-	}
-	c.JSON(200, res)
+	controller.GinResponse(c, &s)
 }
 
 func ModifyUser(c *gin.Context) {
@@ -26,20 +22,10 @@ func ModifyUser(c *gin.Context) {
 		return
 	}
 	s.UserName = c.Param("name")
-	res, err := s.Do()
-	if err != nil {
-		c.AbortWithError(500, err)
-		return
-	}
-	c.JSON(200, res)
+	controller.GinResponse(c, &s)
 }
 
 func ListUser(c *gin.Context) {
 	var s service.UserListService
-	res, err := s.Do()
-	if err != nil {
-		c.AbortWithError(500, err)
-		return
-	}
-	c.JSON(200, res)
+	controller.GinResponse(c, &s)
 }

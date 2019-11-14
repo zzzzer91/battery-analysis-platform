@@ -60,7 +60,7 @@ func (s *UserModifyService) Do() (*jd.Response, error) {
 type UserListService struct {
 }
 
-func (UserListService) Do() (*jd.Response, error) {
+func (s *UserListService) Do() (*jd.Response, error) {
 	userList, err := model.ListCommonUser()
 	if err != nil {
 		return nil, err

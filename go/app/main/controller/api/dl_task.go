@@ -1,6 +1,7 @@
 package api
 
 import (
+	"battery-analysis-platform/app/main/controller"
 	"battery-analysis-platform/app/main/service"
 	"github.com/gin-gonic/gin"
 )
@@ -11,54 +12,29 @@ func CreateDlTask(c *gin.Context) {
 		c.AbortWithError(500, err)
 		return
 	}
-	res, err := s.Do()
-	if err != nil {
-		c.AbortWithError(500, err)
-		return
-	}
-	c.JSON(200, res)
+	controller.GinResponse(c, &s)
 }
 
 func DeleteDlTask(c *gin.Context) {
 	var s service.DlTaskDeleteService
 	s.Id = c.Param("taskId")
-	res, err := s.Do()
-	if err != nil {
-		c.AbortWithError(500, err)
-		return
-	}
-	c.JSON(200, res)
+	controller.GinResponse(c, &s)
 }
 
 func ListDlTask(c *gin.Context) {
 	var s service.DlTaskListService
-	res, err := s.Do()
-	if err != nil {
-		c.AbortWithError(500, err)
-		return
-	}
-	c.JSON(200, res)
+	controller.GinResponse(c, &s)
 }
 
 func ShowDlTaskTraningHistory(c *gin.Context) {
 	var s service.DlTaskShowTraningHistoryService
 	s.Id = c.Param("taskId")
 	s.ReadFromRedis = false
-	res, err := s.Do()
-	if err != nil {
-		c.AbortWithError(500, err)
-		return
-	}
-	c.JSON(200, res)
+	controller.GinResponse(c, &s)
 }
 
 func ShowDlEvalResultHistory(c *gin.Context) {
 	var s service.DlTaskShowEvalResultService
 	s.Id = c.Param("taskId")
-	res, err := s.Do()
-	if err != nil {
-		c.AbortWithError(500, err)
-		return
-	}
-	c.JSON(200, res)
+	controller.GinResponse(c, &s)
 }
