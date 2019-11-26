@@ -10,7 +10,7 @@
 
 - 基于 Celery，异步创建计算任务
 
-- 基于 PyTorch，支持创建神经网络训练，并可实时画出训练过程
+- 基于 PyTorch，支持创建深度学习训练，并可实时画出训练过程
 
 - 内置一个强大的 Markdown 编辑器，能够插入数学公式和图片，并支持导出为 PDF
 
@@ -134,7 +134,7 @@ $ ./script/run-debug.sh
 ```
 在 Pycharm 中配置 run template，
 选择要执行的 py 模块 celery，
-输入运行参数 `-A task worker --concurrency=1`，
+输入运行参数 `-A task worker --concurrency=2`，
 最后指定好环境变量 CONF_FILE。
 ```
 

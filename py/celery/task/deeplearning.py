@@ -114,8 +114,8 @@ def train(self, dataset: str, hyper_parameter: Dict):
         loss_value, accuracy_value = train_once(
             model, train_data_iter, optimizer, criterion, accuracy
         )
-        loss_value_per_epoch = round(loss_value / sample_num, 4)
-        accuracy_value_per_epoch = round(accuracy_value / sample_num, 4)
+        loss_value_per_epoch = round(loss_value / sample_num, 8)
+        accuracy_value_per_epoch = round(accuracy_value / sample_num, 5)
         loss_history.append(loss_value_per_epoch)
         accuracy_history.append(accuracy_value_per_epoch)
         # 存入redis
