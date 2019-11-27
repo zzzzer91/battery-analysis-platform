@@ -134,7 +134,7 @@ $ ./script/run-debug.sh
 ```
 在 Pycharm 中配置 run template，
 选择要执行的 py 模块 celery，
-输入运行参数 `-A task worker --concurrency=2`，
+输入运行参数 `-A task worker --concurrency=3`，
 最后指定好环境变量 CONF_FILE。
 ```
 

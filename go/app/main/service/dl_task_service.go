@@ -1,14 +1,10 @@
 package service
 
 import (
+	"battery-analysis-platform/app/main/db"
 	"battery-analysis-platform/app/main/model"
 	"battery-analysis-platform/app/main/producer"
 	"battery-analysis-platform/pkg/jd"
-)
-
-const (
-	dlTaskTrain     = "task.deeplearning.train"
-	dlTaskStopTrain = "task.deeplearning.stop_train"
 )
 
 type DlTaskCreateService struct {
@@ -19,8 +15,18 @@ type DlTaskCreateService struct {
 func (s *DlTaskCreateService) Do() (*jd.Response, error) {
 	// TODO 检查输入参数
 
+	// 检查是否达到创建任务上限
+	if !producer.CheckTaskLimit("deeplearningTask:workingIdSet", 1) {
+		return jd.Err("允许同时执行任务数已达上限"), nil
+	}
+
 	asyncResult, err := producer.Celery.Delay(
-		dlTaskTrain, s.Dataset, s.HyperParameter)
+		"task.deeplearning.train", s.Dataset, s.HyperParameter)
+	if err != nil {
+		return nil, err
+	}
+	// 添加正在工作的任务的 id 到集合中
+	err = producer.AddWorkingTaskIdToSet("deeplearningTask:workingIdSet", asyncResult.TaskID)
 	if err != nil {
 		return nil, err
 	}
@@ -39,15 +45,25 @@ type DlTaskDeleteService struct {
 
 func (s *DlTaskDeleteService) Do() (*jd.Response, error) {
 	// 因为 gocelery 未提供终止任务的 api，这里把终止行为封装成任务，然后调用它
-	_, err := producer.Celery.Delay(dlTaskStopTrain, s.Id)
+	_, err := producer.Celery.Delay("task.deeplearning.stop_train", s.Id)
 	if err != nil {
 		return nil, err
 	}
+
+	err = producer.DelWorkingTaskIdFromSet("deeplearningTask:workingIdSet", s.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	// 删除暂存在 redis 中的数据
+	prefixStr := "deeplearningTask:trainingHistory:" + s.Id + ":"
+	db.Redis.Del(prefixStr+"sigList", prefixStr+"loss", prefixStr+"accuracy")
 
 	err = model.DeleteDlTask(s.Id)
 	if err != nil {
 		return nil, err
 	}
+
 	return jd.Build(jd.SUCCESS, "删除成功", nil), nil
 }
 

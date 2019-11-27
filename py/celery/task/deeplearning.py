@@ -14,8 +14,12 @@ from .mytorch.data import mini_batch
 from .mytorch.metrics import beiqi_accuracy
 
 TASK_NAME = 'deeplearningTask'
+# 信号通知 websocket，redis 中数据有更新
 SIG_LIST_NAME = f'{TASK_NAME}:sigList'
+# 训练历史，用于 websocket 返回
 TRAINING_HISTORY_NAME = f'{TASK_NAME}:trainingHistory'
+# 当前正在执行任务的 id 的集合
+WORKING_ID_SET_NAME = f'{TASK_NAME}:workingIdSet'
 
 
 @app.task(name='task.deeplearning.train', bind=True, ignore_result=True)
@@ -161,6 +165,8 @@ def train(self, dataset: str, hyper_parameter: Dict):
     redis.delete(redis_training_history_loss)
     redis.delete(redis_training_history_accuracy)
     redis.delete(redis_training_history_sig_list)
+    # 删除正在工作集合中自己的 id
+    redis.srem(WORKING_ID_SET_NAME, task_id)
 
 
 @app.task(name='task.deeplearning.stop_train', ignore_result=True)

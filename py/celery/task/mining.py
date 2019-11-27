@@ -1,16 +1,16 @@
 import time
 from datetime import datetime
-from typing import Callable, Optional, Iterable, List
 
 from . import status
 from .celery import app
-from .db import mongo
+from .db import mongo, redis
 from .algorithm import compute_battery_statistic, \
     compute_charging_process, compute_working_condition, \
     compute_correlation
 
 TASK_NAME = 'miningTask'
 SIG_LIST_NAME = f'{TASK_NAME}:sigList'
+WORKING_ID_SET_NAME = f'{TASK_NAME}:workingIdSet'
 
 DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 
@@ -120,6 +120,8 @@ def compute_model(self,
             }}
         )
     status.send_status_change_sig(SIG_LIST_NAME)
+    # 删除正在工作集合中自己的 id
+    redis.srem(WORKING_ID_SET_NAME, task_id)
 
 
 @app.task(name='task.mining.stop_compute_model', ignore_result=True)

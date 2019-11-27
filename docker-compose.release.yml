@@ -82,7 +82,7 @@ services:
       dockerfile: ../docker/py-app-celery/Dockerfile
     environment:
       - CONF_FILE=/root/conf/app.yml
-    command: python3 -m celery -A task worker --concurrency=2
+    command: python3 -m celery -A task worker --concurrency=3
     volumes:
       - ./py/celery/task:/root/task:ro
       - ./conf/app.release.yml:/root/conf/app.yml:ro

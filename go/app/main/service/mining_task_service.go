@@ -7,12 +7,6 @@ import (
 	"battery-analysis-platform/pkg/jd"
 )
 
-// support task
-const (
-	miningTaskComputeModel     = "task.mining.compute_model"
-	miningTaskStopComputeModel = "task.mining.stop_compute_model"
-)
-
 type MiningTaskCreateService struct {
 	TaskName     string `json:"taskName"`
 	DataComeFrom string `json:"dataComeFrom"`
@@ -45,9 +39,19 @@ func (s *MiningTaskCreateService) Do() (*jd.Response, error) {
 		dateRange = s.StartDate + " - " + s.EndDate
 	}
 
+	// 检查是否达到创建任务上限
+	if !producer.CheckTaskLimit("miningTask:workingIdSet", 1) {
+		return jd.Err("允许同时执行任务数已达上限"), nil
+	}
+
 	asyncResult, err := producer.Celery.Delay(
-		miningTaskComputeModel,
+		"task.mining.compute_model",
 		s.TaskName, table.Name, dateRange)
+	if err != nil {
+		return nil, err
+	}
+	// 添加正在工作的任务的 id 到集合中
+	err = producer.AddWorkingTaskIdToSet("miningTask:workingIdSet", asyncResult.TaskID)
 	if err != nil {
 		return nil, err
 	}
@@ -66,7 +70,12 @@ type MiningTaskDeleteService struct {
 
 func (s *MiningTaskDeleteService) Do() (*jd.Response, error) {
 	// 因为 gocelery 未提供终止任务的 api，这里把终止行为封装成任务，然后调用它
-	_, err := producer.Celery.Delay(miningTaskStopComputeModel, s.Id)
+	_, err := producer.Celery.Delay("task.mining.stop_compute_model", s.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	err = producer.DelWorkingTaskIdFromSet("miningTask:workingIdSet", s.Id)
 	if err != nil {
 		return nil, err
 	}
