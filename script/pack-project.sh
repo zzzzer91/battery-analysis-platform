@@ -38,7 +38,10 @@ echo 'copy Docker file'
 cp -r "docker" "$BUILD_PROJECT_DIR" || exit
 
 echo 'copy 脚本文件'
-cp -r "script" "$BUILD_PROJECT_DIR" || exit
+mkdir "${BUILD_PROJECT_DIR}/script"
+cp "script/init-project.sh" "$BUILD_PROJECT_DIR/script" || exit
+cp "script/run-release.sh" "$BUILD_PROJECT_DIR/script" || exit
+cp "script/stop-release.sh" "$BUILD_PROJECT_DIR/script" || exit
 
 echo 'copy 配置文件'
 cp -r "conf" "$BUILD_PROJECT_DIR" || exit
