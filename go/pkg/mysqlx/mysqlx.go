@@ -5,6 +5,7 @@ package mysqlx
 import (
 	"battery-analysis-platform/pkg/jtime"
 	"database/sql"
+	_ "github.com/go-sql-driver/mysql"
 	"reflect"
 )
 

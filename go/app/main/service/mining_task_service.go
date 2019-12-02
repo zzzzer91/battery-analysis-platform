@@ -44,18 +44,20 @@ func (s *MiningTaskCreateService) Do() (*jd.Response, error) {
 		return jd.Err("允许同时执行任务数已达上限"), nil
 	}
 
+	// 调用 celery
 	asyncResult, err := producer.Celery.Delay(
 		"task.mining.compute_model",
 		s.TaskName, table.Name, dateRange)
 	if err != nil {
 		return nil, err
 	}
-	// 添加正在工作的任务的 id 到集合中
+	// 添加正在工作的任务的 id 到 redis 集合中
 	err = producer.AddWorkingTaskIdToSet("miningTask:workingIdSet", asyncResult.TaskID)
 	if err != nil {
 		return nil, err
 	}
 
+	// 创建 mongo 记录
 	data, err := model.CreateMiningTask(asyncResult.TaskID, s.TaskName, s.DataComeFrom, dateRange)
 	if err != nil {
 		return nil, err
