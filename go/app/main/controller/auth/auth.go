@@ -18,7 +18,7 @@ func Login(c *gin.Context) {
 			return
 		}
 		s := service.LoginByCookieService{UserName: userName.(string)}
-		controller.GinResponse(c, &s)
+		controller.JsonResponse(c, &s)
 	} else if c.Request.Method == "POST" {
 		var s service.LoginService
 		// ShouldBind() 会检测是否满足设置的 bind 标签要求
@@ -49,5 +49,5 @@ func Logout(c *gin.Context) {
 	session.Clear()
 	_ = session.Save()
 	var s service.LogoutService
-	controller.GinResponse(c, &s)
+	controller.JsonResponse(c, &s)
 }

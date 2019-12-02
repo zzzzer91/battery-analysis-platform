@@ -12,5 +12,5 @@ func ShowMiningBaseData(c *gin.Context) {
 		c.AbortWithError(500, err)
 		return
 	}
-	controller.GinResponse(c, &s)
+	controller.JsonResponse(c, &s)
 }

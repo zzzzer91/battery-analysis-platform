@@ -8,5 +8,5 @@ import (
 
 func ShowSysInfo(c *gin.Context) {
 	var s service.SysInfoShowService
-	controller.GinResponse(c, &s)
+	controller.JsonResponse(c, &s)
 }

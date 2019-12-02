@@ -12,22 +12,22 @@ func CreateMiningTask(c *gin.Context) {
 		c.AbortWithError(500, err)
 		return
 	}
-	controller.GinResponse(c, &s)
+	controller.JsonResponse(c, &s)
 }
 
 func DeleteMiningTask(c *gin.Context) {
 	var s service.MiningTaskDeleteService
 	s.Id = c.Param("taskId")
-	controller.GinResponse(c, &s)
+	controller.JsonResponse(c, &s)
 }
 
 func ListMiningTask(c *gin.Context) {
 	var s service.MiningTaskListService
-	controller.GinResponse(c, &s)
+	controller.JsonResponse(c, &s)
 }
 
 func ShowMiningTaskData(c *gin.Context) {
 	var s service.MiningTaskShowDataService
 	s.Id = c.Param("taskId")
-	controller.GinResponse(c, &s)
+	controller.JsonResponse(c, &s)
 }

@@ -2,6 +2,6 @@ package service
 
 import "battery-analysis-platform/pkg/jd"
 
-type Servicer interface {
+type JsonServicer interface {
 	Do() (*jd.Response, error)
 }

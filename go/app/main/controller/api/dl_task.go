@@ -12,29 +12,29 @@ func CreateDlTask(c *gin.Context) {
 		c.AbortWithError(500, err)
 		return
 	}
-	controller.GinResponse(c, &s)
+	controller.JsonResponse(c, &s)
 }
 
 func DeleteDlTask(c *gin.Context) {
 	var s service.DlTaskDeleteService
 	s.Id = c.Param("taskId")
-	controller.GinResponse(c, &s)
+	controller.JsonResponse(c, &s)
 }
 
 func ListDlTask(c *gin.Context) {
 	var s service.DlTaskListService
-	controller.GinResponse(c, &s)
+	controller.JsonResponse(c, &s)
 }
 
 func ShowDlTaskTraningHistory(c *gin.Context) {
 	var s service.DlTaskShowTraningHistoryService
 	s.Id = c.Param("taskId")
 	s.ReadFromRedis = false
-	controller.GinResponse(c, &s)
+	controller.JsonResponse(c, &s)
 }
 
 func ShowDlEvalResultHistory(c *gin.Context) {
 	var s service.DlTaskShowEvalResultService
 	s.Id = c.Param("taskId")
-	controller.GinResponse(c, &s)
+	controller.JsonResponse(c, &s)
 }

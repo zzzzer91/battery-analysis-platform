@@ -12,7 +12,7 @@ func CreateUser(c *gin.Context) {
 		c.AbortWithError(500, err)
 		return
 	}
-	controller.GinResponse(c, &s)
+	controller.JsonResponse(c, &s)
 }
 
 func ModifyUser(c *gin.Context) {
@@ -22,10 +22,10 @@ func ModifyUser(c *gin.Context) {
 		return
 	}
 	s.UserName = c.Param("name")
-	controller.GinResponse(c, &s)
+	controller.JsonResponse(c, &s)
 }
 
 func ListUser(c *gin.Context) {
 	var s service.UserListService
-	controller.GinResponse(c, &s)
+	controller.JsonResponse(c, &s)
 }
