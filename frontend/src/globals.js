@@ -19,6 +19,10 @@ const URL_WS_BASE = '/websocket/v1'
 const URL_WS_MINING_TASKS = URL_WS_BASE + '/mining/tasks'
 const URL_WS_DL_TASKS = URL_WS_BASE + '/dl/tasks'
 
+// file url
+const URL_FILE_BASE = '/file'
+const URL_FILE_DL = URL_FILE_BASE + '/dl'
+
 // 返回的 json 状态码
 const SUCCESS = 20000
 const ERROR = 40000
@@ -75,6 +79,8 @@ export default {
   URL_WS_BASE,
   URL_WS_MINING_TASKS,
   URL_WS_DL_TASKS,
+  // file
+  URL_FILE_DL,
 
   SUCCESS,
   ERROR,

@@ -52,10 +52,11 @@ services:
     image: alpine:3.10
     environment:
       - CONF_FILE=/root/conf/app.yml
-    command: ./app
+    command: ./root/app
     volumes:
-      - ./bin/main/app:/app:ro
+      - ./bin/main/app:/root/app:ro
       - ./conf/app.release.yml:/root/conf/app.yml:ro
+      - ./resource:/root/resource
     depends_on:
       - mysql
       - mongo
@@ -86,6 +87,7 @@ services:
     volumes:
       - ./py/celery/task:/root/task:ro
       - ./conf/app.release.yml:/root/conf/app.yml:ro
+      - ./resource:/root/resource
     depends_on:
       - mysql
       - mongo
@@ -98,7 +100,6 @@ services:
       - 3389:80
     volumes:
       - ./conf/nginx.release.conf:/etc/nginx/nginx.conf:ro
-      - ./resource/dist:/usr/share/nginx/dist:ro
-      - ./resource/media:/usr/share/nginx/media
+      - ./resource:/usr/share/nginx/resource:ro
     depends_on:
       - go-app-main

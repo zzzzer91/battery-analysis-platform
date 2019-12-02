@@ -3,6 +3,7 @@ package server
 import (
 	"battery-analysis-platform/app/main/controller/api"
 	"battery-analysis-platform/app/main/controller/auth"
+	"battery-analysis-platform/app/main/controller/file"
 	"battery-analysis-platform/app/main/controller/websocket"
 	"battery-analysis-platform/app/main/middleware"
 	"battery-analysis-platform/app/main/model"
@@ -52,5 +53,11 @@ func register(r *gin.Engine) {
 		wsV1.GET("/mining/tasks", websocket.ListMiningTask)
 		wsV1.GET("/dl/tasks", websocket.ListDlTask)
 		wsV1.GET("/dl/tasks/:taskId/training-history", websocket.ShowDlTaskTraningHistory)
+	}
+
+	fileV1 := r.Group("/file")
+	fileV1.Use(middleware.PermissionRequired(model.UserTypeCommonUser))
+	{
+		fileV1.GET("/dl/model/:taskId", file.DownloadDlModel)
 	}
 }

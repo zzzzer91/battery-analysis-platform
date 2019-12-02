@@ -12,6 +12,7 @@ from .mytorch.nn import build_nn, train_once
 from .mytorch.loss import get_loss
 from .mytorch.data import mini_batch
 from .mytorch.metrics import beiqi_accuracy
+from .conf import app_conf
 
 TASK_NAME = 'deeplearningTask'
 # 信号通知 websocket，redis 中数据有更新
@@ -20,6 +21,9 @@ SIG_LIST_NAME = f'{TASK_NAME}:sigList'
 TRAINING_HISTORY_NAME = f'{TASK_NAME}:trainingHistory'
 # 当前正在执行任务的 id 的集合
 WORKING_ID_SET_NAME = f'{TASK_NAME}:workingIdSet'
+
+# 训练好模型保存的路径
+MODEL_SAVE_PATH = 'file/dl/model'
 
 
 @app.task(name='task.deeplearning.train', bind=True, ignore_result=True)
@@ -127,6 +131,12 @@ def train(self, dataset: str, hyper_parameter: Dict):
         redis.rpush(redis_training_history_accuracy, accuracy_value_per_epoch)
         # 发送数据更新信号，用于通知 websocket
         status.send_status_change_sig(redis_training_history_sig_list)
+
+    # 保存训练好的模型
+    torch.save(
+        model.state_dict(),
+        f'{app_conf["celery"]["resourcePath"]}/{MODEL_SAVE_PATH}/{task_id}.pt'
+    )
 
     # 模型评估
     model.eval()

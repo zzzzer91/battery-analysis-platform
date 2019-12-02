@@ -23,6 +23,9 @@ module.exports = {
       '/api': {
          target: 'http://localhost:3389',
       },
+      '/file': {
+         target: 'http://localhost:3389',
+      },
       '/websocket': {
          target: 'ws://localhost:3389',
          ws: true

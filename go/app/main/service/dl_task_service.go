@@ -1,10 +1,12 @@
 package service
 
 import (
+	"battery-analysis-platform/app/main/conf"
 	"battery-analysis-platform/app/main/db"
 	"battery-analysis-platform/app/main/model"
 	"battery-analysis-platform/app/main/producer"
 	"battery-analysis-platform/pkg/jd"
+	"fmt"
 )
 
 type DlTaskCreateService struct {
@@ -101,4 +103,12 @@ func (s *DlTaskShowEvalResultService) Do() (*jd.Response, error) {
 		return nil, err
 	}
 	return jd.Build(jd.SUCCESS, "", data), nil
+}
+
+type DlDownloadModelService struct {
+	Id string
+}
+
+func (s *DlDownloadModelService) Do() (string, error) {
+	return conf.App.Gin.ResourcePath + "/file/dl/model/" + fmt.Sprintf("%s.pt", s.Id), nil
 }

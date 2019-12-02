@@ -31,7 +31,7 @@
           </template>
         </el-table-column>
         <el-table-column prop="comment" label="备注" show-overflow-tooltip></el-table-column>
-        <el-table-column label="操作" width="300">
+        <el-table-column label="操作" width="360">
           <template v-slot:default="scope">
             <el-button
               type="text"
@@ -45,6 +45,12 @@
               @click="plotEvalResult(scope.$index, scope.row)"
               v-show="scope.row.taskStatus===6"
             >模型评估</el-button>
+            <el-button
+              type="text"
+              icon="el-icon-download"
+              @click="downloadModel(scope.$index, scope.row)"
+              v-show="scope.row.taskStatus===6"
+            >下载模型</el-button>
             <el-button
               type="text"
               icon="el-icon-delete"
@@ -541,6 +547,9 @@ export default {
         .catch(error => {
           this.$message.error(error.message)
         })
+    },
+    downloadModel(index, row) {
+      location.href = `${globals.URL_FILE_DL}/model/${row.taskId}`
     },
     deleteTask(index, row) {
       this.$confirm('确定删除？', '提示', {

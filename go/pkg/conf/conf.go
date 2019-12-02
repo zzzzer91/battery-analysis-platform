@@ -11,9 +11,10 @@ import (
 )
 
 type GinConf struct {
-	RunMode   string `yaml:"runMode"`
-	HttpAddr  string `yaml:"httpAddr"`
-	SecretKey string `yaml:"secretKey"`
+	RunMode      string `yaml:"runMode"`
+	HttpAddr     string `yaml:"httpAddr"`
+	SecretKey    string `yaml:"secretKey"`
+	ResourcePath string `yaml:"resourcePath"`
 }
 
 type GormConf struct {
