@@ -52,7 +52,7 @@ services:
     image: alpine:3.10
     environment:
       - CONF_FILE=/root/conf/app.yml
-    command: ./root/app
+    command: cd root && ./app
     volumes:
       - ./bin/main/app:/root/app:ro
       - ./conf/app.release.yml:/root/conf/app.yml:ro

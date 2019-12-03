@@ -224,6 +224,10 @@ npm run serve
 
 - commit 时附上版本号，log 中某版本号的最后一个 commit，必须保证可运行
 
+### docker
+
+- dockerfile 中工作目录统一在 */root* 目录下； docker 容器中所有资源文件也都映射在 */root* 目录下
+
 ### 杂
 
 - 配置文件名中带有 release 的是生产环境的配置文件，带有 debug 的是开发环境配置文件

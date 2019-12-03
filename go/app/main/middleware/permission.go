@@ -4,6 +4,7 @@ import (
 	"battery-analysis-platform/app/main/model"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 func PermissionRequired(permission int) gin.HandlerFunc {
@@ -11,17 +12,17 @@ func PermissionRequired(permission int) gin.HandlerFunc {
 		session := sessions.Default(c)
 		userName := session.Get("userName")
 		if userName == nil {
-			c.AbortWithStatus(401)
+			c.AbortWithStatus(http.StatusForbidden)
 			return
 		}
 
 		user, err := model.GetUser(userName.(string))
 		if err != nil {
-			c.AbortWithError(401, err)
+			c.AbortWithError(http.StatusForbidden, err)
 			return
 		}
 		if user.Type < permission {
-			c.AbortWithStatus(403)
+			c.AbortWithStatus(http.StatusForbidden)
 			return
 		}
 

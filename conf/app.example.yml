@@ -4,8 +4,8 @@ go-app-main:
     runMode: debug  # debug or release
     httpAddr: 127.0.0.1:5000
     secretKey: test
-    # 资源目录
-    resourcePath: /root/resource
+    # 资源目录，默认与可执行文件目录相同
+    resourcePath: ./resource
   gorm:
     uri: root:123456@tcp(127.0.0.1:3306)/mytest?charset=utf8mb4&parseTime=True&loc=Local
     # 设置连接池
@@ -37,6 +37,6 @@ py-app-celery:
   celery:
     brokerUri: redis://127.0.0.1:6379
     backendUri: redis://127.0.0.1:6379
-    resourcePath: /root/resource
+    resourcePath: ./resource
   redis:
     uri: redis://127.0.0.1:6379
