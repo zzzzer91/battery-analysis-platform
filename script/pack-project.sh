@@ -38,13 +38,17 @@ echo 'copy Docker file'
 cp -r "docker" "$BUILD_PROJECT_DIR" || exit
 
 echo 'copy 脚本文件'
-mkdir "${BUILD_PROJECT_DIR}/script"
-cp "script/init-project.sh" "$BUILD_PROJECT_DIR/script" || exit
-cp "script/run-release.sh" "$BUILD_PROJECT_DIR/script" || exit
-cp "script/stop-release.sh" "$BUILD_PROJECT_DIR/script" || exit
+BUILD_SCRIPT_DIR="${BUILD_PROJECT_DIR}/script"
+mkdir $BUILD_SCRIPT_DIR
+cp "script/init-project.sh" "$BUILD_SCRIPT_DIR" || exit
+cp "script/run-release.sh" "$BUILD_SCRIPT_DIR" || exit
+cp "script/stop-release.sh" "$BUILD_SCRIPT_DIR" || exit
 
 echo 'copy 配置文件'
-cp -r "conf" "$BUILD_PROJECT_DIR" || exit
+BUILD_CONF_DIR="${BUILD_PROJECT_DIR}/conf"
+mkdir $BUILD_CONF_DIR
+cp -r "conf/app.release.yml" "$BUILD_CONF_DIR" || exit
+cp -r "conf/nginx.release.conf" "$BUILD_CONF_DIR" || exit
 
 echo 'copy docker-compose 文件'
 cp "docker-compose.release.yml" "$BUILD_PROJECT_DIR" || exit
