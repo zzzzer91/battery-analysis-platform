@@ -16,7 +16,7 @@ func PermissionRequired(permission int) gin.HandlerFunc {
 			return
 		}
 
-		user, err := model.GetUser(userName.(string))
+		user, err := model.GetUserFromCache(userName.(string))
 		if err != nil {
 			c.AbortWithError(http.StatusForbidden, err)
 			return

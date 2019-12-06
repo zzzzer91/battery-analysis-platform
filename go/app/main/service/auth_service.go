@@ -37,6 +37,10 @@ func (s *LoginService) Do() (*jd.Response, error) {
 	if err != nil {
 		return nil, err
 	}
+	err = model.SaveUserToCache(user)
+	if err != nil {
+		return nil, err
+	}
 	return jd.Build(jd.SUCCESS, "登录成功", user), nil
 }
 
@@ -45,7 +49,7 @@ type LoginByCookieService struct {
 }
 
 func (s *LoginByCookieService) Do() (*jd.Response, error) {
-	user, err := model.GetUser(s.UserName)
+	user, err := model.GetUserFromCache(s.UserName)
 	if err != nil {
 		return nil, err
 	}

@@ -28,6 +28,18 @@ func (t Time) MarshalJSON() ([]byte, error) {
 	return []byte(formatted), nil
 }
 
+func (t *Time) UnmarshalJSON(data []byte) error {
+	s := string(data)
+	// Ignore null, like in the main JSON package.
+	if s == "null" {
+		return nil
+	}
+	// Fractional seconds are handled implicitly by Parse.
+	var err error
+	t.Time, err = time.Parse(`"`+FormatLayout+`"`, s)
+	return err
+}
+
 // Value insert timestamp into mysql need this function.
 func (t Time) Value() (driver.Value, error) {
 	var zeroTime time.Time

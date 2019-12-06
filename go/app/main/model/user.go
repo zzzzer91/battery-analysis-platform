@@ -4,6 +4,8 @@ import (
 	"battery-analysis-platform/app/main/db"
 	"battery-analysis-platform/pkg/jtime"
 	"battery-analysis-platform/pkg/security"
+	"encoding/json"
+	"time"
 )
 
 // 用户类型 Type
@@ -18,6 +20,13 @@ const (
 const (
 	UserStatusForbiddenLogin = 0
 	UserStatusNormal         = 1
+)
+
+const (
+	// redis 的键前缀
+	redisKeyPrefix = "ubattery:users:"
+	// 缓存中 key 过期时间
+	redisKeyExpiration = time.Hour
 )
 
 type User struct {
@@ -90,4 +99,34 @@ func ListCommonUser() ([]User, error) {
 
 func SaveUserChange(user *User) error {
 	return db.Gorm.Save(user).Error
+}
+
+// ---------------------------cache---------------------------
+
+func SaveUserToCache(user *User) error {
+	// 存储 JSON 序列化的数据
+	jd, err := json.Marshal(user)
+	if err != nil {
+		return err
+	}
+	return db.Redis.Set(redisKeyPrefix+user.Name, jd, redisKeyExpiration).Err()
+}
+
+func DeleteUserFromCache(name string) error {
+	return db.Redis.Del(redisKeyPrefix + name).Err()
+}
+
+func GetUserFromCache(name string) (*User, error) {
+	val, err := db.Redis.Get(redisKeyPrefix + name).Bytes()
+	if err != nil {
+		return nil, err
+	}
+	user := User{}
+	err = json.Unmarshal(val, &user)
+	if err != nil {
+		return nil, err
+	}
+	// 刷新 key 的过期时间
+	db.Redis.Expire(redisKeyPrefix+name, redisKeyExpiration)
+	return &user, nil
 }
