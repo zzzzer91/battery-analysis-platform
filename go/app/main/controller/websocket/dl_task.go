@@ -3,14 +3,13 @@ package websocket
 import (
 	"battery-analysis-platform/app/main/db"
 	"battery-analysis-platform/app/main/service"
-	"fmt"
 	"github.com/gin-gonic/gin"
 )
 
 func ListDlTask(c *gin.Context) {
 	conn, err := upgradeHttpConn(c.Writer, c.Request)
 	if err != nil {
-		fmt.Println(err)
+		c.AbortWithError(500, err)
 		return
 	}
 	defer conn.Close()
@@ -27,11 +26,11 @@ func ListDlTask(c *gin.Context) {
 		default:
 			res, err := s.Do()
 			if err != nil {
-				fmt.Println(err)
+				c.Error(err)
 				return
 			}
 			if err = conn.WriteJSON(res); err != nil {
-				fmt.Println(err)
+				c.Error(err)
 				return
 			}
 		}
@@ -42,7 +41,7 @@ func ListDlTask(c *gin.Context) {
 func ShowDlTaskTraningHistory(c *gin.Context) {
 	conn, err := upgradeHttpConn(c.Writer, c.Request)
 	if err != nil {
-		fmt.Println(err)
+		c.AbortWithError(500, err)
 		return
 	}
 	defer conn.Close()
@@ -61,11 +60,11 @@ func ShowDlTaskTraningHistory(c *gin.Context) {
 		default:
 			res, err := s.Do()
 			if err != nil {
-				fmt.Println(err)
+				c.Error(err)
 				return
 			}
 			if err = conn.WriteJSON(res); err != nil {
-				fmt.Println(err)
+				c.Error(err)
 				return
 			}
 		}

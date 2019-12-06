@@ -5,7 +5,6 @@ package websocket
 import (
 	"battery-analysis-platform/app/main/service"
 	"github.com/gin-gonic/gin"
-	"log"
 	"time"
 )
 
@@ -19,11 +18,11 @@ func ShowSysInfo(c *gin.Context) {
 		var s service.SysInfoShowService
 		res, err := s.Do()
 		if err != nil {
-			log.Println(err)
+			c.Error(err)
 			return
 		}
 		if err := conn.WriteJSON(res); err != nil {
-			log.Println(err)
+			c.Error(err)
 			return
 		}
 		time.Sleep(time.Second * 3)
