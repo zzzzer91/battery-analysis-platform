@@ -60,8 +60,13 @@ func (s *LoginByCookieService) Do() (*jd.Response, error) {
 }
 
 type LogoutService struct {
+	UserName string
 }
 
 func (s *LogoutService) Do() (*jd.Response, error) {
+	err := model.DeleteUserFromCache(s.UserName)
+	if err != nil {
+		return nil, err
+	}
 	return jd.Build(jd.SUCCESS, "", nil), nil
 }

@@ -48,8 +48,15 @@ func Login(c *gin.Context) {
 
 func Logout(c *gin.Context) {
 	session := sessions.Default(c)
+	userName := session.Get("userName")
+	if userName == nil {
+		c.JSON(200, jd.Err(""))
+		return
+	}
 	session.Clear()
 	_ = session.Save()
-	s := service.LogoutService{}
+	s := service.LogoutService{
+		UserName: userName.(string),
+	}
 	controller.JsonResponse(c, &s)
 }
