@@ -7,7 +7,7 @@ import (
 )
 
 func CreateUser(c *gin.Context) {
-	var s service.UserCreateService
+	s := service.UserCreateService{}
 	if err := c.ShouldBindJSON(&s); err != nil {
 		c.AbortWithError(500, err)
 		return
@@ -16,16 +16,17 @@ func CreateUser(c *gin.Context) {
 }
 
 func ModifyUser(c *gin.Context) {
-	var s service.UserModifyService
+	s := service.UserModifyService{
+		UserName: c.Param("name"),
+	}
 	if err := c.ShouldBindJSON(&s); err != nil {
 		c.AbortWithError(500, err)
 		return
 	}
-	s.UserName = c.Param("name")
 	controller.JsonResponse(c, &s)
 }
 
 func ListUser(c *gin.Context) {
-	var s service.UserListService
+	s := service.UserListService{}
 	controller.JsonResponse(c, &s)
 }

@@ -7,6 +7,6 @@ import (
 )
 
 func ShowSysInfo(c *gin.Context) {
-	var s service.SysInfoShowService
+	s := service.SysInfoShowService{}
 	controller.JsonResponse(c, &s)
 }

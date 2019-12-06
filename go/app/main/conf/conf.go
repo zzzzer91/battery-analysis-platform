@@ -10,10 +10,12 @@ type appConf struct {
 	Redis  conf.RedisConf  `yaml:"redis"`
 }
 
-var App appConf
+var App *appConf
 
 func init() {
-	if err := conf.Load("go-app-main", &App); err != nil {
+	app := appConf{}
+	if err := conf.Load("go-app-main", &app); err != nil {
 		panic(err)
 	}
+	App = &app
 }

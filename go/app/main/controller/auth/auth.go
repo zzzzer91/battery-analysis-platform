@@ -17,10 +17,12 @@ func Login(c *gin.Context) {
 			c.JSON(200, jd.Err(""))
 			return
 		}
-		s := service.LoginByCookieService{UserName: userName.(string)}
+		s := service.LoginByCookieService{
+			UserName: userName.(string),
+		}
 		controller.JsonResponse(c, &s)
 	} else if c.Request.Method == "POST" {
-		var s service.LoginService
+		s := service.LoginService{}
 		// ShouldBind() 会检测是否满足设置的 bind 标签要求
 		if err := c.ShouldBindJSON(&s); err != nil {
 			c.AbortWithError(500, err)
@@ -48,6 +50,6 @@ func Logout(c *gin.Context) {
 	session := sessions.Default(c)
 	session.Clear()
 	_ = session.Save()
-	var s service.LogoutService
+	s := service.LogoutService{}
 	controller.JsonResponse(c, &s)
 }

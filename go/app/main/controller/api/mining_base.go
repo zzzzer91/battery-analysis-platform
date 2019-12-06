@@ -7,7 +7,7 @@ import (
 )
 
 func ShowMiningBaseData(c *gin.Context) {
-	var s service.MiningBaseShowDataService
+	s := service.MiningBaseShowDataService{}
 	if err := c.ShouldBindQuery(&s); err != nil {
 		c.AbortWithError(500, err)
 		return

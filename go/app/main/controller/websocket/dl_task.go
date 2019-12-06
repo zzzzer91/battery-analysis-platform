@@ -14,7 +14,7 @@ func ListDlTask(c *gin.Context) {
 	}
 	defer conn.Close()
 
-	var s service.DlTaskListService
+	s := service.DlTaskListService{}
 
 	closed := monitorWsClosed(conn)
 	for {
@@ -46,9 +46,10 @@ func ShowDlTaskTraningHistory(c *gin.Context) {
 	}
 	defer conn.Close()
 
-	var s service.DlTaskShowTraningHistoryService
-	s.Id = c.Param("taskId")
-	s.ReadFromRedis = true
+	s := service.DlTaskShowTraningHistoryService{
+		Id:            c.Param("taskId"),
+		ReadFromRedis: true,
+	}
 
 	closed := monitorWsClosed(conn)
 	for {

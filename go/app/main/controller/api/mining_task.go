@@ -7,7 +7,7 @@ import (
 )
 
 func CreateMiningTask(c *gin.Context) {
-	var s service.MiningTaskCreateService
+	s := service.MiningTaskCreateService{}
 	if err := c.ShouldBindJSON(&s); err != nil {
 		c.AbortWithError(500, err)
 		return
@@ -16,18 +16,20 @@ func CreateMiningTask(c *gin.Context) {
 }
 
 func DeleteMiningTask(c *gin.Context) {
-	var s service.MiningTaskDeleteService
-	s.Id = c.Param("taskId")
+	s := service.MiningTaskDeleteService{
+		Id: c.Param("taskId"),
+	}
 	controller.JsonResponse(c, &s)
 }
 
 func ListMiningTask(c *gin.Context) {
-	var s service.MiningTaskListService
+	s := service.MiningTaskListService{}
 	controller.JsonResponse(c, &s)
 }
 
 func ShowMiningTaskData(c *gin.Context) {
-	var s service.MiningTaskShowDataService
-	s.Id = c.Param("taskId")
+	s := service.MiningTaskShowDataService{
+		Id: c.Param("taskId"),
+	}
 	controller.JsonResponse(c, &s)
 }

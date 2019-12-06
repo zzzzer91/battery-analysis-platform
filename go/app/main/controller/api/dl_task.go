@@ -7,7 +7,7 @@ import (
 )
 
 func CreateDlTask(c *gin.Context) {
-	var s service.DlTaskCreateService
+	s := service.DlTaskCreateService{}
 	if err := c.ShouldBindJSON(&s); err != nil {
 		c.AbortWithError(500, err)
 		return
@@ -16,25 +16,28 @@ func CreateDlTask(c *gin.Context) {
 }
 
 func DeleteDlTask(c *gin.Context) {
-	var s service.DlTaskDeleteService
-	s.Id = c.Param("taskId")
+	s := service.DlTaskDeleteService{
+		Id: c.Param("taskId"),
+	}
 	controller.JsonResponse(c, &s)
 }
 
 func ListDlTask(c *gin.Context) {
-	var s service.DlTaskListService
+	s := service.DlTaskListService{}
 	controller.JsonResponse(c, &s)
 }
 
 func ShowDlTaskTraningHistory(c *gin.Context) {
-	var s service.DlTaskShowTraningHistoryService
-	s.Id = c.Param("taskId")
-	s.ReadFromRedis = false
+	s := service.DlTaskShowTraningHistoryService{
+		Id:            c.Param("taskId"),
+		ReadFromRedis: false,
+	}
 	controller.JsonResponse(c, &s)
 }
 
 func ShowDlEvalResultHistory(c *gin.Context) {
-	var s service.DlTaskShowEvalResultService
-	s.Id = c.Param("taskId")
+	s := service.DlTaskShowEvalResultService{
+		Id: c.Param("taskId"),
+	}
 	controller.JsonResponse(c, &s)
 }

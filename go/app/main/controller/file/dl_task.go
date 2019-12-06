@@ -7,7 +7,8 @@ import (
 )
 
 func DownloadDlModel(c *gin.Context) {
-	var s service.DlDownloadModelService
-	s.Id = c.Param("taskId")
+	s := service.DlDownloadModelService{
+		Id: c.Param("taskId"),
+	}
 	controller.FileResponse(c, &s)
 }

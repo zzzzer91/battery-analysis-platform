@@ -15,7 +15,7 @@ func ShowSysInfo(c *gin.Context) {
 		return
 	}
 	for {
-		var s service.SysInfoShowService
+		s := service.SysInfoShowService{}
 		res, err := s.Do()
 		if err != nil {
 			c.Error(err)

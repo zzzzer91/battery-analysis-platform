@@ -19,7 +19,7 @@ func ListMiningTask(c *gin.Context) {
 	}
 	defer conn.Close()
 
-	var s service.MiningTaskListService
+	s := service.MiningTaskListService{}
 
 	closed := monitorWsClosed(conn)
 	for {
