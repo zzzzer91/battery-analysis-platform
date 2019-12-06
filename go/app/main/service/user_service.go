@@ -54,8 +54,8 @@ func (s *UserModifyService) Do() (*jd.Response, error) {
 	if err != nil {
 		return nil, err
 	}
-	// 用户数据发生修改，暂时处理方式为将其从缓存中删除
-	err = model.DeleteUserFromCache(s.UserName)
+	// 用户数据发生修改，更新将其缓存
+	err = model.SaveUserToCache(user)
 	if err != nil {
 		return nil, err
 	}
