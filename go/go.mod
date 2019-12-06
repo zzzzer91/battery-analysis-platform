@@ -9,6 +9,7 @@ require (
 	github.com/go-ole/go-ole v1.2.4 // indirect
 	github.com/go-playground/universal-translator v0.17.0 // indirect
 	github.com/go-redis/redis/v7 v7.0.0-beta.4
+	github.com/go-sql-driver/mysql v1.4.1
 	github.com/gocelery/gocelery v0.0.0-20191122000747-f805f26a221b
 	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/gorilla/sessions v1.2.0 // indirect
