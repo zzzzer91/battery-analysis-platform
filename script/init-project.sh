@@ -1,7 +1,12 @@
 #!/bin/bash
 
 ABSOLUTE_PROJECT_PATH="$(cd "$(dirname $0)/..";pwd)"
+
 RESOURECE_DIR="${ABSOLUTE_PROJECT_PATH}/resource"
+MEDIA_DIR="${RESOURECE_DIR}/media"
+FILE_DIR="${RESOURECE_DIR}/file"
+FILE_DL_DIR="${FILE_DIR}/dl/model"
+
 ENV_FILE="${ABSOLUTE_PROJECT_PATH}/.env"
 
 echo '项目初始化中...'
@@ -14,9 +19,15 @@ read -p "输入 Mongo root 密码：" mongo_root_password
 # 如果文件夹不存在，创建文件夹
 if [ ! -d "${RESOURECE_DIR}" ]; then
     mkdir "${RESOURECE_DIR}"
-    echo "${RESOURECE_DIR} 创建完毕！"
-else
-    echo "${RESOURECE_DIR} 已存在！"
+fi
+if [ ! -d "${MEDIA_DIR}" ]; then
+    mkdir "${MEDIA_DIR}"
+fi
+if [ ! -d "${FILE_DIR}" ]; then
+    mkdir "${FILE_DIR}"
+fi
+if [ ! -d "${FILE_DL_DIR}" ]; then
+    mkdir -p "${FILE_DL_DIR}"
 fi
 
 # 生成 .env，会覆盖原来的
