@@ -1,4 +1,4 @@
-// 读取 *.ini 配置文件
+// 读取 yaml 配置文件
 
 package conf
 
