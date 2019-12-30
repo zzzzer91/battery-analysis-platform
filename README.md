@@ -79,12 +79,12 @@ $ sudo yum install docker-ce docker-ce-cli containerd.io
 安装：
 
 ```bash
-$ pip install -U docker-compose
+$ pip3 install -U docker-compose
 ```
 
 ### 安装后配置
 
-Docker 需要用户具有 sudo 权限，为了避免每次命令都输入 `sudo`，可以把用户加入 Docker 用户组（[官方文档](https://docs.docker.com/install/linux/linux-postinstall/#manage-docker-as-a-non-root-user)），步骤如下：
+Docker 需要用户具有 root 权限（当前 rootless 特性处于实验阶段），为了避免每次命令都输入 `sudo`，可以把用户加入 Docker 用户组（[官方文档](https://docs.docker.com/install/linux/linux-postinstall/#manage-docker-as-a-non-root-user)），步骤如下：
 
 1、创建 docker 组：
 
@@ -126,7 +126,7 @@ $ sudo systemctl start docker
 $ ./init-project.sh
 ```
 
-会生成 *.env* 文件供 docker-compose 使用。
+会生成 *.env* 文件供 docker-compose 使用。docker 数据库文件映射默认在当前项目的 *database* 文件夹下。
 
 ### 创建配置文件
 
