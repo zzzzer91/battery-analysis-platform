@@ -60,12 +60,15 @@ CentOS7 下安装：
 
 ```bash
 # 1、安装工具
-$ sudo yum install -y yum-utils
+$ sudo yum install -y yum-utils \
+    device-mapper-persistent-data \
+    lvm2
 
 # 2、添加仓库
 $ sudo yum-config-manager \
     --add-repo \
     http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
+# 国外使用 https://download.docker.com/linux/centos/docker-ce.repo
 
 # 3、安装
 $ sudo yum install docker-ce docker-ce-cli containerd.io
