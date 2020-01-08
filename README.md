@@ -198,14 +198,12 @@ npm run serve
 ### 数据库
 
 - 表名一律使用单数
-
 - MySQL，MongoDB 表名使用下划线分割
-
 - Redis key 以业务名（或数据库名）为前缀（防止 key 冲突），用冒号分隔，比如业务名:表名:id
-
 - MySQL，Redis，MongoDB key 名使用小驼峰法命名
-
 - MongoDB 中 key 可以用中文，但最好是英文
+- MySQL 中字段不允许为 null，有一些坑，比如查询 `id != 1` 时，null 值不会被匹配，因为 null 与其他值都不相等。要匹配到，要用 `id != 1 or id is null`
+- 接上条，用 or 时，MySQL 可能不走索引，所以尽量用 union。
 
 ### 前端
 
