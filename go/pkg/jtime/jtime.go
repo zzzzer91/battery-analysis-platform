@@ -10,7 +10,10 @@ package jtime
 
 import (
 	"database/sql/driver"
+	"errors"
 	"fmt"
+	"go.mongodb.org/mongo-driver/bson/bsontype"
+	"go.mongodb.org/mongo-driver/x/bsonx/bsoncore"
 	"time"
 )
 
@@ -59,15 +62,18 @@ func (t *Time) Scan(v interface{}) error {
 	return nil
 }
 
+// 解析结构体成员必须用 `MarshalBSONValue` 而不能 `MarshalBSON`
+func (t Time) MarshalBSONValue() (bsontype.Type, []byte, error) {
+	return bsontype.DateTime, bsoncore.AppendDateTime(nil, t.Time.Unix()*1000+int64(t.Time.Nanosecond()/1e6)), nil
+}
+
 // UnmarshalBSON 实现 Unmarshaler 接口，支持自定义类型的 mongo 反序列化
 func (t *Time) UnmarshalBSON(b []byte) error {
-	// b 字节流有个 4 字节头部，值为 20，可能代表了类型
-	// 还有个 1 字节的尾部，0
-	tTmp, err := time.ParseInLocation(FormatLayout, string(b[4:len(b)-1]), time.Local)
-	if err != nil {
-		return err
+	tTmep, _, ok := bsoncore.ReadTime(b)
+	if !ok {
+		return errors.New("jtime.Time UnmarshalBSON error")
 	}
-	t.Time = tTmp
+	t.Time = tTmep
 	return nil
 }
 

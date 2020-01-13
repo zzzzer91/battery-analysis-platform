@@ -3,7 +3,6 @@ package model
 import (
 	"battery-analysis-platform/app/main/db"
 	"battery-analysis-platform/pkg/conv"
-	"battery-analysis-platform/pkg/jtime"
 	"context"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -47,11 +46,7 @@ type DlTask struct {
 
 func CreateDlTask(id, dataset string, hyperParameter *NnHyperParameter) (*DlTask, error) {
 	task := DlTask{
-		BaseTask: BaseTask{
-			TaskId:     id,
-			CreateTime: jtime.NowStr(),
-			TaskStatus: TaskStatusPreparing,
-		},
+		BaseTask:       newBaseTask(id),
 		Dataset:        dataset,
 		HyperParameter: hyperParameter,
 	}

@@ -2,6 +2,7 @@ package model
 
 import (
 	"battery-analysis-platform/app/main/db"
+	"battery-analysis-platform/pkg/jtime"
 	"context"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -19,10 +20,18 @@ const (
 // 而用 json 序列化时，直接嵌入结构体即可，不需要做其他事。
 // 嵌入时，不能用指针
 type BaseTask struct {
-	TaskId     string `json:"taskId" bson:"taskId"`
-	CreateTime string `json:"createTime" bson:"createTime"`
-	TaskStatus int    `json:"taskStatus" bson:"taskStatus"`
-	Comment    string `json:"comment" bson:"comment"`
+	TaskId     string     `json:"taskId" bson:"taskId"`
+	CreateTime jtime.Time `json:"createTime" bson:"createTime"`
+	TaskStatus int        `json:"taskStatus" bson:"taskStatus"`
+	Comment    string     `json:"comment" bson:"comment"`
+}
+
+func newBaseTask(id string) BaseTask {
+	return BaseTask{
+		TaskId:     id,
+		CreateTime: jtime.Now(),
+		TaskStatus: TaskStatusPreparing,
+	}
 }
 
 func creatTask(collectionName string, task interface{}) error {

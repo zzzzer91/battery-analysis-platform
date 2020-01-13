@@ -247,7 +247,9 @@ npm run serve
 
 - gin 的请求 log 会在请求处理函数结束后打印（记录请求用时），所以请求 websocket 时，打印会很延迟
 
-- 从 MySQL 中读取 datetime 类型到 Python 的 `datetime.datetime` 类型中，会以本地时区解析（如读取 `2018-12-12 09:38:40`，那么其 UTC 时区时间是 `2018-12-12 01:38:40`）；同样的，插入 MongoDB 的时间字符串会以本地时区解析，并以 Unix 时间戳格式存入数据库
+- 从 MySQL 中读取 datetime 类型到 Python 的 `datetime.datetime` 类型中，会以本地时区解析（如读取 `2018-12-12 09:38:40`，那么其 UTC 时区时间是 `2018-12-12 01:38:40`）
+
+- 同样的，插入 MongoDB 的时间字符串会以本地时区解析，并以 Unix 时间戳格式存入数据库，数据库中为 `ISODate` 类型，显示的时间格式为 UTC
 
 - Python 中的时间类型 `datetime.datetime` 用的是本地时区；时间字符串使用 `datetime.datetime.strptime` 解析，直接转换成本地时区。但注意，go 中把本地时区的时间字符串解析成 `time.Time` 类型时，要用 `time.ParseInLocation` 而不是 `time.Parse` 
 

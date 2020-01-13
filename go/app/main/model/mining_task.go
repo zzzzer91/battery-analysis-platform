@@ -2,7 +2,6 @@ package model
 
 import (
 	"battery-analysis-platform/app/main/db"
-	"battery-analysis-platform/pkg/jtime"
 	"context"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -26,11 +25,7 @@ type MiningTask struct {
 
 func CreateMiningTask(id, name, dataComeFrom, dateRange string) (*MiningTask, error) {
 	task := MiningTask{
-		BaseTask: BaseTask{
-			TaskId:     id,
-			CreateTime: jtime.NowStr(),
-			TaskStatus: TaskStatusPreparing,
-		},
+		BaseTask:     newBaseTask(id),
 		TaskName:     name,
 		DataComeFrom: dataComeFrom,
 		DateRange:    dateRange,
