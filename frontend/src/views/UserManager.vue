@@ -95,8 +95,6 @@ export default {
         password: '',
         confirmPassword: '',
         comment: '',
-        loginCount: 0,
-        userStatus: globals.USER_STATUS_NORMAL
       },
       editForm: {
         userName: '',
@@ -126,9 +124,11 @@ export default {
         password: '',
         confirmPassword: '',
         comment: '',
+        avatarName : null,
         userStatus: globals.USER_STATUS_NORMAL,
         loginCount: 0,
-        createTime: null
+        createTime: null,
+        lastLoginTime: null
       }
       this.newVisible = true
     },
@@ -144,6 +144,7 @@ export default {
               throw new Error(jd.msg)
             }
             this.newForm.createTime = moment().format('YYYY-MM-DD HH:mm:ss')
+            this.newForm.lastLoginTime = this.newForm.createTime
             this.tableData.push(this.newForm)
             this.newVisible = false
             this.$message.success(jd.msg)
