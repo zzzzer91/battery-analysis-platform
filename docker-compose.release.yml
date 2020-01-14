@@ -2,14 +2,14 @@ version: '3'
 
 services:
   # 数据库
-  mysql:
-    image: mysql:5.7.26  # 固定版本
-    # restart: always  # 重启系统后重启容器
-    environment:
-      - TZ=Asia/Shanghai
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}  # 只在数据库未初始化的情况下有效
-    volumes:
-      - ${DATABASE_DATA_DIR}/mysql:/var/lib/mysql
+  #  mysql:
+  #    image: mysql:5.7.26  # 固定版本
+  #    # restart: always  # 重启系统后重启容器
+  #    environment:
+  #      - TZ=Asia/Shanghai
+  #      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}  # 只在数据库未初始化的情况下有效
+  #    volumes:
+  #      - ${DATABASE_DATA_DIR}/mysql:/var/lib/mysql
   mongo:
     image: mongo:4.0
     environment:
@@ -59,23 +59,23 @@ services:
       - ./conf/app.release.yml:/root/conf/app.yml:ro
       - ./resource:/root/resource
     depends_on:
-      - mysql
+      #- mysql
       - mongo
       - redis
-  #  go-app-main:  # 在docker中编译
-  #    build:
-  #      context: ./go
-  #      # 相对于 context
-  #      dockerfile: ../docker/go-app-main/Dockerfile
-  #    environment:
-  #      - CONF_FILE=/root/conf/app.yml
-  #    command: ./app
-  #    volumes:
-  #      - ./conf/app.release.yml:/root/conf/app.yml:ro
-  #    depends_on:
-  #      - mysql
-  #      - mongo
-  #      - redis
+  #    go-app-main:  # 在docker中编译
+  #      build:
+  #        context: ./go
+  #        # 相对于 context
+  #        dockerfile: ../docker/go-app-main/Dockerfile
+  #      environment:
+  #        - CONF_FILE=/root/conf/app.yml
+  #      command: ./app
+  #      volumes:
+  #        - ./conf/app.release.yml:/root/conf/app.yml:ro
+  #      depends_on:
+  #        - mysql
+  #        - mongo
+  #        - redis
 
   # py-app
   py-app-celery:
@@ -90,7 +90,7 @@ services:
       - ./conf/app.release.yml:/root/conf/app.yml:ro
       - ./resource:/root/resource
     depends_on:
-      - mysql
+      #- mysql
       - mongo
       - redis
 

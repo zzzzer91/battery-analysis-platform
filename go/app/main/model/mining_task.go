@@ -41,18 +41,17 @@ func DeleteMiningTask(id string) error {
 
 func ListMiningTask() ([]MiningTask, error) {
 	collection := db.Mongo.Collection(mongoCollectionMiningTask)
-	filter := bson.M{}                  // 过滤记录
-	projection := bson.M{"data": false} // 过滤字段
-	sort := bson.M{"createTime": -1}    // 结果排序
+	filter := bson.M{}                                // 过滤记录
+	projection := bson.M{"_id": false, "data": false} // 过滤字段
+	sort := bson.M{"createTime": -1}                  // 结果排序
 	// 注意 ctx 不能几个连接复用，原因见 `context.WithTimeout` 源码
-	ctx, _ := context.WithTimeout(context.Background(), mongoCtxTimeout)
+	ctx := context.TODO()
 	cur, err := collection.Find(ctx, filter, options.Find().SetProjection(projection).SetSort(sort))
 	if err != nil {
 		return nil, err
 	}
 	// 为了使其找不到时返回空列表，而不是 nil
 	records := make([]MiningTask, 0)
-	ctx, _ = context.WithTimeout(context.Background(), mongoCtxTimeout)
 	for cur.Next(ctx) {
 		result := MiningTask{}
 		err := cur.Decode(&result)

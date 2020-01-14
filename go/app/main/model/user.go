@@ -4,7 +4,10 @@ import (
 	"battery-analysis-platform/app/main/db"
 	"battery-analysis-platform/pkg/jtime"
 	"battery-analysis-platform/pkg/security"
+	"context"
 	"encoding/json"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"time"
 )
 
@@ -26,21 +29,20 @@ const (
 	// redis 的键前缀
 	redisKeyPrefix = "ubattery:users:"
 	// 缓存中 key 过期时间
-	redisKeyExpiration = time.Hour
+	redisKeyExpiration = time.Hour * 3
 )
 
 type User struct {
-	Id       int    `json:"-"`
-	Name     string `json:"userName"`
-	Password string `json:"-"`
-	Type     int    `json:"userType"`
+	Name     string `json:"userName" bson:"name"`
+	Password string `json:"-" bson:"password"`
+	Type     int    `json:"userType" bson:"type"`
 	// *string 让其 json 时可以返回 null，否则只能返回字符串零值
-	AvatarName    *string     `json:"avatarName"`
-	LastLoginTime *jtime.Time `json:"lastLoginTime"`
-	Comment       string      `json:"comment"`
-	LoginCount    int         `json:"loginCount"`
-	Status        int         `json:"userStatus"`
-	CreateTime    *jtime.Time `json:"createTime"`
+	AvatarName    *string    `json:"avatarName" bson:"avatarName"`
+	LastLoginTime jtime.Time `json:"lastLoginTime" bson:"lastLoginTime"`
+	Comment       string     `json:"comment" bson:"comment"`
+	LoginCount    int        `json:"loginCount" bson:"loginCount"`
+	Status        int        `json:"userStatus" bson:"status"`
+	CreateTime    jtime.Time `json:"createTime" bson:"createTime"`
 }
 
 // SetPassword 设置密码
@@ -64,13 +66,19 @@ func (user *User) CheckStatusOk() bool {
 }
 
 func CreateUser(name, password, comment string) (*User, error) {
-	user := User{Name: name, Comment: comment}
+	now := jtime.Now()
+	user := User{
+		Name:          name,
+		Comment:       comment,
+		CreateTime:    now,
+		LastLoginTime: now,
+		Status:        1,
+	}
 	err := user.SetPassword(password)
 	if err != nil {
 		return nil, err
 	}
-	// 这里必须传入指针
-	err = db.Gorm.Create(&user).Error
+	err = insertMongoCollection(mongoCollectionUser, user)
 	if err != nil {
 		return nil, err
 	}
@@ -79,8 +87,12 @@ func CreateUser(name, password, comment string) (*User, error) {
 
 func GetUser(name string) (*User, error) {
 	var user User
-	// 找不到会返回 ErrRecordNotFound 错误
-	err := db.Gorm.Where("name = ?", name).First(&user).Error
+	collection := db.Mongo.Collection(mongoCollectionUser)
+	filter := bson.M{"name": name}
+	projection := bson.M{"_id": false} // 注意 _id 默认会返回，需要手动过滤
+	ctx, _ := context.WithTimeout(context.Background(), mongoCtxTimeout)
+	err := collection.FindOne(ctx, filter,
+		options.FindOne().SetProjection(projection)).Decode(&user)
 	if err != nil {
 		return nil, err
 	}
@@ -88,17 +100,50 @@ func GetUser(name string) (*User, error) {
 }
 
 func ListCommonUser() ([]User, error) {
-	var users []User
-	// 找不到会返回空列表，不会返回错误
-	err := db.Gorm.Where("type != ?", UserTypeSuperUser).Find(&users).Error
+	collection := db.Mongo.Collection(mongoCollectionUser)
+	filter := bson.M{"type": bson.M{"$ne": UserTypeSuperUser}} // 过滤记录
+	projection := bson.M{"_id": false}                         // 过滤字段
+	ctx := context.TODO()
+	cur, err := collection.Find(ctx, filter, options.Find().SetProjection(projection))
 	if err != nil {
 		return nil, err
 	}
+	// 为了使其找不到时返回空列表，而不是 nil
+	users := make([]User, 0)
+	for cur.Next(ctx) {
+		result := User{}
+		err := cur.Decode(&result)
+		if err != nil {
+			return nil, err
+		}
+		users = append(users, result)
+	}
+	_ = cur.Close(ctx)
 	return users, nil
 }
 
+func SaveUserLoginTimeAndCount(user *User) error {
+	collection := db.Mongo.Collection(mongoCollectionUser)
+	filter := bson.M{"name": user.Name} // 过滤记录
+	ctx, _ := context.WithTimeout(context.Background(), mongoCtxTimeout)
+	update := bson.M{"$set": bson.M{
+		"lastLoginTime": user.LastLoginTime,
+		"loginCount":    user.LoginCount,
+	}}
+	_, err := collection.UpdateOne(ctx, filter, update)
+	return err
+}
+
 func SaveUserChange(user *User) error {
-	return db.Gorm.Save(user).Error
+	collection := db.Mongo.Collection(mongoCollectionUser)
+	filter := bson.M{"name": user.Name} // 过滤记录
+	ctx, _ := context.WithTimeout(context.Background(), mongoCtxTimeout)
+	update := bson.M{"$set": bson.M{
+		"comment": user.Comment,
+		"status":  user.Status,
+	}}
+	_, err := collection.UpdateOne(ctx, filter, update)
+	return err
 }
 
 // ---------------------------cache---------------------------

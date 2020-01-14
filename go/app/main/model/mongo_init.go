@@ -14,6 +14,7 @@ const (
 )
 
 const (
+	mongoCollectionUser          = "user"
 	mongoCollectionYuTongVehicle = "yutong_vehicle"
 	mongoCollectionBeiQiVehicle  = "beiqi_vehicle"
 	mongoCollectionMiningTask    = "mining_task"
@@ -31,9 +32,37 @@ func createMongoCollectionIdx(name string, model mongo.IndexModel) error {
 	return err
 }
 
+// 在 collection 中插入一条记录
+func insertMongoCollection(collectionName string, item interface{}) error {
+	collection := db.Mongo.Collection(collectionName)
+	ctx, _ := context.WithTimeout(context.Background(), mongoCtxTimeout)
+	_, err := collection.InsertOne(ctx, item)
+	return err
+}
+
 func init() {
-	// yutong_vehicle
+	// user
 	indexModel := mongo.IndexModel{
+		Keys: bson.M{
+			"name": 1,
+		},
+		Options: options.Index().SetUnique(true),
+	}
+	if err := createMongoCollectionIdx(mongoCollectionUser, indexModel); err != nil {
+		panic(err)
+	}
+	indexModel = mongo.IndexModel{
+		Keys: bson.M{
+			"type": 1,
+		},
+		Options: options.Index().SetUnique(false),
+	}
+	if err := createMongoCollectionIdx(mongoCollectionUser, indexModel); err != nil {
+		panic(err)
+	}
+
+	// yutong_vehicle
+	indexModel = mongo.IndexModel{
 		Keys: bson.M{
 			"时间": 1,
 		},
@@ -72,6 +101,7 @@ func init() {
 		panic(err)
 	}
 
+	// task
 	indexModel = mongo.IndexModel{
 		Keys: bson.M{
 			"taskId": 1,

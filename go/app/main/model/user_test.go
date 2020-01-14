@@ -9,7 +9,6 @@ import (
 func TestUser(t *testing.T) {
 	ast := assert.New(t)
 	user := &User{
-		Id:     1,
 		Name:   "xiaoming",
 		Type:   UserTypeSuperUser,
 		Status: 0,

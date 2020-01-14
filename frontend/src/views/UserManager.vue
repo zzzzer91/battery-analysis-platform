@@ -95,6 +95,7 @@ export default {
         password: '',
         confirmPassword: '',
         comment: '',
+        loginCount: 0,
         userStatus: globals.USER_STATUS_NORMAL
       },
       editForm: {
@@ -126,6 +127,7 @@ export default {
         confirmPassword: '',
         comment: '',
         userStatus: globals.USER_STATUS_NORMAL,
+        loginCount: 0,
         createTime: null
       }
       this.newVisible = true

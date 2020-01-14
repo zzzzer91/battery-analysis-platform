@@ -35,10 +35,7 @@ func newBaseTask(id string) BaseTask {
 }
 
 func creatTask(collectionName string, task interface{}) error {
-	collection := db.Mongo.Collection(collectionName)
-	ctx, _ := context.WithTimeout(context.Background(), mongoCtxTimeout)
-	_, err := collection.InsertOne(ctx, task)
-	return err
+	return insertMongoCollection(collectionName, task)
 }
 
 func deleteTask(collectionName string, id string) error {

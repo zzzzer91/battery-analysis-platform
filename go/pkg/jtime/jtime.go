@@ -12,6 +12,7 @@ import (
 	"database/sql/driver"
 	"errors"
 	"fmt"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/bsontype"
 	"go.mongodb.org/mongo-driver/x/bsonx/bsoncore"
 	"time"
@@ -62,9 +63,15 @@ func (t *Time) Scan(v interface{}) error {
 	return nil
 }
 
-// 解析结构体成员必须用 `MarshalBSONValue` 而不能 `MarshalBSON`
+// MarshalBSON 有问题，bson.Marshal 不能对结构体成员使用
+// 无法获取成员对应的 bson 标签
+//func (t Time) MarshalBSON() ([]byte, error) {
+//	_, a, b := bson.MarshalValue(t.Time)
+//	return a, b
+//}
+
 func (t Time) MarshalBSONValue() (bsontype.Type, []byte, error) {
-	return bsontype.DateTime, bsoncore.AppendDateTime(nil, t.Time.Unix()*1000+int64(t.Time.Nanosecond()/1e6)), nil
+	return bson.MarshalValue(t.Time)
 }
 
 // UnmarshalBSON 实现 Unmarshaler 接口，支持自定义类型的 mongo 反序列化

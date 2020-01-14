@@ -30,10 +30,9 @@ func (s *LoginService) Do() (*jd.Response, error) {
 	if !user.CheckStatusOk() {
 		return jd.Err("该用户已被禁止登录"), nil
 	}
-	t := jtime.Now()
-	user.LastLoginTime = &t
+	user.LastLoginTime = jtime.Now()
 	user.LoginCount += 1
-	err = model.SaveUserChange(user)
+	err = model.SaveUserLoginTimeAndCount(user)
 	if err != nil {
 		return nil, err
 	}
