@@ -208,28 +208,32 @@ npm run serve
 ### 前端
 
 - URI 格式规范：1）URI中尽量使用连字符”-“代替下划线”_”的使用。2）URI中统一使用小写字母。3）用复数名词。一个资源URI可以这样定义：`https://www.example.com/api/v1/posts/{postId}/comments/{commentId}?过滤条件`
-
 - 上一条的 URI 中的过滤条件采用小驼峰法命名
-
 - 前端对后端返回的 JSON 字段的顺序一律假设是无序的
-
 - 提交和返回的 JSON 使用小驼峰法命名
 
 ### 后端
 
 - 数据库表不由某个 ORM 创建，而是手工创建，统一管理
-
 - 字典的 key 都假设是无序的（即使在 Python 中是有序的）
-
 - 字段前后端都要校验
-
 - 某些不确定情况，直接返回 500。因为 gin panic recover 后会返回 500
-
-- （TODO）后端字段合法性校验在 service 做（URL 的 Param 的判空在 controller 也要做，因为是 URL 的逻辑），包括 URL 的 Param 和 Query，提交的数据（如 JSON）
-
 - 后端字段合法性校验不依赖于 gin 的 ShouldBindxxx，出于逻辑和方便测试 service 上考虑
-
 - service 中的 xxxService 结构体用于接收用户发送的数据；而 model 中结构体一般是返回给用户的数据格式
+- Go 中默认值尽量不要从 0，而是从 1 开始，因为 Go 中初始化值为 0
+
+### 时区
+
+- Python 中的时间类型 `datetime.datetime` 是**本地时区**的，时间字符串使用 `datetime.datetime.strptime` 解析，直接转换成本地时间
+- Go 中的时间类型 `time.Time` 也是**本地时区**，Go 中把本地时区的时间字符串解析成 `time.Time` 类型时，要用 `time.ParseInLocation` 而不是 `time.Parse` 
+
+- MySQL 中时间类型一律使用 `datatime`，它是**无时区**的，如果可以，最好保存 UTC 时间
+- Python 的 PyMySQL 库插入或读取 `datetime.datetime` 类型时，不会做任何转换
+- Go 的 go-sql-driver/mysql 库插入或读取 `time.Time` 类型时，也不会做任何转换
+- MongoDB 时间类型用 `ISODate`，本质是 Unix 时间戳，在 Robo3T 软件中默认显示为 UTC 时区格式（可以调为本地时区）
+- （**注意**）Python 的 PyMongo 库和 Go 的 go-mongo-driver 库在**默认配置**下对 MongoDB 的 `ISODate` 的处理方式有很大不同，不注意会造成时区的误差，见下
+- Python 的 `datatime.datatime` 插入 MongoDB 时，会直接把插入的时间当成 UTC 时间，这时就会有 8 个小时的误差，所以插入当前时间要用 `datetime.datetime.utcnow()`；读取时会直接把 MongoDB 中的 UTC 时区直接读入 `datatime.datatime`，而不做任何转换
+- Go 的 `time.Time` 读取或插入 MongoDB 时，会自动转换时区（插入时本地时区转为 UTC 时区，读取时 UTC 时区转为本地时区）
 
 ### Git
 
@@ -242,19 +246,11 @@ npm run serve
 ### 杂
 
 - 配置文件名中带有 release 的是生产环境的配置文件，带有 debug 的是开发环境配置文件
-
 - 开发环境需要手动设置环境变量 `CONF_FILE`，指定配置文件路径
-
 - gin 的请求 log 会在请求处理函数结束后打印（记录请求用时），所以请求 websocket 时，打印会很延迟
-
-- 从 MySQL 中读取 datetime 类型到 Python 的 `datetime.datetime` 类型中，会以本地时区解析（如读取 `2018-12-12 09:38:40`，那么其 UTC 时区时间是 `2018-12-12 01:38:40`）
-
 - 同样的，插入 MongoDB 的时间字符串会以本地时区解析，并以 Unix 时间戳格式存入数据库，数据库中为 `ISODate` 类型，显示的时间格式为 UTC
-
-- Python 中的时间类型 `datetime.datetime` 用的是本地时区；时间字符串使用 `datetime.datetime.strptime` 解析，直接转换成本地时区。但注意，go 中把本地时区的时间字符串解析成 `time.Time` 类型时，要用 `time.ParseInLocation` 而不是 `time.Parse` 
 
 ## TODO
 
 - 完善错误处理，如 `error.New("xxx")` 提出来赋值给全局变量
-
 - 测试
