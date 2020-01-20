@@ -116,10 +116,6 @@ $ sudo systemctl start docker
 
 ## 项目初始化
 
-### MySQL 初始化
-
-创建相应数据库。
-
 ### 生成相应文件
 
 ```bash
