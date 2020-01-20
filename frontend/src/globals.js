@@ -1,14 +1,17 @@
+// 静态资源 URL，nginx 分发
+const URL_MEDIA = '/media'
+const URL_AVATAR = URL_MEDIA + '/avatars'
 
 // base url
 const URL_LOGIN = '/login'
 const URL_LOGOUT = '/logout'
 
-// 静态资源 URL，nginx 分发
-const URL_MEDIA = '/media'
-const URL_AVATAR = URL_MEDIA + '/avatars'
+// 用户自身
 
 // api url
 const URL_API_BASE = '/api/v1'
+const URL_API_SELF = URL_API_BASE + '/self'
+const URL_API_CHANGE_PASSWORD = URL_API_SELF + '/change-password'
 const URL_API_USERS = URL_API_BASE + '/users'
 const URL_API_MINING_BASE = URL_API_BASE + '/mining/base'
 const URL_API_MINING_TASKS = URL_API_BASE + '/mining/tasks'
@@ -64,13 +67,15 @@ function range(start, end, step) {
 }
 
 export default {
-  URL_LOGIN,
-  URL_LOGOUT,
   // media
   URL_MEDIA,
   URL_AVATAR,
+  // auth
+  URL_LOGIN,
+  URL_LOGOUT,
   // api
   URL_API_BASE,
+  URL_API_CHANGE_PASSWORD,
   URL_API_USERS,
   URL_API_MINING_BASE,
   URL_API_MINING_TASKS,
