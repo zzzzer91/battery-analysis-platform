@@ -47,7 +47,7 @@ type User struct {
 
 // SetPassword 设置密码
 func (user *User) SetPassword(password string) error {
-	s, err := security.GeneratePasswordHash(password, "pbkdf2:sha256", 8)
+	s, err := security.GeneratePasswordHash(password)
 	if err != nil {
 		return err
 	}
@@ -143,6 +143,21 @@ func SaveUserChange(user *User) error {
 		"status":  user.Status,
 	}}
 	_, err := collection.UpdateOne(ctx, filter, update)
+	return err
+}
+
+func ChangeUserPassword(userName, password string) error {
+	collection := db.Mongo.Collection(mongoCollectionUser)
+	filter := bson.M{"name": userName} // 过滤记录
+	ctx, _ := context.WithTimeout(context.Background(), mongoCtxTimeout)
+	s, err := security.GeneratePasswordHash(password)
+	if err != nil {
+		return err
+	}
+	update := bson.M{"$set": bson.M{
+		"password": s,
+	}}
+	_, err = collection.UpdateOne(ctx, filter, update)
 	return err
 }
 

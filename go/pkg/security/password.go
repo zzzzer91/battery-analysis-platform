@@ -20,9 +20,9 @@ const (
 //)
 
 // 生成加密后密码，源自 Python 的 werkzeug 库
-func GeneratePasswordHash(password, method string, saltLength int) (string, error) {
-	salt := GenerateRandomString(saltLength)
-	h, actualMethod, err := hashInternal(method, salt, password)
+func GeneratePasswordHash(password string) (string, error) {
+	salt := GenerateRandomString(8)
+	h, actualMethod, err := hashInternal("pbkdf2:sha256", salt, password)
 	return fmt.Sprintf("%s$%s$%s", actualMethod, salt, h), err
 }
 

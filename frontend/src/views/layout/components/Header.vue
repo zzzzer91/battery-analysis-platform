@@ -1,35 +1,51 @@
 <template>
-  <div class="header">
-    <!-- 折叠按钮 -->
-    <div class="collapse-btn" @click="collapseChage">
-      <i class="el-icon-s-unfold" :class="rotateIcon"></i>
-    </div>
-    <div class="logo">动力电池数据分析系统</div>
-    <div class="header-right">
-      <div class="header-user-con">
-        <!-- 全屏显示 -->
-        <div class="btn-fullscreen" @click="handleFullScreen">
-          <el-tooltip effect="dark" :content="fullscreen?`取消全屏`:`全屏`" placement="bottom">
-            <i class="el-icon-full-screen"></i>
-          </el-tooltip>
+  <div>
+    <div class="header">
+      <!-- 折叠按钮 -->
+      <div class="collapse-btn" @click="collapseChage">
+        <i class="el-icon-s-unfold" :class="rotateIcon"></i>
+      </div>
+      <div class="logo">动力电池数据分析系统</div>
+      <div class="header-right">
+        <div class="header-user-con">
+          <!-- 全屏显示 -->
+          <div class="btn-fullscreen" @click="handleFullScreen">
+            <el-tooltip effect="dark" :content="fullscreen?`取消全屏`:`全屏`" placement="bottom">
+              <i class="el-icon-full-screen"></i>
+            </el-tooltip>
+          </div>
+          <!-- 用户头像 -->
+          <div class="user-avator">
+            <img :src="userAvatar" />
+          </div>
+          <!-- 用户名下拉菜单 -->
+          <el-dropdown class="user-name" trigger="click" @command="handleCommand">
+            <span class="el-dropdown-link">
+              {{ userName }}
+              <i class="el-icon-caret-bottom"></i>
+            </span>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item command="changePassword">修改密码</el-dropdown-item>
+              <el-dropdown-item divided command="logout">注销</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
         </div>
-        <!-- 用户头像 -->
-        <div class="user-avator">
-          <img :src="userAvatar" />
-        </div>
-        <!-- 用户名下拉菜单 -->
-        <el-dropdown class="user-name" trigger="click" @command="handleCommand">
-          <span class="el-dropdown-link">
-            {{ userName }}
-            <i class="el-icon-caret-bottom"></i>
-          </span>
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item>设置</el-dropdown-item>
-            <el-dropdown-item divided command="logout">注销</el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown>
       </div>
     </div>
+      <el-dialog title="修改密码" :visible.sync="changePasswordDialogVisible" :close-on-click-modal="false" width="30%">
+      <el-form ref="form" :model="newForm">
+        <el-form-item label="密码">
+          <el-input maxlength="14" type="password" v-model="newForm.password"></el-input>
+        </el-form-item>
+        <el-form-item label="确认密码">
+          <el-input maxlength="14" type="password" v-model="newForm.confirmPassword"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer">
+        <el-button @click="changePasswordDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="savePassword">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -41,7 +57,12 @@ export default {
   data() {
     return {
       fullscreen: false,
-      rotateIcon: ''
+      rotateIcon: '',
+      changePasswordDialogVisible: false,
+      newForm: {
+        password: '',
+        confirmPassword: '',
+      }
     }
   },
   computed: {
@@ -57,12 +78,12 @@ export default {
         imgUrl = `${globals.URL_AVATAR}/${avatarName}`
       }
       return imgUrl
-    }
+    },
   },
   methods: {
     // 用户名下拉菜单选择事件
     handleCommand(command) {
-      if (command == 'logout') {
+      if (command === 'logout') {
         this.$axios
           .post(globals.URL_LOGOUT)
           .then(response => response.data)
@@ -77,6 +98,44 @@ export default {
           .catch(error => {
             this.$message.error(error.message)
           })
+      } else if (command === 'changePassword') {
+        this.newForm = {
+          password: '',
+          confirmPassword: '',
+        }
+        this.changePasswordDialogVisible = true
+      }
+    },
+    checkForm(form) {
+      let err_msg = null
+      if (form.password === '' || form.confirmPassword === '') {
+        err_msg = '密码不能为空！'
+      } else if (!globals.RE_SIX_CHARACTER_CHECKER.test(form.password)) {
+        err_msg = '密码须 5～14 位，并且只能是字母和数字！'
+      } else if (form.password !== form.confirmPassword) {
+        err_msg = '两次密码不一致！'
+      }
+      return err_msg
+    },
+    // 保存密码修改
+    savePassword() {
+      const err_msg = this.checkForm(this.newForm)
+      if (err_msg === null) {
+        this.$axios
+          .post(globals.URL_API_CHANGE_PASSWORD, this.newForm)
+          .then(response => response.data)
+          .then(jd => {
+            if (jd.code !== globals.SUCCESS) {
+              throw new Error(jd.msg)
+            }
+            this.changePasswordDialogVisible = false
+            this.$message.success(jd.msg)
+          })
+          .catch(error => {
+            this.$message.error(error.message)
+          })
+      } else {
+        this.$message.error(err_msg)
       }
     },
     // 侧边栏折叠

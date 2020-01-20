@@ -21,6 +21,8 @@ func PermissionRequired(permission int) gin.HandlerFunc {
 			c.AbortWithError(http.StatusForbidden, err)
 			return
 		}
+		// 保存用户信息到本次会话中
+		c.Set("user", user)
 		if user.Type < permission {
 			c.AbortWithStatus(http.StatusForbidden)
 			return

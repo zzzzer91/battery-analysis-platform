@@ -14,50 +14,53 @@ func register(r *gin.Engine) {
 	r.GET("/login", auth.Login)
 	r.POST("/login", auth.Login)
 
-	root := r.Group("/")
-	root.Use(middleware.PermissionRequired(model.UserTypeCommonUser))
+	rootPath := r.Group("/")
+	rootPath.Use(middleware.PermissionRequired(model.UserTypeCommonUser))
 	{
-		root.POST("/logout", auth.Logout)
+		rootPath.POST("/logout", auth.Logout)
 	}
 
-	apiV1 := r.Group("/api/v1")
-	apiV1.Use(middleware.PermissionRequired(model.UserTypeCommonUser))
+	apiV1Path := r.Group("/api/v1")
+	apiV1Path.Use(middleware.PermissionRequired(model.UserTypeCommonUser))
 	{
-		apiV1.GET("/sys-info", api.ShowSysInfo)
+		apiV1Path.POST("/self/change-password", api.ChangePassword)
 
-		apiV1.GET("/mining/base", api.ShowMiningBaseData)
+		apiV1Path.GET("/sys-info", api.ShowSysInfo)
 
-		apiV1.POST("/mining/tasks", api.CreateMiningTask)
-		apiV1.GET("/mining/tasks", api.ListMiningTask)
-		apiV1.GET("/mining/tasks/:taskId/data", api.ShowMiningTaskData)
-		apiV1.DELETE("/mining/tasks/:taskId", api.DeleteMiningTask)
+		apiV1Path.GET("/mining/base", api.ShowMiningBaseData)
 
-		apiV1.POST("/dl/tasks", api.CreateDlTask)
-		apiV1.GET("/dl/tasks", api.ListDlTask)
-		apiV1.GET("/dl/tasks/:taskId/training-history", api.ShowDlTaskTraningHistory)
-		apiV1.GET("/dl/tasks/:taskId/eval-result", api.ShowDlEvalResultHistory)
-		apiV1.DELETE("/dl/tasks/:taskId", api.DeleteDlTask)
-	}
-	apiV1NeedAuth := r.Group("/api/v1")
-	apiV1.Use(middleware.PermissionRequired(model.UserTypeSuperUser))
-	{
-		apiV1NeedAuth.GET("/users", api.ListUser)
-		apiV1NeedAuth.POST("/users", api.CreateUser)
-		apiV1NeedAuth.PUT("/users/:name", api.ModifyUser)
+		apiV1Path.POST("/mining/tasks", api.CreateMiningTask)
+		apiV1Path.GET("/mining/tasks", api.ListMiningTask)
+		apiV1Path.GET("/mining/tasks/:taskId/data", api.ShowMiningTaskData)
+		apiV1Path.DELETE("/mining/tasks/:taskId", api.DeleteMiningTask)
+
+		apiV1Path.POST("/dl/tasks", api.CreateDlTask)
+		apiV1Path.GET("/dl/tasks", api.ListDlTask)
+		apiV1Path.GET("/dl/tasks/:taskId/training-history", api.ShowDlTaskTraningHistory)
+		apiV1Path.GET("/dl/tasks/:taskId/eval-result", api.ShowDlEvalResultHistory)
+		apiV1Path.DELETE("/dl/tasks/:taskId", api.DeleteDlTask)
 	}
 
-	wsV1 := r.Group("/websocket/v1")
-	wsV1.Use(middleware.PermissionRequired(model.UserTypeCommonUser))
+	apiV1NeedPermissionPath := r.Group("/api/v1")
+	apiV1NeedPermissionPath.Use(middleware.PermissionRequired(model.UserTypeSuperUser))
 	{
-		//wsV1.GET("/sys-info", websocket.ShowSysInfo)
-		wsV1.GET("/mining/tasks", websocket.ListMiningTask)
-		wsV1.GET("/dl/tasks", websocket.ListDlTask)
-		wsV1.GET("/dl/tasks/:taskId/training-history", websocket.ShowDlTaskTraningHistory)
+		apiV1NeedPermissionPath.GET("/users", api.ListUser)
+		apiV1NeedPermissionPath.POST("/users", api.CreateUser)
+		apiV1NeedPermissionPath.PUT("/users/:name", api.ModifyUser)
 	}
 
-	fileV1 := r.Group("/file")
-	fileV1.Use(middleware.PermissionRequired(model.UserTypeCommonUser))
+	wsV1Path := r.Group("/websocket/v1")
+	wsV1Path.Use(middleware.PermissionRequired(model.UserTypeCommonUser))
 	{
-		fileV1.GET("/dl/model/:taskId", file.DownloadDlModel)
+		//wsV1Path.GET("/sys-info", websocket.ShowSysInfo)
+		wsV1Path.GET("/mining/tasks", websocket.ListMiningTask)
+		wsV1Path.GET("/dl/tasks", websocket.ListDlTask)
+		wsV1Path.GET("/dl/tasks/:taskId/training-history", websocket.ShowDlTaskTraningHistory)
+	}
+
+	filePath := r.Group("/file")
+	filePath.Use(middleware.PermissionRequired(model.UserTypeCommonUser))
+	{
+		filePath.GET("/dl/model/:taskId", file.DownloadDlModel)
 	}
 }
