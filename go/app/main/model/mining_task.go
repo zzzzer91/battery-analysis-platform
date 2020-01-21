@@ -10,7 +10,7 @@ type MiningTask struct {
 
 func NewMiningTask(id, name, dataComeFrom, dateRange string) *MiningTask {
 	return &MiningTask{
-		BaseTask:     newBaseTask(id),
+		BaseTask:     *NewBaseTask(id),
 		TaskName:     name,
 		DataComeFrom: dataComeFrom,
 		DateRange:    dateRange,

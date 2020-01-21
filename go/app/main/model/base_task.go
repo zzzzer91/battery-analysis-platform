@@ -17,8 +17,8 @@ type BaseTask struct {
 	Comment    string     `json:"comment" bson:"comment"`
 }
 
-func newBaseTask(id string) BaseTask {
-	return BaseTask{
+func NewBaseTask(id string) *BaseTask {
+	return &BaseTask{
 		TaskId:     id,
 		CreateTime: jtime.Now(),
 		TaskStatus: consts.TaskStatusPreparing,
