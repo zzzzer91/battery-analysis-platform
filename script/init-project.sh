@@ -11,9 +11,7 @@ ENV_FILE="${ABSOLUTE_PROJECT_PATH}/.env"
 
 echo '项目初始化中...'
 
-mysql_root_password=''
 mongo_root_password=''
-read -p "输入 MySQL root 密码：" mysql_root_password
 read -p "输入 Mongo root 密码：" mongo_root_password
 
 # 如果文件夹不存在，创建文件夹
@@ -38,9 +36,6 @@ echo "PROJECT_DIR=${ABSOLUTE_PROJECT_PATH}" >> "${ENV_FILE}"
 #
 echo "# docker 映射数据库数据" >> "${ENV_FILE}"
 echo "DATABASE_DATA_DIR=${ABSOLUTE_PROJECT_PATH}/database" >> "${ENV_FILE}"
-#
-echo "# MySQL" >> "${ENV_FILE}"
-echo "MYSQL_ROOT_PASSWORD=${mysql_root_password}" >> "${ENV_FILE}"
 #
 echo "# Mongo" >> "${ENV_FILE}"
 echo "MONGO_INITDB_ROOT_USERNAME=root" >> "${ENV_FILE}"

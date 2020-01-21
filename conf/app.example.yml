@@ -6,17 +6,6 @@ go-app-main:
     secretKey: test
     # 资源目录，默认与可执行文件目录相同
     resourcePath: ./resource
-  gorm:
-    uri: root:123456@tcp(127.0.0.1:3306)/mytest?charset=utf8mb4&parseTime=True&loc=Local
-    # 设置连接池
-    # 空闲
-    maxIdleConns: 20
-    # 打开
-    maxOpenConns: 100
-    # 超时
-    connMaxLifetime: 30
-    # 是否打开 log
-    logMode: true
   mongo:
     uri: mongodb://root:123456@127.0.0.1:27017
     database: mytest
