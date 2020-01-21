@@ -49,21 +49,21 @@ func ListDlTask() ([]model.DlTask, error) {
 
 func GetDlTaskTrainingHistory(id string, readFromRedis bool) (*model.NnTrainingHistory, error) {
 	if readFromRedis {
+		prefixStr := consts.RedisPrefixDlTaskTrainingHistory + id + ":"
+
 		lossStrList, err := db.Redis.LRange(
-			"deeplearningTask:trainingHistory:"+id+":loss",
-			0, -1).Result()
+			prefixStr+"loss", 0, -1).Result()
 		if err != nil {
 			return nil, err
 		}
-		accuracyStrList, err := db.Redis.LRange(
-			"deeplearningTask:trainingHistory:"+id+":accuracy",
-			0, -1).Result()
+		// 转换为 float
+		lossList, err := conv.StringSlice2FloatSlice(lossStrList)
 		if err != nil {
 			return nil, err
 		}
 
-		// 转换为 float
-		lossList, err := conv.StringSlice2FloatSlice(lossStrList)
+		accuracyStrList, err := db.Redis.LRange(
+			prefixStr+"accuracy", 0, -1).Result()
 		if err != nil {
 			return nil, err
 		}
@@ -81,9 +81,9 @@ func GetDlTaskTrainingHistory(id string, readFromRedis bool) (*model.NnTrainingH
 		filter := bson.M{"taskId": id}
 		projection := bson.M{"_id": false, "trainingHistory": true}
 		var result model.DlTask
-		ctx, _ := context.WithTimeout(context.Background(), consts.MongoCtxTimeout)
-		err := collection.FindOne(ctx, filter, options.FindOne().
-			SetProjection(projection)).Decode(&result)
+		ctx := NewTimeoutCtx()
+		err := collection.FindOne(ctx, filter,
+			options.FindOne().SetProjection(projection)).Decode(&result)
 		if err != nil {
 			return nil, err
 		}
@@ -96,9 +96,9 @@ func GetDlTaskEvalResult(id string) (*model.NnEvalResult, error) {
 	filter := bson.M{"taskId": id}
 	projection := bson.M{"_id": false, "evalResult": true}
 	var result model.DlTask
-	ctx, _ := context.WithTimeout(context.Background(), consts.MongoCtxTimeout)
-	err := collection.FindOne(ctx, filter, options.FindOne().
-		SetProjection(projection)).Decode(&result)
+	ctx := NewTimeoutCtx()
+	err := collection.FindOne(ctx, filter,
+		options.FindOne().SetProjection(projection)).Decode(&result)
 	if err != nil {
 		return nil, err
 	}

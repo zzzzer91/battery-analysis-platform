@@ -9,21 +9,23 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+func NewTimeoutCtx() context.Context {
+	ctx, _ := context.WithTimeout(context.Background(), consts.MongoCtxTimeout)
+	return ctx
+}
+
 // 确保创建 mongo 索引
 func createMongoCollectionIdx(name string, model mongo.IndexModel) error {
 	collection := db.Mongo.Collection(name)
-	ctx, _ := context.WithTimeout(context.Background(), consts.MongoCtxTimeout)
-	_, err := collection.Indexes().CreateOne(
-		ctx,
-		model,
-	)
+	ctx := NewTimeoutCtx()
+	_, err := collection.Indexes().CreateOne(ctx, model)
 	return err
 }
 
 // 在 collection 中插入一条记录
 func insertMongoCollection(collectionName string, item interface{}) error {
 	collection := db.Mongo.Collection(collectionName)
-	ctx, _ := context.WithTimeout(context.Background(), consts.MongoCtxTimeout)
+	ctx := NewTimeoutCtx()
 	_, err := collection.InsertOne(ctx, item)
 	return err
 }

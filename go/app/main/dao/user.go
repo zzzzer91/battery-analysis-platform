@@ -5,7 +5,6 @@ import (
 	"battery-analysis-platform/app/main/db"
 	"battery-analysis-platform/app/main/model"
 	"battery-analysis-platform/pkg/security"
-	"context"
 	"encoding/json"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -25,7 +24,7 @@ func GetUser(name string) (*model.User, error) {
 	collection := db.Mongo.Collection(consts.MongoCollectionUser)
 	filter := bson.M{"name": name}
 	projection := bson.M{"_id": false} // 注意 _id 默认会返回，需要手动过滤
-	ctx, _ := context.WithTimeout(context.Background(), consts.MongoCtxTimeout)
+	ctx := NewTimeoutCtx()
 	err := collection.FindOne(ctx, filter,
 		options.FindOne().SetProjection(projection)).Decode(&user)
 	if err != nil {
@@ -37,8 +36,8 @@ func GetUser(name string) (*model.User, error) {
 func ListCommonUser() ([]model.User, error) {
 	collection := db.Mongo.Collection(consts.MongoCollectionUser)
 	filter := bson.M{"type": bson.M{"$ne": consts.UserTypeSuperUser}} // 过滤记录
-	projection := bson.M{"_id": false}                                // 过滤字段
-	ctx := context.TODO()
+	projection := bson.M{"_id": false}
+	ctx := NewTimeoutCtx()
 	cur, err := collection.Find(ctx, filter, options.Find().SetProjection(projection))
 	if err != nil {
 		return nil, err
@@ -60,11 +59,11 @@ func ListCommonUser() ([]model.User, error) {
 func SaveUserLoginTimeAndCount(user *model.User) error {
 	collection := db.Mongo.Collection(consts.MongoCollectionUser)
 	filter := bson.M{"name": user.Name} // 过滤记录
-	ctx, _ := context.WithTimeout(context.Background(), consts.MongoCtxTimeout)
 	update := bson.M{"$set": bson.M{
 		"lastLoginTime": user.LastLoginTime,
 		"loginCount":    user.LoginCount,
 	}}
+	ctx := NewTimeoutCtx()
 	_, err := collection.UpdateOne(ctx, filter, update)
 	return err
 }
@@ -72,11 +71,11 @@ func SaveUserLoginTimeAndCount(user *model.User) error {
 func SaveUserChange(user *model.User) error {
 	collection := db.Mongo.Collection(consts.MongoCollectionUser)
 	filter := bson.M{"name": user.Name} // 过滤记录
-	ctx, _ := context.WithTimeout(context.Background(), consts.MongoCtxTimeout)
 	update := bson.M{"$set": bson.M{
 		"comment": user.Comment,
 		"status":  user.Status,
 	}}
+	ctx := NewTimeoutCtx()
 	_, err := collection.UpdateOne(ctx, filter, update)
 	return err
 }
@@ -84,7 +83,6 @@ func SaveUserChange(user *model.User) error {
 func ChangeUserPassword(userName, password string) error {
 	collection := db.Mongo.Collection(consts.MongoCollectionUser)
 	filter := bson.M{"name": userName} // 过滤记录
-	ctx, _ := context.WithTimeout(context.Background(), consts.MongoCtxTimeout)
 	s, err := security.GeneratePasswordHash(password)
 	if err != nil {
 		return err
@@ -92,6 +90,7 @@ func ChangeUserPassword(userName, password string) error {
 	update := bson.M{"$set": bson.M{
 		"password": s,
 	}}
+	ctx := NewTimeoutCtx()
 	_, err = collection.UpdateOne(ctx, filter, update)
 	return err
 }
@@ -104,15 +103,15 @@ func SaveUserToCache(user *model.User) error {
 	if err != nil {
 		return err
 	}
-	return db.Redis.Set(consts.RedisUserKeyPrefix+user.Name, jd, consts.RedisUserLoginExpiration).Err()
+	return db.Redis.Set(consts.RedisPrefixUser+user.Name, jd, consts.RedisExpirationUserLogin).Err()
 }
 
 func DeleteUserFromCache(name string) error {
-	return db.Redis.Del(consts.RedisUserKeyPrefix + name).Err()
+	return db.Redis.Del(consts.RedisPrefixUser + name).Err()
 }
 
 func GetUserFromCache(name string) (*model.User, error) {
-	val, err := db.Redis.Get(consts.RedisUserKeyPrefix + name).Bytes()
+	val, err := db.Redis.Get(consts.RedisPrefixUser + name).Bytes()
 	if err != nil {
 		return nil, err
 	}
@@ -122,6 +121,6 @@ func GetUserFromCache(name string) (*model.User, error) {
 		return nil, err
 	}
 	// 刷新 key 的过期时间
-	db.Redis.Expire(consts.RedisUserKeyPrefix+name, consts.RedisUserLoginExpiration)
+	db.Redis.Expire(consts.RedisPrefixUser+name, consts.RedisExpirationUserLogin)
 	return &user, nil
 }

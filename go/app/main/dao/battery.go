@@ -1,10 +1,8 @@
 package dao
 
 import (
-	"battery-analysis-platform/app/main/consts"
 	"battery-analysis-platform/app/main/db"
 	"battery-analysis-platform/pkg/jtime"
-	"context"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -27,7 +25,8 @@ func GetBatteryData(tableName, startDate string, limit int, fields []string) ([]
 		projection[field] = true
 	}
 
-	ctx, _ := context.WithTimeout(context.Background(), consts.MongoCtxTimeout)
+	ctx := NewTimeoutCtx()
+
 	cur, err := collection.Find(ctx, filter,
 		options.Find().SetProjection(projection).SetLimit(int64(limit)))
 	if err != nil {
@@ -39,7 +38,6 @@ func GetBatteryData(tableName, startDate string, limit int, fields []string) ([]
 
 	// 为了使其找不到时返回空列表，而不是 nil
 	records := make([]bson.M, 0)
-	ctx, _ = context.WithTimeout(context.Background(), consts.MongoCtxTimeout)
 	for cur.Next(ctx) {
 		result := make(bson.M)
 		err := cur.Decode(&result)

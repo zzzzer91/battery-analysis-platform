@@ -41,7 +41,7 @@ func (s *MiningTaskCreateService) Do() (*jd.Response, error) {
 	}
 
 	// 检查是否达到创建任务上限
-	if !producer.CheckTaskLimit("miningTask:workingIdSet", 1) {
+	if !producer.CheckTaskLimit(consts.RedisKeyMiningTaskWorkingIdSet, 1) {
 		return jd.Err("允许同时执行任务数已达上限"), nil
 	}
 
@@ -53,7 +53,7 @@ func (s *MiningTaskCreateService) Do() (*jd.Response, error) {
 		return nil, err
 	}
 	// 添加正在工作的任务的 id 到 redis 集合中
-	err = producer.AddWorkingTaskIdToSet("miningTask:workingIdSet", asyncResult.TaskID)
+	err = producer.AddWorkingTaskIdToSet(consts.RedisKeyMiningTaskWorkingIdSet, asyncResult.TaskID)
 	if err != nil {
 		return nil, err
 	}
@@ -78,7 +78,7 @@ func (s *MiningTaskDeleteService) Do() (*jd.Response, error) {
 		return nil, err
 	}
 
-	err = producer.DelWorkingTaskIdFromSet("miningTask:workingIdSet", s.Id)
+	err = producer.DelWorkingTaskIdFromSet(consts.RedisKeyMiningTaskWorkingIdSet, s.Id)
 	if err != nil {
 		return nil, err
 	}

@@ -1,6 +1,6 @@
 package consts
 
 const (
-	fileRootPath    = "/file"
-	FileDlModelPath = fileRootPath + "/dl/model"
+	FileRootPath    = "/file"
+	FileDlModelPath = FileRootPath + "/dl/model"
 )

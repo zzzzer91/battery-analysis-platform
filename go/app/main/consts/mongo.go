@@ -3,7 +3,7 @@ package consts
 import "time"
 
 const (
-	MongoCtxTimeout = time.Second * 5
+	MongoCtxTimeout = time.Second * 10
 )
 
 const (

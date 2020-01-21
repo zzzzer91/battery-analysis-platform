@@ -14,7 +14,7 @@ from .mytorch.data import mini_batch
 from .mytorch.metrics import beiqi_accuracy
 from .conf import app_conf
 
-TASK_NAME = 'deeplearningTask'
+TASK_NAME = 'ubattery:deeplearningTask'
 # 信号通知 websocket，redis 中数据有更新
 SIG_LIST_NAME = f'{TASK_NAME}:sigList'
 # 训练历史，用于 websocket 返回

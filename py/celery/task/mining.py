@@ -8,7 +8,7 @@ from .algorithm import compute_battery_statistic, \
     compute_charging_process, compute_working_condition, \
     compute_correlation
 
-TASK_NAME = 'miningTask'
+TASK_NAME = 'ubattery:miningTask'
 SIG_LIST_NAME = f'{TASK_NAME}:sigList'
 WORKING_ID_SET_NAME = f'{TASK_NAME}:workingIdSet'
 

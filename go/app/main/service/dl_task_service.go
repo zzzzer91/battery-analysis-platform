@@ -20,7 +20,7 @@ func (s *DlTaskCreateService) Do() (*jd.Response, error) {
 	// TODO 检查输入参数
 
 	// 检查是否达到创建任务上限
-	if !producer.CheckTaskLimit("deeplearningTask:workingIdSet", 1) {
+	if !producer.CheckTaskLimit(consts.RedisKeyDlTaskWorkingIdSet, 1) {
 		return jd.Err("允许同时执行任务数已达上限"), nil
 	}
 
@@ -30,7 +30,7 @@ func (s *DlTaskCreateService) Do() (*jd.Response, error) {
 		return nil, err
 	}
 	// 添加正在工作的任务的 id 到集合中
-	err = producer.AddWorkingTaskIdToSet("deeplearningTask:workingIdSet", asyncResult.TaskID)
+	err = producer.AddWorkingTaskIdToSet(consts.RedisKeyDlTaskWorkingIdSet, asyncResult.TaskID)
 	if err != nil {
 		return nil, err
 	}
@@ -54,14 +54,14 @@ func (s *DlTaskDeleteService) Do() (*jd.Response, error) {
 		return nil, err
 	}
 
-	err = producer.DelWorkingTaskIdFromSet("deeplearningTask:workingIdSet", s.Id)
+	err = producer.DelWorkingTaskIdFromSet(consts.RedisKeyDlTaskWorkingIdSet, s.Id)
 	if err != nil {
 		return nil, err
 	}
 
 	// 删除暂存在 redis 中的数据
-	prefixStr := "deeplearningTask:trainingHistory:" + s.Id + ":"
-	db.Redis.Del(prefixStr+"sigList", prefixStr+"loss", prefixStr+"accuracy")
+	prefixStr := consts.RedisPrefixDlTaskTrainingHistory + s.Id + ":"
+	db.Redis.Del(prefixStr+consts.RedisCommonKeySigList, prefixStr+"loss", prefixStr+"accuracy")
 
 	err = dao.DeleteDlTask(s.Id)
 	if err != nil {
