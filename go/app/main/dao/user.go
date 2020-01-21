@@ -104,15 +104,15 @@ func SaveUserToCache(user *model.User) error {
 	if err != nil {
 		return err
 	}
-	return db.Redis.Set(consts.RedisKeyPrefix+user.Name, jd, consts.RedisKeyExpiration).Err()
+	return db.Redis.Set(consts.RedisUserKeyPrefix+user.Name, jd, consts.RedisUserLoginExpiration).Err()
 }
 
 func DeleteUserFromCache(name string) error {
-	return db.Redis.Del(consts.RedisKeyPrefix + name).Err()
+	return db.Redis.Del(consts.RedisUserKeyPrefix + name).Err()
 }
 
 func GetUserFromCache(name string) (*model.User, error) {
-	val, err := db.Redis.Get(consts.RedisKeyPrefix + name).Bytes()
+	val, err := db.Redis.Get(consts.RedisUserKeyPrefix + name).Bytes()
 	if err != nil {
 		return nil, err
 	}
@@ -122,6 +122,6 @@ func GetUserFromCache(name string) (*model.User, error) {
 		return nil, err
 	}
 	// 刷新 key 的过期时间
-	db.Redis.Expire(consts.RedisKeyPrefix+name, consts.RedisKeyExpiration)
+	db.Redis.Expire(consts.RedisUserKeyPrefix+name, consts.RedisUserLoginExpiration)
 	return &user, nil
 }

@@ -2,6 +2,7 @@ package service
 
 import (
 	"battery-analysis-platform/app/main/conf"
+	"battery-analysis-platform/app/main/consts"
 	"battery-analysis-platform/app/main/dao"
 	"battery-analysis-platform/app/main/db"
 	"battery-analysis-platform/app/main/model"
@@ -111,5 +112,5 @@ type DlDownloadModelService struct {
 }
 
 func (s *DlDownloadModelService) Do() (string, error) {
-	return conf.App.Gin.ResourcePath + "/file/dl/model/" + fmt.Sprintf("%s.pt", s.Id), nil
+	return conf.App.Gin.ResourcePath + consts.FileDlModelPath + fmt.Sprintf("/%s.pt", s.Id), nil
 }

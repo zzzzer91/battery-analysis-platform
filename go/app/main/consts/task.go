@@ -1,6 +1,12 @@
 package consts
 
-import "time"
+// 任务状态
+const (
+	TaskStatusPreparing  = 0
+	TaskStatusProcessing = 1
+	TaskStatusSuccess    = 6
+	TaskStatusFailure    = 7
+)
 
 // 过滤不合法任务
 var MiningSupportTaskSet = map[string]struct{}{
@@ -9,7 +15,3 @@ var MiningSupportTaskSet = map[string]struct{}{
 	"电池统计":        {},
 	"pearson相关系数": {},
 }
-
-const (
-	TaskWaitSigTimeout = time.Second * 3
-)

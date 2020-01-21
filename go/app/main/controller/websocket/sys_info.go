@@ -3,6 +3,7 @@
 package websocket
 
 import (
+	"battery-analysis-platform/app/main/consts"
 	"battery-analysis-platform/app/main/service"
 	"github.com/gin-gonic/gin"
 	"time"
@@ -25,6 +26,6 @@ func ShowSysInfo(c *gin.Context) {
 			c.Error(err)
 			return
 		}
-		time.Sleep(time.Second * 3)
+		time.Sleep(consts.WsSendInterval)
 	}
 }

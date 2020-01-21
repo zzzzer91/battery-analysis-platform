@@ -2,9 +2,13 @@ package consts
 
 import "time"
 
+// redis key 前缀
 const (
-	// redis 的键前缀
-	RedisKeyPrefix = "ubattery:users:"
-	// 缓存中 key 过期时间
-	RedisKeyExpiration = time.Hour * 3
+	redisProjectKeyPrefix = "ubattery:"
+	RedisUserKeyPrefix    = redisProjectKeyPrefix + "users:"
+)
+
+const (
+	// redis 中用户登录状态过期时间
+	RedisUserLoginExpiration = time.Hour * 3
 )

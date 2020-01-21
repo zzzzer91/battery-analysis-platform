@@ -35,7 +35,7 @@ func ListDlTask(c *gin.Context) {
 				return
 			}
 		}
-		db.Redis.BLPop(consts.TaskWaitSigTimeout, "deeplearningTask:sigList")
+		db.Redis.BLPop(consts.WsSendInterval, "deeplearningTask:sigList")
 	}
 }
 
@@ -72,7 +72,7 @@ func ShowDlTaskTraningHistory(c *gin.Context) {
 		}
 
 		db.Redis.BLPop(
-			consts.TaskWaitSigTimeout,
+			consts.WsSendInterval,
 			"deeplearningTask:trainingHistory:"+s.Id+":sigList")
 	}
 }

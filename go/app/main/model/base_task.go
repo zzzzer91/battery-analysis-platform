@@ -1,14 +1,8 @@
 package model
 
 import (
+	"battery-analysis-platform/app/main/consts"
 	"battery-analysis-platform/pkg/jtime"
-)
-
-const (
-	TaskStatusPreparing  = 0
-	TaskStatusProcessing = 1
-	TaskStatusSuccess    = 6
-	TaskStatusFailure    = 7
 )
 
 // 注意：
@@ -27,6 +21,6 @@ func newBaseTask(id string) BaseTask {
 	return BaseTask{
 		TaskId:     id,
 		CreateTime: jtime.Now(),
-		TaskStatus: TaskStatusPreparing,
+		TaskStatus: consts.TaskStatusPreparing,
 	}
 }
