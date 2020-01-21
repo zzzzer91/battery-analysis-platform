@@ -7,10 +7,9 @@ import (
 )
 
 func Start() error {
-	ginConf := &conf.App.Gin
-	gin.SetMode(ginConf.RunMode)
+	gin.SetMode(conf.App.Gin.RunMode)
 	r := gin.Default()
-	r.Use(middleware.Session(ginConf.SecretKey))
+	r.Use(middleware.Session(conf.App.Gin.SecretKey))
 	register(r)
 	return r.Run(conf.App.Gin.HttpAddr)
 }
