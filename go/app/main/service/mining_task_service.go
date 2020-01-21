@@ -47,8 +47,7 @@ func (s *MiningTaskCreateService) Do() (*jd.Response, error) {
 
 	// 调用 celery
 	asyncResult, err := producer.Celery.Delay(
-		"task.mining.compute_model",
-		s.TaskName, table.Name, dateRange)
+		consts.CeleryTaskMiningComputeModel, s.TaskName, table.Name, dateRange)
 	if err != nil {
 		return nil, err
 	}
@@ -73,7 +72,7 @@ type MiningTaskDeleteService struct {
 
 func (s *MiningTaskDeleteService) Do() (*jd.Response, error) {
 	// 因为 gocelery 未提供终止任务的 api，这里把终止行为封装成任务，然后调用它
-	_, err := producer.Celery.Delay("task.mining.stop_compute_model", s.Id)
+	_, err := producer.Celery.Delay(consts.CeleryTaskMiningStopComputeModel, s.Id)
 	if err != nil {
 		return nil, err
 	}

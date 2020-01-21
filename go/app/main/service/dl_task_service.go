@@ -25,7 +25,7 @@ func (s *DlTaskCreateService) Do() (*jd.Response, error) {
 	}
 
 	asyncResult, err := producer.Celery.Delay(
-		"task.deeplearning.train", s.Dataset, s.HyperParameter)
+		consts.CeleryTaskDeeplearningTrain, s.Dataset, s.HyperParameter)
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +49,7 @@ type DlTaskDeleteService struct {
 
 func (s *DlTaskDeleteService) Do() (*jd.Response, error) {
 	// 因为 gocelery 未提供终止任务的 api，这里把终止行为封装成任务，然后调用它
-	_, err := producer.Celery.Delay("task.deeplearning.stop_train", s.Id)
+	_, err := producer.Celery.Delay(consts.CeleryTaskDeeplearningStopTrain, s.Id)
 	if err != nil {
 		return nil, err
 	}
