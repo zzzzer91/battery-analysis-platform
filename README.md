@@ -207,14 +207,13 @@ $ npm run serve
 ### 时区
 
 - Python 中的时间类型 `datetime.datetime` 是**本地时区**的，时间字符串使用 `datetime.datetime.strptime` 解析，直接转换成本地时间
-- Go 中的时间类型 `time.Time` 也是**本地时区**，Go 中把本地时区的时间字符串解析成 `time.Time` 类型时，要用 `time.ParseInLocation` 而不是 `time.Parse` 
-
+- Go 中的时间类型 `time.Time` 也是**本地时区**，Go 中把本地时区的时间字符串解析成 `time.Time` 类型时，要用 `time.ParseInLocation` 而不是 `time.Parse`
 - MySQL 中时间类型一律使用 `datatime`，它是**无时区**的，如果可以，最好保存 UTC 时间
 - Python 的 PyMySQL 库插入或读取 `datetime.datetime` 类型时，不会做任何转换
 - Go 的 go-sql-driver/mysql 库插入或读取 `time.Time` 类型时，也不会做任何转换
 - MongoDB 时间类型用 `ISODate`，本质是 Unix 时间戳，在 Robo3T 软件中默认显示为 UTC 时区格式（可以调为本地时区）
 - （**注意**）Python 的 PyMongo 库和 Go 的 go-mongo-driver 库在**默认配置**下对 MongoDB 的 `ISODate` 的处理方式有很大不同，不注意会造成时区的误差，见下
-- Python 的 `datatime.datatime` 插入 MongoDB 时，会直接把插入的时间当成 UTC 时间，这时就会有 8 个小时的误差，所以插入当前时间要用 `datetime.datetime.utcnow()`；读取时会直接把 MongoDB 中的 UTC 时区直接读入 `datatime.datatime`，而不做任何转换
+- Python 的 `datatime.datatime` 插入 MongoDB 时，会直接把插入的时间当成 UTC 时间，这时就会有 8 个小时的误差，所以插入当前时间要用 `datetime.datetime.utcnow()`，插入已有时间时要用 `t - datetime.timedelta(hours=8)`；读取时会直接把 MongoDB 中的 UTC 时区直接读入 `datatime.datatime`，而不做任何转换，所以要进行 `t + datetime.timedelta(hours=8)` 转换
 - Go 的 `time.Time` 读取或插入 MongoDB 时，会自动转换时区（插入时本地时区转为 UTC 时区，读取时 UTC 时区转为本地时区）
 
 ### Git
