@@ -1,5 +1,5 @@
 import time
-from datetime import datetime
+import datetime
 
 from . import status
 from .celery import app
@@ -13,6 +13,9 @@ SIG_LIST_NAME = f'{TASK_NAME}:sigList'
 WORKING_ID_SET_NAME = f'{TASK_NAME}:workingIdSet'
 
 DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
+
+# 插入 Mongo 的时间需要转换时区
+TIME_ZONE_DELTA = datetime.timedelta(hours=8)
 
 
 # `ignore_result=True` 该任务不会将结果保存在 redis，提高性能
@@ -93,10 +96,12 @@ def compute_model(self,
         mongo_filter = {}
     else:
         start_date, end_date = date_range.split(' - ')
+        gte = datetime.datetime.strptime(start_date, DATETIME_FORMAT) - TIME_ZONE_DELTA
+        lte = datetime.datetime.strptime(end_date, DATETIME_FORMAT) - TIME_ZONE_DELTA
         mongo_filter = {
             '时间': {
-                '$gte': datetime.strptime(start_date, DATETIME_FORMAT),
-                '$lte': datetime.strptime(end_date, DATETIME_FORMAT),
+                '$gte': gte,
+                '$lte': lte,
             }
         }
     rows = data_collection.find(filter=mongo_filter, projection=projection)
