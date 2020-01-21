@@ -33,9 +33,6 @@ func GetBatteryData(tableName, startDate string, limit int, fields []string) ([]
 		return nil, err
 	}
 
-	// 修复时区，go 默认 UTC，用时间区间查询会出问题
-	cstZone := time.FixedZone("CST", 8*3600)
-
 	// 为了使其找不到时返回空列表，而不是 nil
 	records := make([]bson.M, 0)
 	for cur.Next(ctx) {
@@ -46,7 +43,7 @@ func GetBatteryData(tableName, startDate string, limit int, fields []string) ([]
 		}
 		// 为了使 json 序列化时得到想要格式
 		temp := result["时间"].(primitive.DateTime)
-		result["时间"] = jtime.Wrap(temp.Time().In(cstZone))
+		result["时间"] = jtime.Wrap(temp.Time())
 		records = append(records, result)
 	}
 	_ = cur.Close(ctx)
