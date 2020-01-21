@@ -1,7 +1,8 @@
 package service
 
 import (
-	"battery-analysis-platform/app/main/model"
+	"battery-analysis-platform/app/main/consts"
+	"battery-analysis-platform/app/main/dao"
 	"battery-analysis-platform/pkg/checker"
 	"battery-analysis-platform/pkg/jd"
 	"strings"
@@ -16,7 +17,7 @@ type MiningBaseShowDataService struct {
 
 func (s *MiningBaseShowDataService) Do() (*jd.Response, error) {
 	// 校验字段合法性
-	table, ok := model.BatteryNameToTable[s.DataComeFrom]
+	table, ok := consts.BatteryNameToTable[s.DataComeFrom]
 	if !ok {
 		return jd.Err("参数 dataComeFrom 不合法"), nil
 	}
@@ -34,7 +35,7 @@ func (s *MiningBaseShowDataService) Do() (*jd.Response, error) {
 		return jd.Err("参数 dataLimit 不合法"), nil
 	}
 
-	data, err := model.GetBatteryData(table.Name, s.StartDate, s.DataLimit, fields)
+	data, err := dao.GetBatteryData(table.Name, s.StartDate, s.DataLimit, fields)
 	if err != nil {
 		return nil, err
 	}

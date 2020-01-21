@@ -1,7 +1,8 @@
 package service
 
 import (
-	"battery-analysis-platform/app/main/model"
+	"battery-analysis-platform/app/main/consts"
+	"battery-analysis-platform/app/main/dao"
 	"battery-analysis-platform/app/main/producer"
 	"battery-analysis-platform/pkg/checker"
 	"battery-analysis-platform/pkg/jd"
@@ -17,11 +18,11 @@ type MiningTaskCreateService struct {
 }
 
 func (s *MiningTaskCreateService) Do() (*jd.Response, error) {
-	if _, ok := model.MiningSupportTaskSet[s.TaskName]; !ok {
+	if _, ok := consts.MiningSupportTaskSet[s.TaskName]; !ok {
 		return jd.Err("参数 TaskName 不合法"), nil
 	}
 
-	table, ok := model.BatteryNameToTable[s.DataComeFrom]
+	table, ok := consts.BatteryNameToTable[s.DataComeFrom]
 	if !ok {
 		return jd.Err("参数 dataComeFrom 不合法"), nil
 	}
@@ -58,7 +59,7 @@ func (s *MiningTaskCreateService) Do() (*jd.Response, error) {
 	}
 
 	// 创建 mongo 记录
-	data, err := model.CreateMiningTask(asyncResult.TaskID, s.TaskName, s.DataComeFrom, dateRange)
+	data, err := dao.CreateMiningTask(asyncResult.TaskID, s.TaskName, s.DataComeFrom, dateRange)
 	if err != nil {
 		return nil, err
 	}
@@ -82,7 +83,7 @@ func (s *MiningTaskDeleteService) Do() (*jd.Response, error) {
 		return nil, err
 	}
 
-	err = model.DeleteMiningTask(s.Id)
+	err = dao.DeleteMiningTask(s.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -93,7 +94,7 @@ type MiningTaskListService struct {
 }
 
 func (s *MiningTaskListService) Do() (*jd.Response, error) {
-	data, err := model.ListMiningTask()
+	data, err := dao.ListMiningTask()
 	if err != nil {
 		return nil, err
 	}
@@ -105,7 +106,7 @@ type MiningTaskShowDataService struct {
 }
 
 func (s *MiningTaskShowDataService) Do() (*jd.Response, error) {
-	data, err := model.GetMiningTaskData(s.Id)
+	data, err := dao.GetMiningTaskData(s.Id)
 	if err != nil {
 		return nil, err
 	}

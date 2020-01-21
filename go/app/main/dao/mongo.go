@@ -1,30 +1,18 @@
-package model
+package dao
 
 import (
+	"battery-analysis-platform/app/main/consts"
 	"battery-analysis-platform/app/main/db"
 	"context"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"time"
-)
-
-const (
-	mongoCtxTimeout = time.Second * 5
-)
-
-const (
-	mongoCollectionUser          = "user"
-	mongoCollectionYuTongVehicle = "yutong_vehicle"
-	mongoCollectionBeiQiVehicle  = "beiqi_vehicle"
-	mongoCollectionMiningTask    = "mining_task"
-	mongoCollectionDlTask        = "deeplearning_task"
 )
 
 // 确保创建 mongo 索引
 func createMongoCollectionIdx(name string, model mongo.IndexModel) error {
 	collection := db.Mongo.Collection(name)
-	ctx, _ := context.WithTimeout(context.Background(), mongoCtxTimeout)
+	ctx, _ := context.WithTimeout(context.Background(), consts.MongoCtxTimeout)
 	_, err := collection.Indexes().CreateOne(
 		ctx,
 		model,
@@ -35,7 +23,7 @@ func createMongoCollectionIdx(name string, model mongo.IndexModel) error {
 // 在 collection 中插入一条记录
 func insertMongoCollection(collectionName string, item interface{}) error {
 	collection := db.Mongo.Collection(collectionName)
-	ctx, _ := context.WithTimeout(context.Background(), mongoCtxTimeout)
+	ctx, _ := context.WithTimeout(context.Background(), consts.MongoCtxTimeout)
 	_, err := collection.InsertOne(ctx, item)
 	return err
 }
@@ -48,7 +36,7 @@ func init() {
 		},
 		Options: options.Index().SetUnique(true),
 	}
-	if err := createMongoCollectionIdx(mongoCollectionUser, indexModel); err != nil {
+	if err := createMongoCollectionIdx(consts.MongoCollectionUser, indexModel); err != nil {
 		panic(err)
 	}
 	indexModel = mongo.IndexModel{
@@ -57,7 +45,7 @@ func init() {
 		},
 		Options: options.Index().SetUnique(false),
 	}
-	if err := createMongoCollectionIdx(mongoCollectionUser, indexModel); err != nil {
+	if err := createMongoCollectionIdx(consts.MongoCollectionUser, indexModel); err != nil {
 		panic(err)
 	}
 
@@ -68,7 +56,7 @@ func init() {
 		},
 		Options: options.Index().SetUnique(false),
 	}
-	if err := createMongoCollectionIdx(mongoCollectionYuTongVehicle, indexModel); err != nil {
+	if err := createMongoCollectionIdx(consts.MongoCollectionYuTongVehicle, indexModel); err != nil {
 		panic(err)
 	}
 	indexModel = mongo.IndexModel{
@@ -77,7 +65,7 @@ func init() {
 		},
 		Options: options.Index().SetUnique(false),
 	}
-	if err := createMongoCollectionIdx(mongoCollectionYuTongVehicle, indexModel); err != nil {
+	if err := createMongoCollectionIdx(consts.MongoCollectionYuTongVehicle, indexModel); err != nil {
 		panic(err)
 	}
 
@@ -88,7 +76,7 @@ func init() {
 		},
 		Options: options.Index().SetUnique(false),
 	}
-	if err := createMongoCollectionIdx(mongoCollectionBeiQiVehicle, indexModel); err != nil {
+	if err := createMongoCollectionIdx(consts.MongoCollectionBeiQiVehicle, indexModel); err != nil {
 		panic(err)
 	}
 	indexModel = mongo.IndexModel{
@@ -97,7 +85,7 @@ func init() {
 		},
 		Options: options.Index().SetUnique(false),
 	}
-	if err := createMongoCollectionIdx(mongoCollectionBeiQiVehicle, indexModel); err != nil {
+	if err := createMongoCollectionIdx(consts.MongoCollectionBeiQiVehicle, indexModel); err != nil {
 		panic(err)
 	}
 
@@ -108,10 +96,10 @@ func init() {
 		},
 		Options: options.Index().SetUnique(false),
 	}
-	if err := createMongoCollectionIdx(mongoCollectionMiningTask, indexModel); err != nil {
+	if err := createMongoCollectionIdx(consts.MongoCollectionMiningTask, indexModel); err != nil {
 		panic(err)
 	}
-	if err := createMongoCollectionIdx(mongoCollectionDlTask, indexModel); err != nil {
+	if err := createMongoCollectionIdx(consts.MongoCollectionDlTask, indexModel); err != nil {
 		panic(err)
 	}
 }

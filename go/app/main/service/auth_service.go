@@ -1,7 +1,7 @@
 package service
 
 import (
-	"battery-analysis-platform/app/main/model"
+	"battery-analysis-platform/app/main/dao"
 	"battery-analysis-platform/pkg/checker"
 	"battery-analysis-platform/pkg/jd"
 	"battery-analysis-platform/pkg/jtime"
@@ -20,7 +20,7 @@ func (s *LoginService) Do() (*jd.Response, error) {
 		return jd.Err("密码不合法"), nil
 	}
 
-	user, err := model.GetUser(s.UserName)
+	user, err := dao.GetUser(s.UserName)
 	if err != nil {
 		return jd.Err("账号或密码错误"), nil
 	}
@@ -32,11 +32,11 @@ func (s *LoginService) Do() (*jd.Response, error) {
 	}
 	user.LastLoginTime = jtime.Now()
 	user.LoginCount += 1
-	err = model.SaveUserLoginTimeAndCount(user)
+	err = dao.SaveUserLoginTimeAndCount(user)
 	if err != nil {
 		return nil, err
 	}
-	err = model.SaveUserToCache(user)
+	err = dao.SaveUserToCache(user)
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +48,7 @@ type LoginByCookieService struct {
 }
 
 func (s *LoginByCookieService) Do() (*jd.Response, error) {
-	user, err := model.GetUserFromCache(s.UserName)
+	user, err := dao.GetUserFromCache(s.UserName)
 	if err != nil {
 		return nil, err
 	}
@@ -63,7 +63,7 @@ type LogoutService struct {
 }
 
 func (s *LogoutService) Do() (*jd.Response, error) {
-	err := model.DeleteUserFromCache(s.UserName)
+	err := dao.DeleteUserFromCache(s.UserName)
 	if err != nil {
 		return nil, err
 	}

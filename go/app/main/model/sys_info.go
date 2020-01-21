@@ -12,7 +12,7 @@ type SysInfo struct {
 	Memory *Memory `json:"memory"`
 }
 
-func GetSysInfo() (*SysInfo, error) {
+func NewSysInfo() (*SysInfo, error) {
 	vm, err := mem.VirtualMemory()
 	if err != nil {
 		return nil, err

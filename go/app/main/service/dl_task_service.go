@@ -2,6 +2,7 @@ package service
 
 import (
 	"battery-analysis-platform/app/main/conf"
+	"battery-analysis-platform/app/main/dao"
 	"battery-analysis-platform/app/main/db"
 	"battery-analysis-platform/app/main/model"
 	"battery-analysis-platform/app/main/producer"
@@ -33,7 +34,7 @@ func (s *DlTaskCreateService) Do() (*jd.Response, error) {
 		return nil, err
 	}
 
-	data, err := model.CreateDlTask(asyncResult.TaskID, s.Dataset, s.HyperParameter)
+	data, err := dao.CreateDlTask(asyncResult.TaskID, s.Dataset, s.HyperParameter)
 	if err != nil {
 		return nil, err
 	}
@@ -61,7 +62,7 @@ func (s *DlTaskDeleteService) Do() (*jd.Response, error) {
 	prefixStr := "deeplearningTask:trainingHistory:" + s.Id + ":"
 	db.Redis.Del(prefixStr+"sigList", prefixStr+"loss", prefixStr+"accuracy")
 
-	err = model.DeleteDlTask(s.Id)
+	err = dao.DeleteDlTask(s.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -73,7 +74,7 @@ type DlTaskListService struct {
 }
 
 func (s *DlTaskListService) Do() (*jd.Response, error) {
-	data, err := model.ListDlTask()
+	data, err := dao.ListDlTask()
 	if err != nil {
 		return nil, err
 	}
@@ -86,7 +87,7 @@ type DlTaskShowTraningHistoryService struct {
 }
 
 func (s *DlTaskShowTraningHistoryService) Do() (*jd.Response, error) {
-	data, err := model.GetDlTaskTrainingHistory(s.Id, s.ReadFromRedis)
+	data, err := dao.GetDlTaskTrainingHistory(s.Id, s.ReadFromRedis)
 	if err != nil {
 		return nil, err
 	}
@@ -98,7 +99,7 @@ type DlTaskShowEvalResultService struct {
 }
 
 func (s *DlTaskShowEvalResultService) Do() (*jd.Response, error) {
-	data, err := model.GetDlTaskEvalResult(s.Id)
+	data, err := dao.GetDlTaskEvalResult(s.Id)
 	if err != nil {
 		return nil, err
 	}

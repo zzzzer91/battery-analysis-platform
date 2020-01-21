@@ -1,7 +1,8 @@
 package middleware
 
 import (
-	"battery-analysis-platform/app/main/model"
+	"battery-analysis-platform/app/main/consts"
+	"battery-analysis-platform/app/main/dao"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -10,13 +11,13 @@ import (
 func PermissionRequired(permission int) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		session := sessions.Default(c)
-		userName := session.Get("userName")
+		userName := session.Get(consts.CookieKey)
 		if userName == nil {
 			c.AbortWithStatus(http.StatusForbidden)
 			return
 		}
 
-		user, err := model.GetUserFromCache(userName.(string))
+		user, err := dao.GetUserFromCache(userName.(string))
 		if err != nil {
 			c.AbortWithError(http.StatusForbidden, err)
 			return

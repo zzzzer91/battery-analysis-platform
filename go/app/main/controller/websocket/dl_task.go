@@ -1,6 +1,7 @@
 package websocket
 
 import (
+	"battery-analysis-platform/app/main/consts"
 	"battery-analysis-platform/app/main/db"
 	"battery-analysis-platform/app/main/service"
 	"github.com/gin-gonic/gin"
@@ -34,7 +35,7 @@ func ListDlTask(c *gin.Context) {
 				return
 			}
 		}
-		db.Redis.BLPop(taskWaitSigTimeout, "deeplearningTask:sigList")
+		db.Redis.BLPop(consts.TaskWaitSigTimeout, "deeplearningTask:sigList")
 	}
 }
 
@@ -71,7 +72,7 @@ func ShowDlTaskTraningHistory(c *gin.Context) {
 		}
 
 		db.Redis.BLPop(
-			taskWaitSigTimeout,
+			consts.TaskWaitSigTimeout,
 			"deeplearningTask:trainingHistory:"+s.Id+":sigList")
 	}
 }

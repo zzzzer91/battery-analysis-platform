@@ -1,12 +1,12 @@
 package server
 
 import (
+	"battery-analysis-platform/app/main/consts"
 	"battery-analysis-platform/app/main/controller/api"
 	"battery-analysis-platform/app/main/controller/auth"
 	"battery-analysis-platform/app/main/controller/file"
 	"battery-analysis-platform/app/main/controller/websocket"
 	"battery-analysis-platform/app/main/middleware"
-	"battery-analysis-platform/app/main/model"
 	"github.com/gin-gonic/gin"
 )
 
@@ -15,13 +15,13 @@ func register(r *gin.Engine) {
 	r.POST("/login", auth.Login)
 
 	rootPath := r.Group("/")
-	rootPath.Use(middleware.PermissionRequired(model.UserTypeCommonUser))
+	rootPath.Use(middleware.PermissionRequired(consts.UserTypeCommonUser))
 	{
 		rootPath.POST("/logout", auth.Logout)
 	}
 
 	apiV1Path := r.Group("/api/v1")
-	apiV1Path.Use(middleware.PermissionRequired(model.UserTypeCommonUser))
+	apiV1Path.Use(middleware.PermissionRequired(consts.UserTypeCommonUser))
 	{
 		apiV1Path.POST("/self/change-password", api.ChangePassword)
 
@@ -42,7 +42,7 @@ func register(r *gin.Engine) {
 	}
 
 	apiV1NeedPermissionPath := r.Group("/api/v1")
-	apiV1NeedPermissionPath.Use(middleware.PermissionRequired(model.UserTypeSuperUser))
+	apiV1NeedPermissionPath.Use(middleware.PermissionRequired(consts.UserTypeSuperUser))
 	{
 		apiV1NeedPermissionPath.GET("/users", api.ListUser)
 		apiV1NeedPermissionPath.POST("/users", api.CreateUser)
@@ -50,7 +50,7 @@ func register(r *gin.Engine) {
 	}
 
 	wsV1Path := r.Group("/websocket/v1")
-	wsV1Path.Use(middleware.PermissionRequired(model.UserTypeCommonUser))
+	wsV1Path.Use(middleware.PermissionRequired(consts.UserTypeCommonUser))
 	{
 		//wsV1Path.GET("/sys-info", websocket.ShowSysInfo)
 		wsV1Path.GET("/mining/tasks", websocket.ListMiningTask)
@@ -59,7 +59,7 @@ func register(r *gin.Engine) {
 	}
 
 	filePath := r.Group("/file")
-	filePath.Use(middleware.PermissionRequired(model.UserTypeCommonUser))
+	filePath.Use(middleware.PermissionRequired(consts.UserTypeCommonUser))
 	{
 		filePath.GET("/dl/model/:taskId", file.DownloadDlModel)
 	}

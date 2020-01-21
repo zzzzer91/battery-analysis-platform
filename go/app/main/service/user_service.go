@@ -1,7 +1,8 @@
 package service
 
 import (
-	"battery-analysis-platform/app/main/model"
+	"battery-analysis-platform/app/main/consts"
+	"battery-analysis-platform/app/main/dao"
 	"battery-analysis-platform/pkg/checker"
 	"battery-analysis-platform/pkg/jd"
 )
@@ -23,7 +24,7 @@ func (s *UserCreateService) Do() (*jd.Response, error) {
 		return jd.Err("参数 comment 不合法"), nil
 	}
 
-	data, err := model.CreateUser(s.UserName, s.Password, s.Comment)
+	data, err := dao.CreateUser(s.UserName, s.Password, s.Comment)
 	if err != nil {
 		return jd.Err("用户 " + s.UserName + " 已存在"), nil
 	}
@@ -37,25 +38,25 @@ type UserModifyService struct {
 }
 
 func (s *UserModifyService) Do() (*jd.Response, error) {
-	if s.Status != model.UserStatusNormal && s.Status != model.UserStatusForbiddenLogin {
+	if s.Status != consts.UserStatusNormal && s.Status != consts.UserStatusForbiddenLogin {
 		return jd.Err("参数 status 不合法"), nil
 	}
 	if len(s.Comment) > 64 {
 		return jd.Err("参数 comment 不合法"), nil
 	}
 
-	user, err := model.GetUser(s.UserName)
+	user, err := dao.GetUser(s.UserName)
 	if err != nil {
 		return nil, err
 	}
 	user.Comment = s.Comment
 	user.Status = s.Status
-	err = model.SaveUserChange(user)
+	err = dao.SaveUserChange(user)
 	if err != nil {
 		return nil, err
 	}
 	// 用户数据发生修改，更新将其缓存
-	err = model.SaveUserToCache(user)
+	err = dao.SaveUserToCache(user)
 	if err != nil {
 		return nil, err
 	}
@@ -66,7 +67,7 @@ type UserListService struct {
 }
 
 func (s *UserListService) Do() (*jd.Response, error) {
-	userList, err := model.ListCommonUser()
+	userList, err := dao.ListCommonUser()
 	if err != nil {
 		return nil, err
 	}

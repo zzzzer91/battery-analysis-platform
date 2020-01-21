@@ -6,6 +6,7 @@ import (
 	"testing"
 )
 
+// TODO
 func TestSysInfo(t *testing.T) {
 	url := "ws://localhost:5000/websocket/v1/sys-info"
 	conn, _, err := websocket.DefaultDialer.Dial(url, nil)

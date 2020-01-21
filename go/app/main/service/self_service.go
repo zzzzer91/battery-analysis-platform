@@ -1,7 +1,7 @@
 package service
 
 import (
-	"battery-analysis-platform/app/main/model"
+	"battery-analysis-platform/app/main/dao"
 	"battery-analysis-platform/pkg/jd"
 )
 
@@ -11,7 +11,7 @@ type ChangePasswordService struct {
 }
 
 func (s *ChangePasswordService) Do() (*jd.Response, error) {
-	err := model.ChangeUserPassword(s.UserName, s.Password)
+	err := dao.ChangeUserPassword(s.UserName, s.Password)
 	if err != nil {
 		return nil, err
 	}

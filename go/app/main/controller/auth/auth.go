@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"battery-analysis-platform/app/main/consts"
 	"battery-analysis-platform/app/main/controller"
 	"battery-analysis-platform/app/main/service"
 	"battery-analysis-platform/pkg/jd"
@@ -12,7 +13,7 @@ import (
 func Login(c *gin.Context) {
 	if c.Request.Method == "GET" {
 		session := sessions.Default(c)
-		userName := session.Get("userName")
+		userName := session.Get(consts.CookieKey)
 		if userName == nil {
 			c.JSON(200, jd.Err(""))
 			return
@@ -37,7 +38,7 @@ func Login(c *gin.Context) {
 			// 设置Session
 			session := sessions.Default(c)
 			session.Clear()
-			session.Set("userName", s.UserName)
+			session.Set(consts.CookieKey, s.UserName)
 			session.Save()
 		}
 		c.JSON(200, res)
@@ -48,7 +49,7 @@ func Login(c *gin.Context) {
 
 func Logout(c *gin.Context) {
 	session := sessions.Default(c)
-	userName := session.Get("userName")
+	userName := session.Get(consts.CookieKey)
 	if userName == nil {
 		c.JSON(200, jd.Err(""))
 		return

@@ -1,13 +1,14 @@
 package websocket
 
 import (
+	"battery-analysis-platform/app/main/consts"
 	"github.com/gorilla/websocket"
 	"net/http"
 )
 
 var wsUpgrader = websocket.Upgrader{
-	ReadBufferSize:  4096,
-	WriteBufferSize: 4096,
+	ReadBufferSize:  consts.WsReadBufferSize,
+	WriteBufferSize: consts.WsWriteBufferSize,
 	// 取消 ws 跨域校验，http 头部的 origin 不对，会返回 403，这里禁止这个功能
 	CheckOrigin: func(r *http.Request) bool { return true },
 }

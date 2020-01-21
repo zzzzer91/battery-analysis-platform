@@ -9,7 +9,7 @@ type SysInfoShowService struct {
 }
 
 func (s *SysInfoShowService) Do() (*jd.Response, error) {
-	data, err := model.GetSysInfo()
+	data, err := model.NewSysInfo()
 	if err != nil {
 		return nil, err
 	}
