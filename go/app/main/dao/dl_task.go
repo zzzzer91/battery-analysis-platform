@@ -81,7 +81,7 @@ func GetDlTaskTrainingHistory(id string, readFromRedis bool) (*model.NnTrainingH
 		filter := bson.M{"taskId": id}
 		projection := bson.M{"_id": false, "trainingHistory": true}
 		var result model.DlTask
-		ctx := NewTimeoutCtx()
+		ctx := newTimeoutCtx()
 		err := collection.FindOne(ctx, filter,
 			options.FindOne().SetProjection(projection)).Decode(&result)
 		if err != nil {
@@ -96,7 +96,7 @@ func GetDlTaskEvalResult(id string) (*model.NnEvalResult, error) {
 	filter := bson.M{"taskId": id}
 	projection := bson.M{"_id": false, "evalResult": true}
 	var result model.DlTask
-	ctx := NewTimeoutCtx()
+	ctx := newTimeoutCtx()
 	err := collection.FindOne(ctx, filter,
 		options.FindOne().SetProjection(projection)).Decode(&result)
 	if err != nil {

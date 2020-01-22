@@ -24,7 +24,7 @@ func GetUser(name string) (*model.User, error) {
 	collection := db.Mongo.Collection(consts.MongoCollectionUser)
 	filter := bson.M{"name": name}
 	projection := bson.M{"_id": false} // 注意 _id 默认会返回，需要手动过滤
-	ctx := NewTimeoutCtx()
+	ctx := newTimeoutCtx()
 	err := collection.FindOne(ctx, filter,
 		options.FindOne().SetProjection(projection)).Decode(&user)
 	if err != nil {
@@ -37,7 +37,7 @@ func ListCommonUser() ([]model.User, error) {
 	collection := db.Mongo.Collection(consts.MongoCollectionUser)
 	filter := bson.M{"type": bson.M{"$ne": consts.UserTypeSuperUser}} // 过滤记录
 	projection := bson.M{"_id": false}
-	ctx := NewTimeoutCtx()
+	ctx := newTimeoutCtx()
 	cur, err := collection.Find(ctx, filter, options.Find().SetProjection(projection))
 	if err != nil {
 		return nil, err
@@ -63,7 +63,7 @@ func SaveUserLoginTimeAndCount(user *model.User) error {
 		"lastLoginTime": user.LastLoginTime,
 		"loginCount":    user.LoginCount,
 	}}
-	ctx := NewTimeoutCtx()
+	ctx := newTimeoutCtx()
 	_, err := collection.UpdateOne(ctx, filter, update)
 	return err
 }
@@ -75,7 +75,7 @@ func SaveUserChange(user *model.User) error {
 		"comment": user.Comment,
 		"status":  user.Status,
 	}}
-	ctx := NewTimeoutCtx()
+	ctx := newTimeoutCtx()
 	_, err := collection.UpdateOne(ctx, filter, update)
 	return err
 }
@@ -90,7 +90,7 @@ func ChangeUserPassword(userName, password string) error {
 	update := bson.M{"$set": bson.M{
 		"password": s,
 	}}
-	ctx := NewTimeoutCtx()
+	ctx := newTimeoutCtx()
 	_, err = collection.UpdateOne(ctx, filter, update)
 	return err
 }

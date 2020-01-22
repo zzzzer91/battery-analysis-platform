@@ -12,7 +12,7 @@ func creatTask(collectionName string, task interface{}) error {
 func deleteTask(collectionName string, id string) error {
 	collection := db.Mongo.Collection(collectionName)
 	filter := bson.M{"taskId": id}
-	ctx := NewTimeoutCtx()
+	ctx := newTimeoutCtx()
 	_, err := collection.DeleteOne(ctx, filter)
 	return err
 }

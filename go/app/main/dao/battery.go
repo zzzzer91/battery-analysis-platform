@@ -25,7 +25,7 @@ func GetBatteryData(tableName, startDate string, limit int, fields []string) ([]
 		projection[field] = true
 	}
 
-	ctx := NewTimeoutCtx()
+	ctx := newTimeoutCtx()
 
 	cur, err := collection.Find(ctx, filter,
 		options.Find().SetProjection(projection).SetLimit(int64(limit)))
