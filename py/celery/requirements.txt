@@ -6,5 +6,3 @@ pandas
 pyyaml
 redis
 pymongo
-pymysql
-sqlalchemy

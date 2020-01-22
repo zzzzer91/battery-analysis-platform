@@ -18,8 +18,6 @@ go-app-main:
 
 # python-app
 py-app-celery:
-  sqlalchemy:
-    uri: mysql+pymysql://root:123456@127.0.0.1:3306/mytest
   mongo:
     uri: mongodb://root:123456@127.0.0.1:27017
     database: mytest
