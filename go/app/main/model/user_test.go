@@ -1,6 +1,7 @@
 package model
 
 import (
+	"battery-analysis-platform/app/main/consts"
 	"encoding/json"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -10,7 +11,7 @@ func TestUser(t *testing.T) {
 	ast := assert.New(t)
 	user := &User{
 		Name:   "xiaoming",
-		Type:   UserTypeSuperUser,
+		Type:   consts.UserTypeSuperUser,
 		Status: 0,
 	}
 	user.SetPassword("123456")
