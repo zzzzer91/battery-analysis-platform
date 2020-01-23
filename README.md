@@ -226,6 +226,7 @@ $ npm run serve
 
 ### 杂
 
+- 函数命名 `createXxx`，`getXxx`，`getXxxList`，`updateXxx`，`DeleteXxx`
 - 配置文件名中带有 release 的是生产环境的配置文件，带有 debug 的是开发环境配置文件
 - 开发环境需要手动设置环境变量 `CONF_FILE`，指定配置文件路径
 - gin 的请求 log 会在请求处理函数结束后打印（记录请求用时），所以请求 websocket 时，打印会很延迟
