@@ -32,11 +32,11 @@ func (s *LoginService) Do() (*jd.Response, error) {
 	}
 	user.LastLoginTime = jtime.Now()
 	user.LoginCount += 1
-	err = dao.SaveUserLoginTimeAndCount(user)
+	err = dao.UpdateUserLoginTimeAndCount(user)
 	if err != nil {
 		return nil, err
 	}
-	err = dao.SaveUserToCache(user)
+	err = dao.AddUserToCache(user)
 	if err != nil {
 		return nil, err
 	}

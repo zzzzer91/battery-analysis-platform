@@ -7,10 +7,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func ChangePassword(c *gin.Context) {
+func UpdateSelfPassword(c *gin.Context) {
 	val, _ := c.Get("user")
 	user := val.(*model.User)
-	s := service.ChangePasswordService{
+	s := service.UpdateUserPasswordService{
 		UserName: user.Name,
 	}
 	if err := c.ShouldBindJSON(&s); err != nil {

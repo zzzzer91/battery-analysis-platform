@@ -14,11 +14,7 @@ func CreateMiningTask(id, name, dataComeFrom, dateRange string) (*model.MiningTa
 	return task, err
 }
 
-func DeleteMiningTask(id string) error {
-	return deleteTask(consts.MongoCollectionMiningTask, id)
-}
-
-func ListMiningTask() ([]model.MiningTask, error) {
+func GetMiningTaskList() ([]model.MiningTask, error) {
 	collection := db.Mongo.Collection(consts.MongoCollectionMiningTask)
 	filter := bson.M{}                                // 过滤记录
 	projection := bson.M{"_id": false, "data": false} // 过滤字段
@@ -66,4 +62,8 @@ func GetMiningTaskData(id string) (bson.A, error) {
 		return nil, err
 	}
 	return result["data"].(bson.A), nil
+}
+
+func DeleteMiningTask(id string) error {
+	return deleteTask(consts.MongoCollectionMiningTask, id)
 }

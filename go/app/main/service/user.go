@@ -7,13 +7,13 @@ import (
 	"battery-analysis-platform/pkg/jd"
 )
 
-type UserCreateService struct {
+type CreateUserService struct {
 	UserName string `json:"userName"`
 	Password string `json:"password"`
 	Comment  string `json:"comment"`
 }
 
-func (s *UserCreateService) Do() (*jd.Response, error) {
+func (s *CreateUserService) Do() (*jd.Response, error) {
 	if !checker.ReUserNameOrPassword.MatchString(s.UserName) {
 		return jd.Err("用户名不符合要求"), nil
 	}
@@ -31,13 +31,24 @@ func (s *UserCreateService) Do() (*jd.Response, error) {
 	return jd.Build(jd.SUCCESS, "创建用户 "+s.UserName+" 成功", data), nil
 }
 
-type UserModifyService struct {
+type GetCommonUserListService struct {
+}
+
+func (s *GetCommonUserListService) Do() (*jd.Response, error) {
+	userList, err := dao.GetCommonUserList()
+	if err != nil {
+		return nil, err
+	}
+	return jd.Build(jd.SUCCESS, "", userList), nil
+}
+
+type UpdateUserInfoService struct {
 	UserName string
 	Comment  string `json:"comment"`
 	Status   int    `json:"userStatus"`
 }
 
-func (s *UserModifyService) Do() (*jd.Response, error) {
+func (s *UpdateUserInfoService) Do() (*jd.Response, error) {
 	if s.Status != consts.UserStatusNormal && s.Status != consts.UserStatusForbiddenLogin {
 		return jd.Err("参数 status 不合法"), nil
 	}
@@ -51,25 +62,27 @@ func (s *UserModifyService) Do() (*jd.Response, error) {
 	}
 	user.Comment = s.Comment
 	user.Status = s.Status
-	err = dao.SaveUserChange(user)
+	err = dao.UpdateUserInfo(user)
 	if err != nil {
 		return nil, err
 	}
 	// 用户数据发生修改，更新将其缓存
-	err = dao.SaveUserToCache(user)
+	err = dao.AddUserToCache(user)
 	if err != nil {
 		return nil, err
 	}
 	return jd.Build(jd.SUCCESS, "修改用户 "+s.UserName+" 成功", user), nil
 }
 
-type UserListService struct {
+type UpdateUserPasswordService struct {
+	UserName string
+	Password string `json:"password"`
 }
 
-func (s *UserListService) Do() (*jd.Response, error) {
-	userList, err := dao.ListCommonUser()
+func (s *UpdateUserPasswordService) Do() (*jd.Response, error) {
+	err := dao.UpdateUserPassword(s.UserName, s.Password)
 	if err != nil {
 		return nil, err
 	}
-	return jd.Build(jd.SUCCESS, "", userList), nil
+	return jd.Build(jd.SUCCESS, "修改密码成功", nil), nil
 }

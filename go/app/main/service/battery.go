@@ -8,14 +8,14 @@ import (
 	"strings"
 )
 
-type MiningBaseShowDataService struct {
+type GetBatteryListService struct {
 	DataComeFrom string `form:"dataComeFrom"`
 	StartDate    string `form:"startDate"`
 	NeedParams   string `form:"needParams"`
 	DataLimit    int    `form:"dataLimit"`
 }
 
-func (s *MiningBaseShowDataService) Do() (*jd.Response, error) {
+func (s *GetBatteryListService) Do() (*jd.Response, error) {
 	// 校验字段合法性
 	table, ok := consts.BatteryNameToTable[s.DataComeFrom]
 	if !ok {
@@ -35,7 +35,7 @@ func (s *MiningBaseShowDataService) Do() (*jd.Response, error) {
 		return jd.Err("参数 dataLimit 不合法"), nil
 	}
 
-	data, err := dao.GetBatteryData(table.Name, s.StartDate, s.DataLimit, fields)
+	data, err := dao.GetBatteryList(table.Name, s.StartDate, s.DataLimit, fields)
 	if err != nil {
 		return nil, err
 	}

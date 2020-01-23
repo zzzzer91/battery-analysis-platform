@@ -6,8 +6,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func ShowMiningBaseData(c *gin.Context) {
-	s := service.MiningBaseShowDataService{}
+func GetBatteryList(c *gin.Context) {
+	s := service.GetBatteryListService{}
 	if err := c.ShouldBindQuery(&s); err != nil {
 		c.AbortWithError(500, err)
 		return

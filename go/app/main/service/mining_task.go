@@ -8,7 +8,7 @@ import (
 	"battery-analysis-platform/pkg/jd"
 )
 
-type MiningTaskCreateService struct {
+type CreateMiningTaskService struct {
 	TaskName     string `json:"taskName"`
 	DataComeFrom string `json:"dataComeFrom"`
 	// BatteryStatus int    `json:"batteryStatus"`
@@ -17,7 +17,7 @@ type MiningTaskCreateService struct {
 	AllData   bool   `json:"allData"` // bool 型不能 required，因为 false 会被判空
 }
 
-func (s *MiningTaskCreateService) Do() (*jd.Response, error) {
+func (s *CreateMiningTaskService) Do() (*jd.Response, error) {
 	if _, ok := consts.MiningSupportTaskSet[s.TaskName]; !ok {
 		return jd.Err("参数 TaskName 不合法"), nil
 	}
@@ -66,11 +66,34 @@ func (s *MiningTaskCreateService) Do() (*jd.Response, error) {
 	return jd.Build(jd.SUCCESS, "创建成功", data), nil
 }
 
-type MiningTaskDeleteService struct {
+type GetMiningTaskListService struct {
+}
+
+func (s *GetMiningTaskListService) Do() (*jd.Response, error) {
+	data, err := dao.GetMiningTaskList()
+	if err != nil {
+		return nil, err
+	}
+	return jd.Build(jd.SUCCESS, "", data), nil
+}
+
+type GetMiningTaskDataService struct {
 	Id string
 }
 
-func (s *MiningTaskDeleteService) Do() (*jd.Response, error) {
+func (s *GetMiningTaskDataService) Do() (*jd.Response, error) {
+	data, err := dao.GetMiningTaskData(s.Id)
+	if err != nil {
+		return nil, err
+	}
+	return jd.Build(jd.SUCCESS, "", data), nil
+}
+
+type DeleteMiningTaskService struct {
+	Id string
+}
+
+func (s *DeleteMiningTaskService) Do() (*jd.Response, error) {
 	// 因为 gocelery 未提供终止任务的 api，这里把终止行为封装成任务，然后调用它
 	_, err := producer.Celery.Delay(consts.CeleryTaskMiningStopComputeModel, s.Id)
 	if err != nil {
@@ -87,27 +110,4 @@ func (s *MiningTaskDeleteService) Do() (*jd.Response, error) {
 		return nil, err
 	}
 	return jd.Build(jd.SUCCESS, "删除成功", nil), nil
-}
-
-type MiningTaskListService struct {
-}
-
-func (s *MiningTaskListService) Do() (*jd.Response, error) {
-	data, err := dao.ListMiningTask()
-	if err != nil {
-		return nil, err
-	}
-	return jd.Build(jd.SUCCESS, "", data), nil
-}
-
-type MiningTaskShowDataService struct {
-	Id string
-}
-
-func (s *MiningTaskShowDataService) Do() (*jd.Response, error) {
-	data, err := dao.GetMiningTaskData(s.Id)
-	if err != nil {
-		return nil, err
-	}
-	return jd.Build(jd.SUCCESS, "", data), nil
 }

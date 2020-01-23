@@ -23,39 +23,39 @@ func register(r *gin.Engine) {
 	apiV1Path := r.Group("/api/v1")
 	apiV1Path.Use(middleware.PermissionRequired(consts.UserTypeCommonUser))
 	{
-		apiV1Path.POST("/self/change-password", api.ChangePassword)
+		apiV1Path.POST("/self/change-password", api.UpdateSelfPassword)
 
-		apiV1Path.GET("/sys-info", api.ShowSysInfo)
+		apiV1Path.GET("/sys-info", api.GetSysInfo)
 
-		apiV1Path.GET("/mining/base", api.ShowMiningBaseData)
+		apiV1Path.GET("/mining/base", api.GetBatteryList)
 
 		apiV1Path.POST("/mining/tasks", api.CreateMiningTask)
-		apiV1Path.GET("/mining/tasks", api.ListMiningTask)
-		apiV1Path.GET("/mining/tasks/:taskId/data", api.ShowMiningTaskData)
+		apiV1Path.GET("/mining/tasks", api.GetMiningTaskList)
+		apiV1Path.GET("/mining/tasks/:taskId/data", api.GetMiningTaskData)
 		apiV1Path.DELETE("/mining/tasks/:taskId", api.DeleteMiningTask)
 
 		apiV1Path.POST("/dl/tasks", api.CreateDlTask)
-		apiV1Path.GET("/dl/tasks", api.ListDlTask)
-		apiV1Path.GET("/dl/tasks/:taskId/training-history", api.ShowDlTaskTraningHistory)
-		apiV1Path.GET("/dl/tasks/:taskId/eval-result", api.ShowDlEvalResultHistory)
+		apiV1Path.GET("/dl/tasks", api.GetDlTaskList)
+		apiV1Path.GET("/dl/tasks/:taskId/training-history", api.GetDlTaskTraningHistory)
+		apiV1Path.GET("/dl/tasks/:taskId/eval-result", api.GetDlEvalResultHistory)
 		apiV1Path.DELETE("/dl/tasks/:taskId", api.DeleteDlTask)
 	}
 
 	apiV1NeedPermissionPath := r.Group("/api/v1")
 	apiV1NeedPermissionPath.Use(middleware.PermissionRequired(consts.UserTypeSuperUser))
 	{
-		apiV1NeedPermissionPath.GET("/users", api.ListUser)
 		apiV1NeedPermissionPath.POST("/users", api.CreateUser)
-		apiV1NeedPermissionPath.PUT("/users/:name", api.ModifyUser)
+		apiV1NeedPermissionPath.GET("/users", api.GetUserList)
+		apiV1NeedPermissionPath.PUT("/users/:name", api.UpdateUserInfo)
 	}
 
 	wsV1Path := r.Group("/websocket/v1")
 	wsV1Path.Use(middleware.PermissionRequired(consts.UserTypeCommonUser))
 	{
-		//wsV1Path.GET("/sys-info", websocket.ShowSysInfo)
-		wsV1Path.GET("/mining/tasks", websocket.ListMiningTask)
-		wsV1Path.GET("/dl/tasks", websocket.ListDlTask)
-		wsV1Path.GET("/dl/tasks/:taskId/training-history", websocket.ShowDlTaskTraningHistory)
+		//wsV1Path.GET("/sys-info", websocket.GetSysInfo)
+		wsV1Path.GET("/mining/tasks", websocket.GetMiningTaskList)
+		wsV1Path.GET("/dl/tasks", websocket.GetDlTaskList)
+		wsV1Path.GET("/dl/tasks/:taskId/training-history", websocket.GetDlTaskTraningHistory)
 	}
 
 	filePath := r.Group("/file")

@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func ListDlTask(c *gin.Context) {
+func GetDlTaskList(c *gin.Context) {
 	conn, err := upgradeHttpConn(c.Writer, c.Request)
 	if err != nil {
 		c.AbortWithError(500, err)
@@ -15,7 +15,7 @@ func ListDlTask(c *gin.Context) {
 	}
 	defer conn.Close()
 
-	s := service.DlTaskListService{}
+	s := service.GetDlTaskListService{}
 
 	closed := monitorWsClosed(conn)
 	for {
@@ -39,7 +39,7 @@ func ListDlTask(c *gin.Context) {
 	}
 }
 
-func ShowDlTaskTraningHistory(c *gin.Context) {
+func GetDlTaskTraningHistory(c *gin.Context) {
 	conn, err := upgradeHttpConn(c.Writer, c.Request)
 	if err != nil {
 		c.AbortWithError(500, err)
@@ -47,7 +47,7 @@ func ShowDlTaskTraningHistory(c *gin.Context) {
 	}
 	defer conn.Close()
 
-	s := service.DlTaskShowTraningHistoryService{
+	s := service.GetDlTaskTraningHistoryService{
 		Id:            c.Param("taskId"),
 		ReadFromRedis: true,
 	}

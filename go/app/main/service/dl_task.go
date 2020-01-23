@@ -11,12 +11,12 @@ import (
 	"fmt"
 )
 
-type DlTaskCreateService struct {
+type CreateDlTaskService struct {
 	Dataset        string                  `json:"dataset"`
 	HyperParameter *model.NnHyperParameter `json:"hyperParameter"`
 }
 
-func (s *DlTaskCreateService) Do() (*jd.Response, error) {
+func (s *CreateDlTaskService) Do() (*jd.Response, error) {
 	// TODO 检查输入参数
 
 	// 检查是否达到创建任务上限
@@ -43,11 +43,55 @@ func (s *DlTaskCreateService) Do() (*jd.Response, error) {
 	return jd.Build(jd.SUCCESS, "创建成功", data), nil
 }
 
-type DlTaskDeleteService struct {
+type GetDlTaskListService struct {
+}
+
+func (s *GetDlTaskListService) Do() (*jd.Response, error) {
+	data, err := dao.GetDlTaskList()
+	if err != nil {
+		return nil, err
+	}
+	return jd.Build(jd.SUCCESS, "", data), nil
+}
+
+type GetDlTaskTraningHistoryService struct {
+	Id            string
+	ReadFromRedis bool
+}
+
+func (s *GetDlTaskTraningHistoryService) Do() (*jd.Response, error) {
+	data, err := dao.GetDlTaskTrainingHistory(s.Id, s.ReadFromRedis)
+	if err != nil {
+		return nil, err
+	}
+	return jd.Build(jd.SUCCESS, "", data), nil
+}
+
+type GetDlTaskEvalResultService struct {
 	Id string
 }
 
-func (s *DlTaskDeleteService) Do() (*jd.Response, error) {
+func (s *GetDlTaskEvalResultService) Do() (*jd.Response, error) {
+	data, err := dao.GetDlTaskEvalResult(s.Id)
+	if err != nil {
+		return nil, err
+	}
+	return jd.Build(jd.SUCCESS, "", data), nil
+}
+
+type DownloadDlModelService struct {
+	Id string
+}
+
+func (s *DownloadDlModelService) Do() (string, error) {
+	return conf.App.Gin.ResourcePath + consts.FileDlModelPath + fmt.Sprintf("/%s.pt", s.Id), nil
+}
+
+type DeleteDlTaskService struct {
+	Id string
+}
+
+func (s *DeleteDlTaskService) Do() (*jd.Response, error) {
 	// 因为 gocelery 未提供终止任务的 api，这里把终止行为封装成任务，然后调用它
 	_, err := producer.Celery.Delay(consts.CeleryTaskDeeplearningStopTrain, s.Id)
 	if err != nil {
@@ -69,48 +113,4 @@ func (s *DlTaskDeleteService) Do() (*jd.Response, error) {
 	}
 
 	return jd.Build(jd.SUCCESS, "删除成功", nil), nil
-}
-
-type DlTaskListService struct {
-}
-
-func (s *DlTaskListService) Do() (*jd.Response, error) {
-	data, err := dao.ListDlTask()
-	if err != nil {
-		return nil, err
-	}
-	return jd.Build(jd.SUCCESS, "", data), nil
-}
-
-type DlTaskShowTraningHistoryService struct {
-	Id            string
-	ReadFromRedis bool
-}
-
-func (s *DlTaskShowTraningHistoryService) Do() (*jd.Response, error) {
-	data, err := dao.GetDlTaskTrainingHistory(s.Id, s.ReadFromRedis)
-	if err != nil {
-		return nil, err
-	}
-	return jd.Build(jd.SUCCESS, "", data), nil
-}
-
-type DlTaskShowEvalResultService struct {
-	Id string
-}
-
-func (s *DlTaskShowEvalResultService) Do() (*jd.Response, error) {
-	data, err := dao.GetDlTaskEvalResult(s.Id)
-	if err != nil {
-		return nil, err
-	}
-	return jd.Build(jd.SUCCESS, "", data), nil
-}
-
-type DlDownloadModelService struct {
-	Id string
-}
-
-func (s *DlDownloadModelService) Do() (string, error) {
-	return conf.App.Gin.ResourcePath + consts.FileDlModelPath + fmt.Sprintf("/%s.pt", s.Id), nil
 }

@@ -7,7 +7,7 @@ import (
 )
 
 func CreateDlTask(c *gin.Context) {
-	s := service.DlTaskCreateService{}
+	s := service.CreateDlTaskService{}
 	if err := c.ShouldBindJSON(&s); err != nil {
 		c.AbortWithError(500, err)
 		return
@@ -15,28 +15,28 @@ func CreateDlTask(c *gin.Context) {
 	controller.JsonResponse(c, &s)
 }
 
-func DeleteDlTask(c *gin.Context) {
-	s := service.DlTaskDeleteService{
-		Id: c.Param("taskId"),
-	}
+func GetDlTaskList(c *gin.Context) {
+	s := service.GetDlTaskListService{}
 	controller.JsonResponse(c, &s)
 }
 
-func ListDlTask(c *gin.Context) {
-	s := service.DlTaskListService{}
-	controller.JsonResponse(c, &s)
-}
-
-func ShowDlTaskTraningHistory(c *gin.Context) {
-	s := service.DlTaskShowTraningHistoryService{
+func GetDlTaskTraningHistory(c *gin.Context) {
+	s := service.GetDlTaskTraningHistoryService{
 		Id:            c.Param("taskId"),
 		ReadFromRedis: false,
 	}
 	controller.JsonResponse(c, &s)
 }
 
-func ShowDlEvalResultHistory(c *gin.Context) {
-	s := service.DlTaskShowEvalResultService{
+func GetDlEvalResultHistory(c *gin.Context) {
+	s := service.GetDlTaskEvalResultService{
+		Id: c.Param("taskId"),
+	}
+	controller.JsonResponse(c, &s)
+}
+
+func DeleteDlTask(c *gin.Context) {
+	s := service.DeleteDlTaskService{
 		Id: c.Param("taskId"),
 	}
 	controller.JsonResponse(c, &s)

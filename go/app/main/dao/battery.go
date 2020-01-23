@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func GetBatteryData(tableName, startDate string, limit int, fields []string) ([]bson.M, error) {
+func GetBatteryList(tableName, startDate string, limit int, fields []string) ([]bson.M, error) {
 	collection := db.Mongo.Collection(tableName)
 
 	// 查询指定范围时间的数据

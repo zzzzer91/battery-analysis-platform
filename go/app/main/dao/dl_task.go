@@ -17,11 +17,7 @@ func CreateDlTask(id, dataset string, hyperParameter *model.NnHyperParameter) (*
 	return task, err
 }
 
-func DeleteDlTask(id string) error {
-	return deleteTask(consts.MongoCollectionDlTask, id)
-}
-
-func ListDlTask() ([]model.DlTask, error) {
+func GetDlTaskList() ([]model.DlTask, error) {
 	collection := db.Mongo.Collection(consts.MongoCollectionDlTask)
 	filter := bson.M{}                                                  // 过滤记录
 	projection := bson.M{"trainingHistory": false, "evalResult": false} // 过滤字段
@@ -103,4 +99,8 @@ func GetDlTaskEvalResult(id string) (*model.NnEvalResult, error) {
 		return nil, err
 	}
 	return result.EvalResult, nil
+}
+
+func DeleteDlTask(id string) error {
+	return deleteTask(consts.MongoCollectionDlTask, id)
 }

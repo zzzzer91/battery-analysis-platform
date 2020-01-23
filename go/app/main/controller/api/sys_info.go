@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func ShowSysInfo(c *gin.Context) {
-	s := service.SysInfoShowService{}
+func GetSysInfo(c *gin.Context) {
+	s := service.GetSysInfoService{}
 	controller.JsonResponse(c, &s)
 }

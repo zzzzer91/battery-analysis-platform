@@ -9,14 +9,14 @@ import (
 	"time"
 )
 
-func ShowSysInfo(c *gin.Context) {
+func GetSysInfo(c *gin.Context) {
 	conn, err := upgradeHttpConn(c.Writer, c.Request)
 	if err != nil {
 		c.AbortWithError(500, err)
 		return
 	}
 	for {
-		s := service.SysInfoShowService{}
+		s := service.GetSysInfoService{}
 		res, err := s.Do()
 		if err != nil {
 			c.Error(err)

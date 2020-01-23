@@ -19,21 +19,7 @@ func CreateUser(name, password, comment string) (*model.User, error) {
 	return user, nil
 }
 
-func GetUser(name string) (*model.User, error) {
-	var user model.User
-	collection := db.Mongo.Collection(consts.MongoCollectionUser)
-	filter := bson.M{"name": name}
-	projection := bson.M{"_id": false} // 注意 _id 默认会返回，需要手动过滤
-	ctx := newTimeoutCtx()
-	err := collection.FindOne(ctx, filter,
-		options.FindOne().SetProjection(projection)).Decode(&user)
-	if err != nil {
-		return nil, err
-	}
-	return &user, nil
-}
-
-func ListCommonUser() ([]model.User, error) {
+func GetCommonUserList() ([]model.User, error) {
 	collection := db.Mongo.Collection(consts.MongoCollectionUser)
 	filter := bson.M{"type": bson.M{"$ne": consts.UserTypeSuperUser}} // 过滤记录
 	projection := bson.M{"_id": false}
@@ -56,19 +42,21 @@ func ListCommonUser() ([]model.User, error) {
 	return users, nil
 }
 
-func SaveUserLoginTimeAndCount(user *model.User) error {
+func GetUser(name string) (*model.User, error) {
+	var user model.User
 	collection := db.Mongo.Collection(consts.MongoCollectionUser)
-	filter := bson.M{"name": user.Name} // 过滤记录
-	update := bson.M{"$set": bson.M{
-		"lastLoginTime": user.LastLoginTime,
-		"loginCount":    user.LoginCount,
-	}}
+	filter := bson.M{"name": name}
+	projection := bson.M{"_id": false} // 注意 _id 默认会返回，需要手动过滤
 	ctx := newTimeoutCtx()
-	_, err := collection.UpdateOne(ctx, filter, update)
-	return err
+	err := collection.FindOne(ctx, filter,
+		options.FindOne().SetProjection(projection)).Decode(&user)
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
 }
 
-func SaveUserChange(user *model.User) error {
+func UpdateUserInfo(user *model.User) error {
 	collection := db.Mongo.Collection(consts.MongoCollectionUser)
 	filter := bson.M{"name": user.Name} // 过滤记录
 	update := bson.M{"$set": bson.M{
@@ -80,7 +68,19 @@ func SaveUserChange(user *model.User) error {
 	return err
 }
 
-func ChangeUserPassword(userName, password string) error {
+func UpdateUserLoginTimeAndCount(user *model.User) error {
+	collection := db.Mongo.Collection(consts.MongoCollectionUser)
+	filter := bson.M{"name": user.Name} // 过滤记录
+	update := bson.M{"$set": bson.M{
+		"lastLoginTime": user.LastLoginTime,
+		"loginCount":    user.LoginCount,
+	}}
+	ctx := newTimeoutCtx()
+	_, err := collection.UpdateOne(ctx, filter, update)
+	return err
+}
+
+func UpdateUserPassword(userName, password string) error {
 	collection := db.Mongo.Collection(consts.MongoCollectionUser)
 	filter := bson.M{"name": userName} // 过滤记录
 	s, err := security.GeneratePasswordHash(password)
@@ -97,17 +97,13 @@ func ChangeUserPassword(userName, password string) error {
 
 // ---------------------------cache---------------------------
 
-func SaveUserToCache(user *model.User) error {
+func AddUserToCache(user *model.User) error {
 	// 存储 JSON 序列化的数据
 	jd, err := json.Marshal(user)
 	if err != nil {
 		return err
 	}
 	return db.Redis.Set(consts.RedisPrefixUser+user.Name, jd, consts.RedisExpirationUserLogin).Err()
-}
-
-func DeleteUserFromCache(name string) error {
-	return db.Redis.Del(consts.RedisPrefixUser + name).Err()
 }
 
 func GetUserFromCache(name string) (*model.User, error) {
@@ -123,4 +119,8 @@ func GetUserFromCache(name string) (*model.User, error) {
 	// 刷新 key 的过期时间
 	db.Redis.Expire(consts.RedisPrefixUser+name, consts.RedisExpirationUserLogin)
 	return &user, nil
+}
+
+func DeleteUserFromCache(name string) error {
+	return db.Redis.Del(consts.RedisPrefixUser + name).Err()
 }

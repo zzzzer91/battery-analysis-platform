@@ -5,10 +5,10 @@ import (
 	"battery-analysis-platform/pkg/jd"
 )
 
-type SysInfoShowService struct {
+type GetSysInfoService struct {
 }
 
-func (s *SysInfoShowService) Do() (*jd.Response, error) {
+func (s *GetSysInfoService) Do() (*jd.Response, error) {
 	data, err := model.NewSysInfo()
 	if err != nil {
 		return nil, err

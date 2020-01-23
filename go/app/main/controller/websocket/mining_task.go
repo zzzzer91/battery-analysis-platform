@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func ListMiningTask(c *gin.Context) {
+func GetMiningTaskList(c *gin.Context) {
 	conn, err := upgradeHttpConn(c.Writer, c.Request)
 	if err != nil {
 		c.AbortWithError(500, err)
@@ -15,7 +15,7 @@ func ListMiningTask(c *gin.Context) {
 	}
 	defer conn.Close()
 
-	s := service.MiningTaskListService{}
+	s := service.GetMiningTaskListService{}
 
 	closed := monitorWsClosed(conn)
 	for {
