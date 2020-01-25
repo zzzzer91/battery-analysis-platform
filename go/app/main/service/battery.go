@@ -3,9 +3,10 @@ package service
 import (
 	"battery-analysis-platform/app/main/consts"
 	"battery-analysis-platform/app/main/dao"
-	"battery-analysis-platform/pkg/checker"
 	"battery-analysis-platform/pkg/jd"
+	"battery-analysis-platform/pkg/jtime"
 	"strings"
+	"time"
 )
 
 type GetBatteryListService struct {
@@ -28,14 +29,15 @@ func (s *GetBatteryListService) Do() (*jd.Response, error) {
 			return jd.Err("参数 needParams 不合法"), nil
 		}
 	}
-	if !checker.ReDatetime.MatchString(s.StartDate) {
+	startDate, err := time.ParseInLocation(jtime.FormatLayout, s.StartDate, time.Local)
+	if err != nil {
 		return jd.Err("参数 startDate 不合法"), nil
 	}
 	if s.DataLimit > 10000 {
 		return jd.Err("参数 dataLimit 不合法"), nil
 	}
 
-	data, err := dao.GetBatteryList(table.Name, s.StartDate, s.DataLimit, fields)
+	data, err := dao.GetBatteryList(table.Name, startDate, s.DataLimit, fields)
 	if err != nil {
 		return nil, err
 	}

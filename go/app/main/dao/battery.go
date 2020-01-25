@@ -9,16 +9,11 @@ import (
 	"time"
 )
 
-func GetBatteryList(tableName, startDate string, limit int, fields []string) ([]bson.M, error) {
+func GetBatteryList(tableName string, startDate time.Time, limit int, fields []string) ([]bson.M, error) {
 	collection := db.Mongo.Collection(tableName)
 
-	// 查询指定范围时间的数据
-	sDate, err := time.ParseInLocation(jtime.FormatLayout, startDate, time.Local)
-	if err != nil {
-		return nil, err
-	}
 	// filter := bson.M{"时间": bson.M{"$gte": sDate, "$lt": eDate}}
-	filter := bson.M{"时间": bson.M{"$gte": sDate}}
+	filter := bson.M{"时间": bson.M{"$gte": startDate}}
 
 	projection := bson.M{"_id": false, "时间": true, "状态号": true}
 	for _, field := range fields {
