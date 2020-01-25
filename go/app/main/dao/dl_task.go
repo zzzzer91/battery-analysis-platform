@@ -19,9 +19,13 @@ func CreateDlTask(id, dataset string, hyperParameter *model.NnHyperParameter) (*
 
 func GetDlTaskList() ([]model.DlTask, error) {
 	collection := db.Mongo.Collection(consts.MongoCollectionDlTask)
-	filter := bson.M{}                                                  // 过滤记录
-	projection := bson.M{"trainingHistory": false, "evalResult": false} // 过滤字段
-	sort := bson.M{"createTime": -1}                                    // 结果排序
+	filter := bson.D{}
+	projection := bson.D{
+		{"_id", false},
+		{"trainingHistory", false},
+		{"evalResult", false},
+	}
+	sort := bson.D{{"createTime", -1}}
 	// 注意 ctx 不能几个连接复用
 	ctx, _ := context.WithTimeout(context.Background(), consts.MongoCtxTimeout)
 	cur, err := collection.Find(ctx, filter, options.Find().SetProjection(projection).SetSort(sort))
@@ -74,8 +78,8 @@ func GetDlTaskTrainingHistory(id string, readFromRedis bool) (*model.NnTrainingH
 		}, nil
 	} else {
 		collection := db.Mongo.Collection(consts.MongoCollectionDlTask)
-		filter := bson.M{"taskId": id}
-		projection := bson.M{"_id": false, "trainingHistory": true}
+		filter := bson.D{{"taskId", id}}
+		projection := bson.D{{"_id", false}, {"trainingHistory", true}}
 		var result model.DlTask
 		ctx := newTimeoutCtx()
 		err := collection.FindOne(ctx, filter,
@@ -89,8 +93,8 @@ func GetDlTaskTrainingHistory(id string, readFromRedis bool) (*model.NnTrainingH
 
 func GetDlTaskEvalResult(id string) (*model.NnEvalResult, error) {
 	collection := db.Mongo.Collection(consts.MongoCollectionDlTask)
-	filter := bson.M{"taskId": id}
-	projection := bson.M{"_id": false, "evalResult": true}
+	filter := bson.D{{"taskId", id}}
+	projection := bson.D{{"_id", false}, {"evalResult", true}}
 	var result model.DlTask
 	ctx := newTimeoutCtx()
 	err := collection.FindOne(ctx, filter,

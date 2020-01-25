@@ -11,13 +11,15 @@ import (
 
 func GetBatteryList(tableName string, startDate time.Time, limit int, fields []string) ([]bson.M, error) {
 	collection := db.Mongo.Collection(tableName)
-
-	// filter := bson.M{"时间": bson.M{"$gte": sDate, "$lt": eDate}}
-	filter := bson.M{"时间": bson.M{"$gte": startDate}}
-
-	projection := bson.M{"_id": false, "时间": true, "状态号": true}
+	filter := bson.D{{"时间", bson.D{{"$gte", startDate}}}}
+	// 注意 _id 默认会返回，需要手动过滤
+	projection := bson.D{
+		{"_id", false},
+		{"时间", true},
+		{"状态号", true},
+	}
 	for _, field := range fields {
-		projection[field] = true
+		projection = append(projection, bson.E{Key: field, Value: true})
 	}
 
 	ctx := newTimeoutCtx()

@@ -21,8 +21,8 @@ func CreateUser(name, password, comment string) (*model.User, error) {
 
 func GetCommonUserList() ([]model.User, error) {
 	collection := db.Mongo.Collection(consts.MongoCollectionUser)
-	filter := bson.M{"type": bson.M{"$ne": consts.UserTypeSuperUser}} // 过滤记录
-	projection := bson.M{"_id": false}
+	filter := bson.D{{"type", bson.D{{"$ne", consts.UserTypeSuperUser}}}} // 过滤记录
+	projection := bson.D{{"_id", false}}
 	ctx := newTimeoutCtx()
 	cur, err := collection.Find(ctx, filter, options.Find().SetProjection(projection))
 	if err != nil {
@@ -45,8 +45,8 @@ func GetCommonUserList() ([]model.User, error) {
 func GetUser(name string) (*model.User, error) {
 	var user model.User
 	collection := db.Mongo.Collection(consts.MongoCollectionUser)
-	filter := bson.M{"name": name}
-	projection := bson.M{"_id": false} // 注意 _id 默认会返回，需要手动过滤
+	filter := bson.D{{"name", name}}
+	projection := bson.D{{"_id", false}} // 注意 _id 默认会返回，需要手动过滤
 	ctx := newTimeoutCtx()
 	err := collection.FindOne(ctx, filter,
 		options.FindOne().SetProjection(projection)).Decode(&user)
@@ -58,11 +58,11 @@ func GetUser(name string) (*model.User, error) {
 
 func UpdateUserInfo(user *model.User) error {
 	collection := db.Mongo.Collection(consts.MongoCollectionUser)
-	filter := bson.M{"name": user.Name} // 过滤记录
-	update := bson.M{"$set": bson.M{
-		"comment": user.Comment,
-		"status":  user.Status,
-	}}
+	filter := bson.D{{"name", user.Name}} // 过滤记录
+	update := bson.D{{"$set", bson.D{
+		{"comment", user.Comment},
+		{"status", user.Status},
+	}}}
 	ctx := newTimeoutCtx()
 	_, err := collection.UpdateOne(ctx, filter, update)
 	return err
@@ -70,11 +70,11 @@ func UpdateUserInfo(user *model.User) error {
 
 func UpdateUserLoginTimeAndCount(user *model.User) error {
 	collection := db.Mongo.Collection(consts.MongoCollectionUser)
-	filter := bson.M{"name": user.Name} // 过滤记录
-	update := bson.M{"$set": bson.M{
-		"lastLoginTime": user.LastLoginTime,
-		"loginCount":    user.LoginCount,
-	}}
+	filter := bson.D{{"name", user.Name}} // 过滤记录
+	update := bson.D{{"$set", bson.D{
+		{"lastLoginTime", user.LastLoginTime},
+		{"loginCount", user.LoginCount},
+	}}}
 	ctx := newTimeoutCtx()
 	_, err := collection.UpdateOne(ctx, filter, update)
 	return err
@@ -82,14 +82,14 @@ func UpdateUserLoginTimeAndCount(user *model.User) error {
 
 func UpdateUserPassword(userName, password string) error {
 	collection := db.Mongo.Collection(consts.MongoCollectionUser)
-	filter := bson.M{"name": userName} // 过滤记录
+	filter := bson.D{{"name", userName}} // 过滤记录
 	s, err := security.GeneratePasswordHash(password)
 	if err != nil {
 		return err
 	}
-	update := bson.M{"$set": bson.M{
-		"password": s,
-	}}
+	update := bson.D{{"$set", bson.D{
+		{"password", s},
+	}}}
 	ctx := newTimeoutCtx()
 	_, err = collection.UpdateOne(ctx, filter, update)
 	return err
