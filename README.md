@@ -185,7 +185,8 @@ $ npm run serve
 - MySQL，Redis，MongoDB key 名使用小驼峰法命名
 - MongoDB 中 key 可以用中文，但最好是英文
 - MySQL 中字段不允许为 null，有一些坑，比如查询 `id != 1` 时，null 值不会被匹配，因为 null 与其他值都不相等。要匹配到，要用 `id != 1 or id is null`
-- 接上条，用 or 时，MySQL 可能不走索引，所以尽量用 union。
+- 接上条，用 or 时，MySQL 可能不走索引，所以尽量用 union
+- Go 用 go-mongo-driver 库，`bson.D`（底层是结构体数组，`json.Marshal()` 结果不如期望）和 `bson.M`（底层是 `map`，`json.Marshal()` 结果如期望）都可以代表一个 Document。推荐：传入条件时，用类型 `bson.D`（应该效率更高）；把查询的数据映射出来的时候，用类型 `bson.M`。
 
 ### 前端
 
