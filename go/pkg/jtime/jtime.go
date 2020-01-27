@@ -59,7 +59,7 @@ func (t *Time) Scan(v interface{}) error {
 	if !ok {
 		return fmt.Errorf("can not convert %v to timestamp", v)
 	}
-	t.Time = tTmp
+	t.Time = tTmp.Local()
 	return nil
 }
 
