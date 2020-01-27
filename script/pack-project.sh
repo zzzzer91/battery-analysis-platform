@@ -12,7 +12,7 @@ if [ -d "${BUILD_PATH}" ]; then
   rm -r "${BUILD_PATH}"
 fi
 
-PROEJCT_NAME="battery-analysis-platform"
+PROEJCT_NAME="${ABSOLUTE_PROJECT_PATH##*/}"
 BUILD_PROJECT_DIR="${BUILD_PATH}/${PROEJCT_NAME}"
 mkdir -p "${BUILD_PROJECT_DIR}"
 
