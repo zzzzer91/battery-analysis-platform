@@ -38,7 +38,7 @@ type DlTask struct {
 
 func NewDlTask(id, dataset string, hyperParameter *NnHyperParameter) *DlTask {
 	return &DlTask{
-		BaseTask:       *NewBaseTask(id),
+		BaseTask:       NewBaseTask(id),
 		Dataset:        dataset,
 		HyperParameter: hyperParameter,
 	}

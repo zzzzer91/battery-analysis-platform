@@ -9,9 +9,6 @@ type GetSysInfoService struct {
 }
 
 func (s *GetSysInfoService) Do() (*jd.Response, error) {
-	data, err := model.NewSysInfo()
-	if err != nil {
-		return nil, err
-	}
+	data := model.NewSysInfo()
 	return jd.Build(jd.SUCCESS, "", data), nil
 }

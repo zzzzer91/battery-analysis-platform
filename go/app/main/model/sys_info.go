@@ -9,20 +9,16 @@ type Memory struct {
 }
 
 type SysInfo struct {
-	Memory *Memory `json:"memory"`
+	Memory Memory `json:"memory"`
 }
 
-func NewSysInfo() (*SysInfo, error) {
-	vm, err := mem.VirtualMemory()
-	if err != nil {
-		return nil, err
-	}
-	si := &SysInfo{
-		Memory: &Memory{
+func NewSysInfo() *SysInfo {
+	vm, _ := mem.VirtualMemory()
+	return &SysInfo{
+		Memory: Memory{
 			Total:       vm.Total,
 			Free:        vm.Free,
 			UsedPercent: vm.UsedPercent,
 		},
 	}
-	return si, nil
 }
