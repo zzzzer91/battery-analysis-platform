@@ -55,6 +55,7 @@ services:
     working_dir: /root
     command: ./app
     volumes:
+      - /etc/localtime:/etc/localtime:ro
       - ./bin/main/app:/root/app:ro
       - ./conf/app.release.yml:/root/conf/app.yml:ro
       - ./resource:/root/resource
@@ -86,6 +87,7 @@ services:
       - CONF_FILE=/root/conf/app.yml
     command: python3 -m celery -A task worker --concurrency=3
     volumes:
+      - /etc/localtime:/etc/localtime:ro
       - ./py/celery/task:/root/task:ro
       - ./conf/app.release.yml:/root/conf/app.yml:ro
       - ./resource:/root/resource

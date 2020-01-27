@@ -1,17 +1,6 @@
 version: '3'
 
 services:
-  # 数据库
-  #  mysql:
-  #    image: mysql:5.7.26  # 固定版本
-  #    # restart: always  # 重启系统后重启容器
-  #    ports:
-  #      - 127.0.0.1:3306:3306
-  #    environment:
-  #      - TZ=Asia/Shanghai
-  #      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}  # 只在数据库未初始化的情况下有效
-  #    volumes:
-  #      - ${DATABASE_DATA_DIR}/mysql:/var/lib/mysql
   mongo:
     image: mongo:4.0
     ports:
@@ -29,21 +18,6 @@ services:
       - ${DATABASE_DATA_DIR}/redis:/data  # redis 数据存储在容器的 /data 下
 
   # 数据库管理工具
-  #  adminer:  # MySQL 管理
-  #    image: adminer:latest
-  #    ports:
-  #      - 127.0.0.1:8080:8080
-  #    depends_on:
-  #      - mysql
-  #    mongo-express:  # Mongo 管理
-  #      image: mongo-express:latest
-  #      ports:
-  #        - 127.0.0.1:8078:8081
-  #      environment:
-  #        ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_INITDB_ROOT_USERNAME}
-  #        ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
-  #      depends_on:
-  #        - mongo
   redis-commander:  # redis 管理
     image: rediscommander/redis-commander:latest
     environment:
