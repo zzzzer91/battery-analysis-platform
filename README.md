@@ -217,6 +217,7 @@ $ npm run serve
 - （**注意**）Python 的 PyMongo 库和 Go 的 go-mongo-driver 库在**默认配置**下对 MongoDB 的 `ISODate` 的处理方式有很大不同，不注意会造成时区的误差，见下
 - Python 的 `datatime.datatime` 插入 MongoDB 时，会直接把插入的时间当成 UTC 时间，这时就会有 8 个小时的误差，所以插入当前时间要用 `datetime.datetime.utcnow()`，插入已有时间时要用 `t - datetime.timedelta(hours=8)`；读取时会直接把 MongoDB 中的 UTC 时区直接读入 `datatime.datatime`，而不做任何转换，所以要进行 `t + datetime.timedelta(hours=8)` 转换
 - Go 的 `time.Time` 读取或插入 MongoDB 时，会自动转换时区（插入时本地时区转为 UTC 时区，读取时 UTC 时区转为本地时区）
+- （**注意**）容器中时区一般是 UTC，而调试环境是 CST，一定要考虑这点，Go 中 `time.Time` 解析依赖系统时区设置，会导致时区问题。
 
 ### Git
 
