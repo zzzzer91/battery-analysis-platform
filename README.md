@@ -205,7 +205,6 @@ $ npm run serve
 - 某些不确定情况，直接返回 500。因为 gin panic recover 后会返回 500
 - 后端字段合法性校验不依赖于 gin 的 ShouldBindxxx，出于逻辑和方便测试 service 上考虑
 - service 中的 xxxService 结构体用于接收用户发送的数据；而 model 中结构体一般是返回给用户的数据格式
-- Go 中默认值尽量不要从 0，而是从 1 开始，因为 Go 中初始化值为 0
 
 ### 时区
 
