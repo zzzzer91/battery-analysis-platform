@@ -40,7 +40,7 @@ func (t *Time) UnmarshalJSON(data []byte) error {
 	}
 	// Fractional seconds are handled implicitly by Parse.
 	var err error
-	t.Time, err = time.Parse(`"`+FormatLayout+`"`, s)
+	t.Time, err = time.ParseInLocation(`"`+FormatLayout+`"`, s, time.Local)
 	return err
 }
 
