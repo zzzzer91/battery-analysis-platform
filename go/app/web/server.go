@@ -11,6 +11,7 @@ import (
 )
 
 func Run() error {
+	conf.Init()
 	gin.SetMode(conf.App.Gin.RunMode)
 	r := gin.Default()
 	r.Use(middleware.Session(conf.App.Gin.SecretKey))

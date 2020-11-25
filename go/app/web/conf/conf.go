@@ -11,7 +11,7 @@ type appConf struct {
 
 var App *appConf
 
-func init() {
+func Init() {
 	app := appConf{}
 	if err := conf.Load("go-app-main", &app); err != nil {
 		panic(err)
