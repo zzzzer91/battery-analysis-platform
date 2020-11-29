@@ -1,5 +1,5 @@
 # go-app
-go-app-main:
+go-app-web:
   gin:
     runMode: debug  # debug or release
     httpAddr: 127.0.0.1:5000

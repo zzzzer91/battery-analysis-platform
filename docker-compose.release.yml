@@ -48,7 +48,7 @@ services:
 #      - redis
 
   # go-app
-  go-app-main:  # 不在docker中编译，需要先执行 build-go.sh
+  go-app-web:  # 不在docker中编译，需要先执行 build-go.sh
     image: alpine:3.10
     environment:
       - CONF_FILE=/root/conf/app.yml
@@ -56,18 +56,18 @@ services:
     command: ./app
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ./bin/main/app:/root/app:ro
+      - ./bin/web/app:/root/app:ro
       - ./conf/app.release.yml:/root/conf/app.yml:ro
       - ./resource:/root/resource
     depends_on:
       #- mysql
       - mongo
       - redis
-  #    go-app-main:  # 在docker中编译
+  #    go-app-web:  # 在docker中编译
   #      build:
   #        context: ./go
   #        # 相对于 context
-  #        dockerfile: ../docker/go-app-main/Dockerfile
+  #        dockerfile: ../docker/go-app-web/Dockerfile
   #      environment:
   #        - CONF_FILE=/root/conf/app.yml
   #      command: ./app
